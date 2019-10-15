@@ -29,7 +29,11 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.set("view engine", "ejs");
 app.set('views', __dirname + '/views/');
-app.use(express.static("public"));
+app.use(express.static(__dirname + '/public'));
+// app.use('/css',express.static(__dirname +'/public/css'));
+
+
+// app.use(express.static("public"));
 app.use(bodyParser.urlencoded({extended:true}));
 app.use(methodOverride("_method"));
 app.use(flash());
@@ -125,6 +129,12 @@ app.get("/items", auth.isAuthenticated, async function(req, res) {
 	res.render("items",{items:items});
 });
 
+app.get("/items/:item", auth.isAuthenticated, async function(req, res) {
+	// console.log("searching for " + req.param.item);
+	let item = await db.getItemByLabel(req.params.item);
+	// console.log(item);
+	res.render("item",{item:item});
+});
 
 app.get("/categories", auth.isAuthenticated, async function(req, res) {
 	let categories = await db.getCategoriesByUser(req.user.username);

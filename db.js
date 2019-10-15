@@ -33,6 +33,14 @@ exports.getCategoriesByUser = async function(user) {
 	return Category.find({user: user}).exec();
 }
 
+exports.getItemByLabel = async function(label) {
+	let items = await Item.find({label: label}).exec();
+	if(items.length > 0)
+	{	
+		return items[0];
+	} else return {"label": "Item label does not produce a hit"};
+}
+
 exports.getItemsByUser = async function(user) {
 	return Item.find({user: user}).exec();
 }
