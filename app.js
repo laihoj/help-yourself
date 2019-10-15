@@ -130,11 +130,21 @@ app.get("/items", auth.isAuthenticated, async function(req, res) {
 });
 
 app.get("/items/:item", auth.isAuthenticated, async function(req, res) {
-	// console.log("searching for " + req.param.item);
+	let categories = await db.getCategoriesByUser(req.user.username);
+	if(categories) {
+		res.locals.categories = categories;
+	}
 	let item = await db.getItemByLabel(req.params.item);
 	// console.log(item);
 	res.render("item",{item:item});
 });
+
+app.put("/items/:item", auth.isAuthenticated, async function (req, res) {
+	let updatedItem = await db.findItemByLabelAndUpdate(req.body.item_label, req.body.item_category);
+	// console.log(updatedItem);
+    res.redirect("/items/"+req.params.item);
+});
+
 
 app.get("/categories", auth.isAuthenticated, async function(req, res) {
 	let categories = await db.getCategoriesByUser(req.user.username);

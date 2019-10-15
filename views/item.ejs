@@ -4,10 +4,29 @@
 	<div class="container">
 		<div class="row">
 			<div class="u-full-width">
-			
-			<h5><%= item.label %></h5> 
-			</div>
+				<form  action="/items/<%= item.label %>/?_method=PUT" method="post">
 
+    				<div class="row">
+    	    			<div class="six columns">
+							<label for="labelInput">Item</label>
+							<input class="u-full-width" type="text" name="item_label" placeholder="enter an item" value="<%= item.label %>" id="labelInput" readonly="readonly"><br>
+						</div>
+		    			<div class="six columns">
+        					<label for="categorySelect">Select Category</label>
+							<select class="u-full-width" name="item_category" id="categorySelect" value="<%= item.category %>">
+							<% for(var i = 0; i < categories.length; i++) { %>
+		  						<option value="<%= categories[i].label %>"><%= categories[i].label %></option>
+        					<% } %>
+     					</div>   
+					</div>
+					User:<br>
+					<%if(!currentUser) {%>
+						<input type="hidden" name="item_user" placeholder="Your name please" value="<%= currentUser.username %>"><br>
+					<% } else { %>
+						<input type="hidden" name="item_user" placeholder="Your name please" value="<%= currentUser.username %>"><br>
+					<% } %>	
+					<input type="submit"><br>
+				</form>
 		</div>
 	</div>
 </div>

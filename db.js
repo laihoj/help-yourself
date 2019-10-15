@@ -77,6 +77,17 @@ exports.saveItem = async function(label, category, user) {
  	return item.save();
 }
 
+
+
+exports.findItemByLabelAndUpdate = async function(label, category) {
+	let itemToUpdate = await exports.getItemByLabel(label);
+	itemToUpdate.category = category;
+	return itemToUpdate.save();
+
+}
+
+
+
 exports.saveEffort = async function(hours, minutes, item, timestamp, user) {
 	var effort = new Effort({
 		hours: hours,
