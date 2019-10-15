@@ -1,0 +1,49 @@
+<% include ./partials/header %>
+<style>
+table, th, td {
+  border: 1px solid black;
+}
+</style>
+<table style="width:100%;">
+
+  <tr>
+    <th>Model</th>
+    <th>GET</th> 
+    <th>POST</th>
+  </tr>
+
+
+  <tr>
+    <td>Categories</td>
+    <td><a href="/api/categories">GET ALL</a></td> 
+    <td><% include ./partials/newcategoryform %></td>
+  </tr>
+
+  <tr>
+    <td>Items</td>
+    <td><a href="/api/items">GET ALL</a></td> 
+    <td><% include ./partials/newitemform %></td>
+  </tr>
+
+<tr>
+    <td>Efforts</td>
+    <td><a href="/api/efforts">GET ALL</a></td> 
+    <td><% include ./partials/neweffortform %></td>
+  </tr>
+
+  <tr>
+    <td>Relevances</td>
+    <td><a href="/api/relevances">GET ALL</a></td> 
+    <td><% include ./partials/newrelevanceform %></td>
+  </tr>
+
+</table>
+<br>
+
+
+<br>
+
+
+
+
+<% include ./partials/footer %>

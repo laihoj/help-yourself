@@ -1,0 +1,18 @@
+<form action="/api/effort" method="post">
+	<div class="row">
+    	
+        	<label for="hoursInput">Hours</label>
+			<input class="" type="number" name="effort_hours" placeholder="1" id="hoursInput">
+			
+
+		<label for="minutesInput">Minutes</label>
+		<input type="number" name="effort_minutes" placeholder="15" id="minutesInput">
+		<input type="hidden" name="effort_item" placeholder="enter an item" value="<%= currentItem %>">
+		<%if(!currentUser) {%>
+		<input type="text" name="effort_user" placeholder="Your name please">
+	<% } else { %>
+		<input type="hidden" name="effort_user" placeholder="Your name please" value="<%= currentUser.username %>">
+	<% } %>	
+	<input type="submit">
+	</div>
+</form>

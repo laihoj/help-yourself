@@ -1,0 +1,35 @@
+<% include ./partials/header %>
+
+<div class="section match">
+	<div class="container">
+		<div class="row">
+			<div class="u-full-width">
+			<% include ./partials/newcategoryform %>
+			</div>
+
+			<h1>Categories</h1>
+			<div class="data">
+				<table id="categoriesTable" class="categories u-full-width">
+					<thead>
+						<tr>
+							<th onclick="sortTable('categoriesTable',0,'true');">#<i class="fas fa-filter"></i></th>
+							<th onclick="sortTable('categoriesTable',1,'true');">Label</th>
+							<th onclick="sortTable('categoriesTable',2,'true');">User</th>
+						</tr>
+					</thead>
+					<tbody>
+				 		<% for(var i = 0; i < categories.length; i++) { %>
+				  			<tr>
+				  				<td><%= i %></td>
+								<td><%= categories[i].label %></td>
+								<td><%= categories[i].user %></td>
+							</tr>
+						<% } %>
+					</tbody>
+				</table>
+			</div>	
+		</div>
+	</div>
+</div>
+
+<% include ./partials/footer %>

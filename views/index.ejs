@@ -1,0 +1,52 @@
+<% include ./partials/header %>
+
+<div class="container">
+  <div class="row">
+  	<div class="twelve column" style="margin-top: 5%">
+			<h1>Help Yourself</h1>
+
+    </div>
+    <div class="row">
+      <div class="data">
+        <table id="itemsTable" class="u-full-width">
+          <thead>
+            <tr>
+              <th onclick="sortTable('itemsTable',1,'true');">Label</th>
+              <th onclick="sortTable('itemsTable',2,'true');">Hours</th>
+              <th onclick="sortTable('itemsTable',3,'true');">Minutes</th>
+              <th onclick="sortTable('itemsTable',3,'true');">Submit</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% for(var i = 0; i < items.length; i++) { %>
+              <tr>
+                <td><%= items[i].label %></td>
+                <%  currentItem = items[i].label %>
+                <form action="/api/effort" method="post">
+                  <td>
+                    <input class="one column" type="number" name="effort_hours" placeholder="1" value="1" id="hoursInput">
+                  </td>
+                  <td>
+                    <input class="one column" type="number" name="effort_minutes" placeholder="15" value="15" id="minutesInput">
+                  </td>
+                    <input type="hidden" name="effort_item" placeholder="enter an item" value="<%= currentItem %>">
+                    <%if(!currentUser) {%>
+                    <input type="text" name="effort_user" placeholder="Your name please">
+                    <% } else { %>
+                    <input type="hidden" name="effort_user" placeholder="Your name please" value="<%= currentUser.username %>">
+                    <% } %> 
+                  <td>
+                    <input type="submit">
+                  </td>
+                </form>
+              </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div> 
+  	</div>
+  </div>
+</div>
+
+
+<% include ./partials/footer %>

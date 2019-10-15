@@ -1,0 +1,16 @@
+<nav class="navbar navbar-expand-lg d-flex">
+  <div class="container">
+	<a class="nav-item nav-link" href="/">Help Me</a>
+	<a class="nav-item nav-link" href="/categories">categories</a>
+	<a class="nav-item nav-link" href="/items">items</a>
+	<a class="nav-item nav-link" href="/effort">effort</a>
+	<a class="nav-item nav-link" href="/relevance">relevance</a>
+	<a class="nav-item nav-link" href="/api">api</a>
+	<%if(!currentUser) {%>
+		<a class="nav-item nav-link" href="/login">Login</a>
+	<% } else { %>
+		<a class="nav-item nav-link" href="/users/<%=currentUser.username%>"><%=currentUser.username%></a>
+		<a class="nav-item nav-link" href="/logout">Logout</a>
+	<% } %>
+   </div>
+</nav>

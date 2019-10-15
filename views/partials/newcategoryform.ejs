@@ -1,0 +1,12 @@
+<h1>new category</h1>
+<form action="/api/categories" method="post">
+	Category:<br>
+		<input type="text" name="category_label" placeholder="such as an aspect of life"><br>
+	User:<br>
+		<%if(!currentUser) {%>
+		<input type="text" name="category_user" placeholder="Your name please"><br>
+	<% } else { %>
+		<input type="text" name="category_user" placeholder="Your name please" value="<%= currentUser.username %>"><br>
+	<% } %>	
+	<input type="submit"><br>
+</form>

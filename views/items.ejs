@@ -1,0 +1,37 @@
+<% include ./partials/header %>
+
+<div class="section match">
+	<div class="container">
+		<div class="row">
+			<div class="u-full-width">
+			<% include ./partials/newitemform %>
+			</div>
+
+			<h1>Items</h1>
+			<div class="data">
+				<table id="itemsTable" class="items u-full-width">
+					<thead>
+						<tr>
+							<th onclick="sortTable('itemsTable',0,'true');">#<i class="fas fa-filter"></i></th>
+							<th onclick="sortTable('itemsTable',1,'true');">Label</th>
+							<th onclick="sortTable('itemsTable',2,'true');">Category</th>
+							<th onclick="sortTable('itemsTable',3,'true');">User</th>
+						</tr>
+					</thead>
+					<tbody>
+				 		<% for(var i = 0; i < items.length; i++) { %>
+				  			<tr>
+				  				<td><%= i %></td>
+								<td><%= items[i].label %></td>
+								<td><%= items[i].category %></td>
+								<td><%= items[i].user %></td>
+							</tr>
+						<% } %>
+					</tbody>
+				</table>
+			</div>	
+		</div>
+	</div>
+</div>
+
+<% include ./partials/footer %>
