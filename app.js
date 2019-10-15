@@ -52,10 +52,13 @@ var domain = process.env.DOMAIN || "localhost:3000";
 const db = require('./db.js');
 
 
-app.get("/", function(req, res) {
-	request("http://" + domain + "/api/items", function(err, response, body) {
-		res.render("index",{items:JSON.parse(body)});
-	});
+app.get("/", async function(req, res) {
+	let items = await db.items();
+	res.render("index", {items:items});
+	// res.send(items);
+	// request("http://" + domain + "/api/items", function(err, response, body) {
+		// res.render("index",{items:JSON.parse(body)});
+	// });
 	// res.render("index");
 });
 
