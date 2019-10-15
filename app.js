@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 var bodyParser 				= require("body-parser"),
 	express 				= require("express"),
 	request					= require("request"),
@@ -7,6 +9,7 @@ var bodyParser 				= require("body-parser"),
 	passportLocalMongoose 	= require("passport-local-mongoose"),
 	methodOverride			= require("method-override"),
 	app						= express();
+
 
 var User = require("./models/user");
 
