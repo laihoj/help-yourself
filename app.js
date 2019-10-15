@@ -1,4 +1,8 @@
-require('dotenv').config();
+
+
+if (process.env.NODE_ENV !== 'production') {
+  require('dotenv').config();
+}
 
 var bodyParser 				= require("body-parser"),
 	express 				= require("express"),
