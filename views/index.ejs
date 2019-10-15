@@ -24,20 +24,27 @@
                 <%  currentItem = items[i].label %>
                 <form action="/api/effort" method="post">
                   <td>
-                    <input class="one column" type="number" name="effort_hours" placeholder="1" value="1" id="hoursInput">
+                    <input class="one column" type="number" name="effort_hours" placeholder="0" value="0" id="hoursInput">
                   </td>
                   <td>
-                    <input class="one column" type="number" name="effort_minutes" placeholder="15" value="15" id="minutesInput">
+                    <input class="one column" type="number" name="effort_minutes" placeholder="0" value="0" id="minutesInput">
                   </td>
-                    <input type="hidden" name="effort_item" placeholder="enter an item" value="<%= currentItem %>">
-                    <%if(!currentUser) {%>
-                    <input type="text" name="effort_user" placeholder="Your name please">
-                    <% } else { %>
-                    <input type="hidden" name="effort_user" placeholder="Your name please" value="<%= currentUser.username %>">
-                    <% } %> 
+                    
                   <td>
                     <input type="submit">
                   </td>
+
+
+                  <!-- Hidden form inputs: item, user, time-->
+                  <input type="hidden" name="effort_item" placeholder="enter an item" value="<%= currentItem %>">
+                  <%if(!currentUser) {%>
+                    <input type="hidden" name="effort_user" placeholder="Your name please">
+                  <% } else { %>
+                    <input type="hidden" name="effort_user" placeholder="Your name please" value="<%= currentUser.username %>">
+                  <% } %> 
+                  <input class="one column" id="effort_timestamp" type="hidden" name="effort_timestamp" placeholder="yyyy-mm-ddThh:mm:ss.mmmZ" value="<%= Date.now() %>">
+
+
                 </form>
               </tr>
             <% } %>

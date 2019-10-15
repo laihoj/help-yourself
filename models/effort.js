@@ -4,6 +4,7 @@ var effortSchema =  mongoose.Schema({
 	hours: Number,
 	minutes: Number,
 	item: String,
+	timestamp: Date,
 	user: String
 });
 

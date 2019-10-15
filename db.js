@@ -37,6 +37,10 @@ exports.getItemsByUser = async function(user) {
 	return Item.find({user: user}).exec();
 }
 
+exports.getItemsByCategory = async function(category) {
+	return Item.find({category: category}).exec();
+}
+
 exports.getEffortsByUser = async function(user) {
 	return Effort.find({user: user}).exec();
 }
@@ -65,11 +69,12 @@ exports.saveItem = async function(label, category, user) {
  	return item.save();
 }
 
-exports.saveEffort = async function(hours, minutes, item, user) {
+exports.saveEffort = async function(hours, minutes, item, timestamp, user) {
 	var effort = new Effort({
 		hours: hours,
 		minutes: minutes,
 		item: item,
+		timestamp: timestamp,
 		user: user
 	});
  	return effort.save();

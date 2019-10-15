@@ -14,15 +14,13 @@
 						<tr>
 							<th onclick="sortTable('categoriesTable',0,'true');">#<i class="fas fa-filter"></i></th>
 							<th onclick="sortTable('categoriesTable',1,'true');">Label</th>
-							<th onclick="sortTable('categoriesTable',2,'true');">User</th>
 						</tr>
 					</thead>
 					<tbody>
 				 		<% for(var i = 0; i < categories.length; i++) { %>
 				  			<tr>
 				  				<td><%= i %></td>
-								<td><%= categories[i].label %></td>
-								<td><%= categories[i].user %></td>
+			  					<td><a href="/categories/<%= categories[i].label %>"><%= categories[i].label %></a></td>
 							</tr>
 						<% } %>
 					</tbody>

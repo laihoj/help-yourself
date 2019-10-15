@@ -55,11 +55,6 @@ const db = require('./db.js');
 app.get("/", async function(req, res) {
 	let items = await db.items();
 	res.render("index", {items:items});
-	// res.send(items);
-	// request("http://" + domain + "/api/items", function(err, response, body) {
-		// res.render("index",{items:JSON.parse(body)});
-	// });
-	// res.render("index");
 });
 
 
@@ -87,7 +82,7 @@ app.post("/api/categories", auth.isAuthenticated, async function(req,res) {
 	let category = await db.saveCategory(
 		req.body.category_label, 
 		req.body.category_user);
-	res.send(category);
+	res.redirect("/categories");
 });
 
 app.post("/api/items", auth.isAuthenticated, async function(req,res) {
@@ -95,7 +90,7 @@ app.post("/api/items", auth.isAuthenticated, async function(req,res) {
 		req.body.item_label, 
 		req.body.item_category, 
 		req.body.item_user);
-	res.send(item);
+	res.redirect("/items");
 });
 
 app.post("/api/effort", auth.isAuthenticated, async function(req,res) {
@@ -103,8 +98,9 @@ app.post("/api/effort", auth.isAuthenticated, async function(req,res) {
 		req.body.effort_hours, 
 		req.body.effort_minutes, 
 		req.body.effort_item, 
+		req.body.effort_timestamp || Date.now(), 
 		req.body.effort_user);
-	res.send(effort);
+	res.redirect("/efforts");
 });
 
 app.post("/api/relevance", auth.isAuthenticated, async function(req,res) {
@@ -112,7 +108,7 @@ app.post("/api/relevance", auth.isAuthenticated, async function(req,res) {
 		req.body.relevance_value, 
 		req.body.relevance_item, 
 		req.body.relevance_user);
-	res.send(relevance);
+	res.redirect("/relevance");
 });
 
 app.get("/api", function(req, res) {
@@ -125,16 +121,22 @@ app.get("/items", auth.isAuthenticated, async function(req, res) {
 	if(categories) {
 		res.locals.categories = categories;
 	}
-	request("http://" + domain + "/api/items", function(err, response, body) {
-		res.render("items",{items:JSON.parse(body)});
-	});
+	let items = await db.getItemsByUser(req.user.username);
+	res.render("items",{items:items});
 });
 
-app.get("/categories", function(req, res) {
-	request("http://" + domain + "/api/categories", function(err, response, body) {
-		res.render("categories",{categories:JSON.parse(body)});
-	});
+
+app.get("/categories", auth.isAuthenticated, async function(req, res) {
+	let categories = await db.getCategoriesByUser(req.user.username);
+	res.render("categories",{categories:categories});
 });
+
+app.get("/categories/:category", auth.isAuthenticated, async function(req, res) {
+	let items = await db.getItemsByCategory(req.params.category);
+	res.render("category",{items:items, category:req.params.category});
+	// res.render("category",{items:items});
+});
+
 
 app.post("/users", async function(req,res){
 	let user = await db.saveUser(req.body.username, req.body.password);

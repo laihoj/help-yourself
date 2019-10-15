@@ -1,4 +1,10 @@
-<form action="/api/effort" method="post">
+<script>
+function refreshTimeStamp() {
+	document.getElementById('effort_timestamp').setAttribute('value', now());
+}
+</script>
+
+<form action="/api/effort" method="post" onsubmit="refreshTimeStamp()">
 	<div class="row">
     	
         	<label for="hoursInput">Hours</label>
@@ -8,6 +14,13 @@
 		<label for="minutesInput">Minutes</label>
 		<input type="number" name="effort_minutes" placeholder="15" id="minutesInput">
 		<input type="hidden" name="effort_item" placeholder="enter an item" value="<%= currentItem %>">
+
+
+		<input id="effort_timestamp" type="datetime" name="effort_timestamp" placeholder="yyyy-mm-ddThh:mm:ss.mmmZ" value="<%= now() %>">
+
+	
+
+
 		<%if(!currentUser) {%>
 		<input type="text" name="effort_user" placeholder="Your name please">
 	<% } else { %>
