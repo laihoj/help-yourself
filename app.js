@@ -44,8 +44,15 @@ app.use(function(req, res, next){
 	res.locals.success = req.flash("success");
 	res.header("Access-Control-Allow-Origin", "*");
   	res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  	
 	next();
 });
+
+// app.use(async function(req, res, next) {
+// 	if(req.isAuthenticated())
+// 	res.locals.relevances = await db.getRelevanceByUser(req.user.username).relevances;
+// 	return next();
+// });
 
 passport.use(new LocalStrategy(User.authenticate()));
 passport.serializeUser(User.serializeUser());
@@ -79,7 +86,7 @@ app.get("/api/efforts", async function(req,res) {
 
 app.get("/api/relevances", async function(req,res) {
 	let relevances = await db.relevances();
-	res.send(relevances);
+	res.send(relevances.relevances);
 });
 
 app.post("/api/categories", auth.isAuthenticated, async function(req,res) {
@@ -107,13 +114,14 @@ app.post("/api/effort", auth.isAuthenticated, async function(req,res) {
 	res.redirect("/efforts");
 });
 
-app.post("/api/relevance", auth.isAuthenticated, async function(req,res) {
-	let relevance = await db.saveRelevance(
-		req.body.relevance_value, 
-		req.body.relevance_item, 
-		req.body.relevance_user);
-	res.redirect("/relevance");
-});
+
+// app.post("/api/relevance", auth.isAuthenticated, async function(req,res) {
+// 	let relevance = await db.saveRelevance(
+// 		req.body.relevance_value, 
+// 		req.body.relevance_item, 
+// 		req.body.relevance_user);
+// 	res.redirect("/relevance");
+// });
 
 app.get("/api", function(req, res) {
 	res.render("api");
@@ -126,7 +134,8 @@ app.get("/items", auth.isAuthenticated, async function(req, res) {
 		res.locals.categories = categories;
 	}
 	let items = await db.getItemsByUser(req.user.username);
-	res.render("items",{items:items});
+	let relevances = await db.getRelevanceByUser(req.user.username);
+	res.render("items",{items:items, relevances:relevances.relevances});
 });
 
 app.get("/items/:item", auth.isAuthenticated, async function(req, res) {
@@ -136,7 +145,8 @@ app.get("/items/:item", auth.isAuthenticated, async function(req, res) {
 	}
 	let item = await db.getItemByLabel(req.params.item);
 	// console.log(item);
-	res.render("item",{item:item});
+	let relevances = await db.getRelevanceByUser(req.user.username);
+	res.render("item",{item:item, relevances:relevances.relevances});
 });
 
 app.put("/items/:item", auth.isAuthenticated, async function (req, res) {
@@ -148,21 +158,21 @@ app.put("/items/:item", auth.isAuthenticated, async function (req, res) {
 
 app.get("/categories", auth.isAuthenticated, async function(req, res) {
 	let categories = await db.getCategoriesByUser(req.user.username);
-	res.render("categories",{categories:categories});
+	let relevances = await db.getRelevanceByUser(req.user.username);
+	res.render("categories",{categories:categories, relevances:relevances.relevances});
 });
 
 app.get("/categories/:category", auth.isAuthenticated, async function(req, res) {
 	let items = await db.getItemsByCategory(req.params.category);
-	res.render("category",{items:items, category:req.params.category});
+	let relevances = await db.getRelevanceByUser(req.user.username);
+	res.render("category",{items:items, category:req.params.category, relevances:relevances.relevances});
 	// res.render("category",{items:items});
 });
 
 app.get("/relevances", auth.isAuthenticated, async function(req, res) {
-	let categories = await db.getCategoriesByUser(req.user.username);
-	let items = await db.getItemsByUser(req.user.username);
 	let relevances = await db.getRelevanceByUser(req.user.username);
-	console.log("Relevances found: " + relevances);
-	res.render("relevances",{relevances:relevances.relevances, categories: categories.concat(items)});
+	res.render("relevances",{relevances:relevances.relevances});
+	// res.render("relevances");
 });
 
 app.put("/relevances", auth.isAuthenticated, async function (req, res) {

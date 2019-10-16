@@ -1,6 +1,44 @@
 var bodyOnLoad = function() {
+	// loadRelevanciesToCookie();
 	loadRelevanceSlidersFromCookie();
 }
+
+var loadRelevanciesToCookie = async function() {
+	// const url='/api/relevances';
+
+	// const response = await fetch(url);
+	// const myJson = await response.json();
+	// return myJson;
+		//.then(res=>{return res});
+	const Http = new XMLHttpRequest();
+	const url='/api/relevances';
+	Http.open("GET", url);
+	Http.send();
+
+	Http.onreadystatechange = function()  {
+	  	// console.log(Http.responseText);
+	  	var obj = JSON.parse(Http.responseText);
+	  	console.log(obj);
+	  	for(var i = 0; i < obj.relevances.length; i++) {
+	  		setCookie(obj.relevances.key, obj.relevances.value,  Date.now() + (10 * 365 * 24 * 60 * 60));
+	  	}
+	  	// return Http.responseText;
+	  	
+	}
+}
+
+var httpOnReadyStateChangeHandler = function() {
+	  	// console.log(Http.responseText);
+	  	var obj = JSON.parse(Http.responseText);
+	  	console.log(obj);
+	  	for(var i = 0; i < obj.relevances.length; i++) {
+	  		setCookie(obj.relevances.key, obj.relevances.value,  Date.now() + (10 * 365 * 24 * 60 * 60));
+	  	}
+	  	// return Http.responseText;
+	  	
+	}
+
+
 
 var loadRelevanceSlidersFromCookie = function() {
 	var sliders = document.getElementsByClassName("slider");

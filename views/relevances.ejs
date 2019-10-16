@@ -6,40 +6,38 @@
 			<h1>relevances</h1>
 			<form action="/relevances/?_method=PUT" method="post" id="relevance_form">
 				<div class="data">
-					<table id="categoriesTable" class="categories u-full-width">
+					<table id="relevancesTable" class="categories u-full-width">
 						<thead>
 							<tr>
-								<th onclick="sortTable('categoriesTable',0,'true');">#<i class="fas fa-filter"></i></th>
-								<th onclick="sortTable('categoriesTable',1,'true');">Label</th>
-								<th onclick="sortTable('categoriesTable',2,'true');">Relevance</th>
+								<th onclick="sortTable('relevancesTable',0,'true');">#<i class="fas fa-filter"></i></th>
+								<th onclick="sortTable('relevancesTable',1,'true');">Label</th>
+								<th onclick="sortTable('relevancesTable',2,'true');">Relevance</th>
 							</tr>
 						</thead>
 						<tbody>
-					 		<% for(var i = 0; i < categories.length; i++) { %>
-			  					<% for(var i = 0; i < relevances.length; i++) { %>
-			  					<tr>
-				  					<td><%= i %></td>
-									<td><%= relevances[i].key %></td>
-									<td><input 
-					  						type="range" 
-					  						min="1" 
-					  						max="100" 
-					  						value="<%= relevances[i].value %>" 
-					  						class="slider" 
-					  						id="<%= relevances[i].key %>_relevance" 
-											name="<%= relevances[i].key %>_relevance" 
+		  					<% for(var i = 0; i < relevances.length; i++) { %>
+		  					<tr>
+			  					<td><%= i %></td>
+								<td><%= relevances[i].key %></td>
+								<td><input 
+				  						type="range" 
+				  						min="1" 
+				  						max="100" 
+				  						value="<%= relevances[i].value %>" 
+				  						class="slider" 
+				  						id="<%= relevances[i].key %>_relevance" 
+										name="<%= relevances[i].key %>_relevance" 
 
-											onmouseup="updateRelevance('<%= relevances[i].key %>'); document.getElementById('relevance_form').submit();"
-											ontouchend="updateRelevance('<%= relevances[i].key %>');document.getElementById('relevance_form').submit();">
-			  						</td>
-								<% } %>
-								<%if(!currentUser) {%>
-									<input type="hidden" name="category_user" placeholder="Your name please" value="<%= currentUser.username %>"><br>
-								<% } else { %>
-									<input type="hidden" name="category_user" placeholder="Your name please" value="<%= currentUser.username %>"><br>
-								<% } %>
-								</tr>
+										onmouseup="updateRelevance('<%= relevances[i].key %>'); document.getElementById('relevance_form').submit();"
+										ontouchend="updateRelevance('<%= relevances[i].key %>');document.getElementById('relevance_form').submit();">
+		  						</td>
 							<% } %>
+							<%if(!currentUser) {%>
+								<input type="hidden" name="category_user" placeholder="Your name please" value="<%= currentUser.username %>"><br>
+							<% } else { %>
+								<input type="hidden" name="category_user" placeholder="Your name please" value="<%= currentUser.username %>"><br>
+							<% } %>
+							</tr>
 						</tbody>
 					</table>
 				</div>			
