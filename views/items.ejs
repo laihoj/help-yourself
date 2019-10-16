@@ -8,6 +8,7 @@
 			</div>
 
 			<h1>Items</h1>
+			<form action="/relevances/?_method=PUT" method="post" id="relevance_form">
 			<div class="data">
 				<table id="itemsTable" class="items u-full-width">
 					<thead>
@@ -15,6 +16,7 @@
 							<th onclick="sortTable('itemsTable',0,'true');">#<i class="fas fa-filter"></i></th>
 							<th onclick="sortTable('itemsTable',1,'true');">Label</th>
 							<th onclick="sortTable('itemsTable',2,'true');">Category</th>
+							<th onclick="sortTable('itemsTable',3,'true');">Relevance</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -23,11 +25,31 @@
 				  				<td><%= i %></td>
 				  				<td><a href="/items/<%= items[i].label %>"><%= items[i].label %></a></td>
 								<td><a href="/categories/<%= items[i].category %>"><%= items[i].category %></a></td>
+								<td><input 
+									type="range" 
+									min="1" 
+									max="100" 
+									value="50" 
+									class="slider" 
+									id="<%= items[i].label %>_relevance" 
+									name="<%= items[i].label %>_relevance" 
+
+									onmouseup="updateRelevance('<%= items[i].label %>'); document.getElementById('relevance_form').submit();"
+									ontouchend="updateRelevance('<%= items[i].label %>');document.getElementById('relevance_form').submit();">
+								</td>
 							</tr>
 						<% } %>
 					</tbody>
 				</table>
-			</div>	
+			</div>
+
+			<%if(!currentUser) {%>
+					<input type="hidden" name="category_user" placeholder="Your name please" value="<%= currentUser.username %>"><br>
+				<% } else { %>
+					<input type="hidden" name="category_user" placeholder="Your name please" value="<%= currentUser.username %>"><br>
+				<% } %>	
+				
+			</form>
 		</div>
 	</div>
 </div>

@@ -8,12 +8,14 @@
 			</div>
 
 			<h1>Categories</h1>
+			<form action="/relevances/?_method=PUT" method="post" id="relevance_form">
 			<div class="data">
 				<table id="categoriesTable" class="categories u-full-width">
 					<thead>
 						<tr>
 							<th onclick="sortTable('categoriesTable',0,'true');">#<i class="fas fa-filter"></i></th>
 							<th onclick="sortTable('categoriesTable',1,'true');">Label</th>
+							<th onclick="sortTable('categoriesTable',2,'true');">Relevance</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -21,6 +23,18 @@
 				  			<tr>
 				  				<td><%= i %></td>
 			  					<td><a href="/categories/<%= categories[i].label %>"><%= categories[i].label %></a></td>
+			  					<td><input 
+			  						type="range" 
+			  						min="1" 
+			  						max="100" 
+			  						value="50" 
+			  						class="slider" 
+			  						id="<%= categories[i].label %>_relevance" 
+									name="<%= categories[i].label %>_relevance" 
+
+									onmouseup="updateRelevance('<%= categories[i].label %>'); document.getElementById('relevance_form').submit();"
+									ontouchend="updateRelevance('<%= categories[i].label %>');document.getElementById('relevance_form').submit();">
+		  						</td>
 							</tr>
 						<% } %>
 					</tbody>

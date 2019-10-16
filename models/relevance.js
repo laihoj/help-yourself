@@ -1,9 +1,11 @@
 var mongoose = require("mongoose");
 
 var relevanceSchema =  mongoose.Schema({
-	value: Number,
-	item: String,
-	user: String
+	user: String,
+	relevances: [{
+		key: String,
+		value: Number
+	}]
 });
 
 

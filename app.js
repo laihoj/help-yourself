@@ -157,6 +157,32 @@ app.get("/categories/:category", auth.isAuthenticated, async function(req, res) 
 	// res.render("category",{items:items});
 });
 
+app.get("/relevances", auth.isAuthenticated, async function(req, res) {
+	let categories = await db.getCategoriesByUser(req.user.username);
+	let items = await db.getItemsByUser(req.user.username);
+	let relevances = await db.getRelevanceByUser(req.user.username);
+	console.log("Relevances found: " + relevances);
+	res.render("relevances",{relevances:relevances.relevances, categories: categories.concat(items)});
+});
+
+app.put("/relevances", auth.isAuthenticated, async function (req, res) {
+	let updatedRelevance = await db.findRelevancesByUserAndUpdate(req.user.username, req.body);
+	backURL=req.header('Referer') || '/';
+
+    res.redirect(backURL);
+});
+
+app.put("/relevances/newrelevance", auth.isAuthenticated, function (req, res) {
+	let relevance = db.addRelevance(
+		req.user.username,
+		req.body.relevance_key, 
+		req.body.relevance_value);
+
+
+
+	// console.log(updatedItem);
+    res.redirect("/relevances");
+});
 
 app.post("/users", async function(req,res){
 	let user = await db.saveUser(req.body.username, req.body.password);

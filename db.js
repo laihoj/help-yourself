@@ -53,8 +53,17 @@ exports.getEffortsByUser = async function(user) {
 	return Effort.find({user: user}).exec();
 }
 
+//try not to use
 exports.getRelevancesByUser = async function(user) {
 	return Relevance.find({user: user}).exec();
+}
+
+exports.getRelevanceByUser = async function(user) {
+	let relevances = await Relevance.find({user: user}).exec();
+	if(relevances.length > 0) {
+		return relevances[0];
+	}
+	else return {"label": "Item label does not produce a hit"};
 }
 
 
@@ -65,6 +74,7 @@ exports.saveCategory = async function(label, user) {
 		label: label,
 		user: user
 	});
+	exports.addRelevance(user, label, 50);
  	return category.save();
 }
 
@@ -74,6 +84,7 @@ exports.saveItem = async function(label, category, user) {
 		category: category,
 		user: user
 	});
+	exports.addRelevance(user, label, 50);
  	return item.save();
 }
 
@@ -83,6 +94,34 @@ exports.findItemByLabelAndUpdate = async function(label, category) {
 	let itemToUpdate = await exports.getItemByLabel(label);
 	itemToUpdate.category = category;
 	return itemToUpdate.save();
+
+}
+
+exports.addRelevance = async function(user, key, value) {
+	let res = await exports.getRelevanceByUser(user);
+	console.log(res);
+	res.relevances.push({"key":key, "value":value});
+	return res.save();
+}
+
+exports.findRelevancesByUserAndUpdate = async function(user, relevances) {
+	let res = await exports.getRelevanceByUser(user);
+	let relevancesToUpdate = res.relevances;
+	console.log("relevances retreived: " + relevancesToUpdate);
+	for(var i = 0; i < relevancesToUpdate.length; i++) {
+		var key 		= relevancesToUpdate[i].key;
+		var value	 	= relevancesToUpdate[i].value;
+		// var newvalue 	= relevances["sovellusohjelmointi_relevance"];
+		var formkey		= relevancesToUpdate[i].key+"_relevance";
+		console.log("Looking for form input by the name: " + formkey);
+		var newvalue 	= relevances[formkey];
+
+		console.log("Key: " + key + ", value: " + value + ", newvalue: " + newvalue);
+		relevancesToUpdate[i].value = newvalue;
+	}
+	console.log("relevances updated: " + res);
+	// relevancesToUpdate.relevances = relevances;
+	return res.save();
 
 }
 
@@ -99,11 +138,10 @@ exports.saveEffort = async function(hours, minutes, item, timestamp, user) {
  	return effort.save();
 }
 
-exports.saveRelevance = async function(value, item, user) {
+exports.saveRelevance = async function(user) {
 	var relevance = new Relevance({
-		value: value,
-		item: item,
-		user: user
+		user: user,
+		relevances:{}
 	});
  	return relevance.save();
 }
@@ -116,5 +154,7 @@ exports.getUser = async function(user) {
 exports.saveUser = async function(username, password) {
 	const newUser = new User({username:username});
 	await newUser.setPassword(password);
+
+	const newRelevances = await exports.saveRelevance(username);
 	return newUser.save();
 }
