@@ -1,3 +1,15 @@
+function getRelevancesFromFooter() {
+	var data = document.getElementsByClassName("relevanceData");
+	for(var i = 0; i < data.length; i++) {
+		var text = data[0].innerText;
+		var res = text.split(":");
+		var key = res[0];
+		var value = res[1];
+		setCookie(key, value, Date.now() + (10 * 365 * 24 * 60 * 60));
+	}
+
+}
+
 var bodyOnLoad = function() {
 	// loadRelevanciesToCookie();
 	loadRelevanceSlidersFromCookie();
