@@ -20,7 +20,8 @@
           <tbody>
             <% for(var i = 0; i < items.length; i++) { %>
               <tr>
-                <td><%= items[i].label %></td>
+                
+                <td><a href="/items/<%= items[i].label %>"><%= items[i].label %></a></td>
                 <%  currentItem = items[i].label %>
                 <form action="/api/effort" method="post">
                   <td>
