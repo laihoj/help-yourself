@@ -10,9 +10,24 @@ function getRelevancesFromFooter() {
 
 }
 
+var loadRelevanceSlidersFromFooter = function() {
+	var sliders = document.getElementsByClassName("slider");
+	Array.prototype.forEach.call(sliders, function(slider, index) {
+		var key = slider.id.split("_")[0] + "_key";
+		// var value = parseInt(document.getElementById(key).innerText);
+		// slider.value = value;
+		slider.value = getValueByKeyFromFooter(key);
+	});
+}
+
+function getValueByKeyFromFooter(key) {
+	return parseInt(document.getElementById(key).innerText);
+}
+
 var bodyOnLoad = function() {
 	// loadRelevanciesToCookie();
-	loadRelevanceSlidersFromCookie();
+	// loadRelevanceSlidersFromCookie();
+	loadRelevanceSlidersFromFooter();
 }
 
 var loadRelevanciesToCookie = async function() {
