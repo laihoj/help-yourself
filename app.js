@@ -1,5 +1,3 @@
-
-
 if (process.env.NODE_ENV !== 'production') {
   require('dotenv').config();
 }
@@ -68,15 +66,13 @@ app.get("/", async function(req, res) {
 	res.render("index", {items:items});
 });
 
+app.get("/api", function(req, res) {
+	res.render("api");
+});
 
 app.get("/api/categories", async function(req,res) {
 	let categories = await db.categories.all();
 	res.send(categories);
-});
-
-app.get("/api/items", async function(req,res) {
-	let items = await db.items.all();
-	res.send(items);
 });
 
 app.get("/api/efforts", async function(req,res) {
@@ -84,9 +80,19 @@ app.get("/api/efforts", async function(req,res) {
 	res.send(efforts);
 });
 
+app.get("/api/items", async function(req,res) {
+	let items = await db.items.all();
+	res.send(items);
+});
+
 app.get("/api/relevances", async function(req,res) {
 	let relevances = await db.relevances.all();
 	res.send(relevances.relevances);
+});
+
+app.get("/api/users", async function(req,res) {
+	let relevances = await db.users.all();
+	res.send(users);
 });
 
 app.post("/api/categories", auth.isAuthenticated, async function(req,res) {
@@ -95,21 +101,6 @@ app.post("/api/categories", auth.isAuthenticated, async function(req,res) {
 		req.body.category_user);
 	res.redirect("/categories");
 });
-
-app.post("/api/items", auth.isAuthenticated, async function(req,res) {
-	let item = await db.items.save(
-		req.body.item_label, 
-		req.body.item_category, 
-		req.body.item_user);
-	res.redirect("/items");
-});
-
-app.delete("/api/items/:item", auth.isAuthenticated, async function(req,res) {
-	db.deleteItem(req.params.item);
-
-	res.redirect("/items");
-});
-
 
 
 app.post("/api/effort", auth.isAuthenticated, async function(req,res) {
@@ -122,7 +113,14 @@ app.post("/api/effort", auth.isAuthenticated, async function(req,res) {
 	res.redirect("/efforts");
 });
 
-
+app.post("/api/items", auth.isAuthenticated, async function(req,res) {
+	let item = await db.items.save(
+		req.body.item_label, 
+		req.body.item_category, 
+		req.body.item_user);
+	res.redirect("/items");
+});
+/*does not reflect current model*/
 // app.post("/api/relevance", auth.isAuthenticated, async function(req,res) {
 // 	let relevance = await db.saveRelevance(
 // 		req.body.relevance_value, 
@@ -131,9 +129,55 @@ app.post("/api/effort", auth.isAuthenticated, async function(req,res) {
 // 	res.redirect("/relevance");
 // });
 
-app.get("/api", function(req, res) {
-	res.render("api");
+app.post("/users", async function(req,res){
+	let user = await db.users.save(req.body.username, req.body.password);
+	if(user) {
+		passport.authenticate("local")(req, res, function() {
+			res.redirect(req.session.redirectTo || '/users/' +req.user.username);
+			delete req.session.redirectTo;
+		});
+	} else {
+		res.redirect("/");
+	}
 });
+
+app.delete("/api/categories/:id", auth.isAuthenticated, async function(req,res) {
+	db.categories.delete(req.params.id);
+	backURL=req.header('Referer') || '/';
+    res.redirect(backURL);
+});
+
+app.delete("/api/efforts/:id", auth.isAuthenticated, async function(req,res) {
+	db.efforts.delete(req.params.id);
+	backURL=req.header('Referer') || '/';
+    res.redirect(backURL);
+});
+
+app.delete("/api/items/:id", auth.isAuthenticated, async function(req,res) {
+	db.items.delete(req.params.id);
+	backURL=req.header('Referer') || '/';
+    res.redirect(backURL);
+});
+
+app.delete("/api/users/:id", auth.isAuthenticated, async function(req,res) {
+	db.users.delete(req.params.id);
+	backURL=req.header('Referer') || '/';
+    res.redirect(backURL);
+});
+
+app.delete("/api/relevances/:id", auth.isAuthenticated, async function(req,res) {
+	db.relevances.delete(req.params.id);
+	backURL=req.header('Referer') || '/';
+    res.redirect(backURL);
+});
+
+
+
+
+
+
+
+
 
 
 app.get("/efforts", auth.isAuthenticated, async function(req, res) {
@@ -197,8 +241,8 @@ app.get("/relevances", auth.isAuthenticated, async function(req, res) {
 
 app.put("/relevances", auth.isAuthenticated, async function (req, res) {
 	let updatedRelevance = await db.relevances.byUserAndUpdate(req.user.username, req.body);
-	backURL=req.header('Referer') || '/';
 
+	backURL=req.header('Referer') || '/';
     res.redirect(backURL);
 });
 
@@ -210,17 +254,7 @@ app.put("/relevances", auth.isAuthenticated, async function (req, res) {
 //     res.redirect("/relevances");
 // });
 
-app.post("/users", async function(req,res){
-	let user = await db.users.save(req.body.username, req.body.password);
-	if(user) {
-		passport.authenticate("local")(req, res, function() {
-			res.redirect(req.session.redirectTo || '/users/' +req.user.username);
-			delete req.session.redirectTo;
-		});
-	} else {
-		res.redirect("/");
-	}
-});
+
 
 app.get("/users/:user", auth.isAuthenticated, async function(req,res){
 	let categories = await db.categories.byUser(req.user.username);
