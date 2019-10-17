@@ -29,10 +29,8 @@ exports.save = async function(label, user) {
  	return category.save();
 }
 
-
-exports.delete = async function(label) {
-	var message = "category delete not implemented yet";
-	console.log(message);
-	alert(message);
-	return {err: message};
+//TODO: delete category from relevances also
+exports.delete = async function(id) {
+	let res = await exports.byID(id);	
+	return res.delete();
 }

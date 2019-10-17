@@ -70,9 +70,7 @@ exports.save = async function(user) {
 }
 
 
-exports.delete = async function(label) {
-	var message = "relevance delete not implemented yet";
-	console.log(message);
-	alert(message);
-	return {err: message};
+exports.delete = async function(id) {
+	let res = await exports.byID(id);	
+	return res.delete();
 }

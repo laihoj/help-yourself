@@ -35,3 +35,9 @@ exports.delete = async function(label) {
 	alert(message);
 	return {err: message};
 }
+
+//TODO: delete user delete everything by user
+exports.delete = async function(id) {
+	let res = await exports.byID(id);	
+	return res.delete();
+}

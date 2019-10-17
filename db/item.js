@@ -42,10 +42,10 @@ exports.save = async function(label, category, user) {
  	return item.save();
 }
 
-exports.delete = async function(label) {
-	let item = await exports.getItemByLabel(label);
-	//TODO: delete item from relevances also
-	return item.delete();
+//TODO: delete item from relevances also
+exports.delete = async function(id) {
+	let res = await exports.byID(id);	
+	return res.delete();
 }
 
 exports.byLabelAndUpdate = async function(label, category) {
