@@ -1,0 +1,18 @@
+<table id="effortsTable" class="items u-full-width">
+	<thead>
+		<tr>
+			<th onclick="sortTable('effortsTable',0,'true');">#<i class="fas fa-filter"></i></th>
+			<th onclick="sortTable('effortsTable',1,'true');">Date</th>
+			<th onclick="sortTable('effortsTable',2,'true');">Effort</th>
+		</tr>
+	</thead>
+	<tbody>
+ 		<% for(var i = 0; i < efforts.length; i++) { %>
+			<tr onclick="window.location='/efforts/<%= efforts[i]._id %>'">
+  				<td><%= i %></td>
+  				<td><%= efforts[i].timestamp %></td>
+  				<td><span class="hours"><%= efforts[i].hours %></span> hour <span class="minutes"><%= efforts[i].minutes %></span> mins</td>
+			</tr>
+		<% } %>
+	</tbody>
+</table>

@@ -1,3 +1,16 @@
+function getTotalMinutes() {
+	var hours = document.getElementsByClassName("hours");
+	var minutes = document.getElementsByClassName("minutes");
+	var total = 0;
+	for(var i = 0; i < hours.length; i++) {
+		total += parseInt(hours[i].innerText) * 60;
+	}
+	for(var i = 0; i < minutes.length; i++) {
+		total += parseInt(minutes[i].innerText);
+	}
+	return total;
+}
+
 function getRelevancesFromFooter() {
 	var data = document.getElementsByClassName("relevanceData");
 	for(var i = 0; i < data.length; i++) {

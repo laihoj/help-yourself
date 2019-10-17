@@ -4,49 +4,23 @@
   <div class="row">
   	<div class="twelve column" style="margin-top: 5%">
 			<h1>Help Yourself</h1>
-
     </div>
     <div class="row">
       <div class="data">
         <table id="itemsTable" class="u-full-width">
           <thead>
             <tr>
+              <th onclick="sortTable('itemsTable',0,'true');">#<i class="fas fa-filter"></i></th>
               <th onclick="sortTable('itemsTable',1,'true');">Label</th>
-              <th onclick="sortTable('itemsTable',2,'true');">Hours</th>
-              <th onclick="sortTable('itemsTable',3,'true');">Minutes</th>
-              <th onclick="sortTable('itemsTable',3,'true');">Submit</th>
+              <th onclick="sortTable('itemsTable',2,'true');">Effort</th>
             </tr>
           </thead>
           <tbody>
             <% for(var i = 0; i < items.length; i++) { %>
-              <tr>
-                
-                <td><a href="/items/<%= items[i].label %>"><%= items[i].label %></a></td>
-                <%  currentItem = items[i].label %>
-                <form action="/api/effort" method="post">
-                  <td>
-                    <input class="one column" type="number" name="effort_hours" placeholder="0" value="0" id="hoursInput">
-                  </td>
-                  <td>
-                    <input class="one column" type="number" name="effort_minutes" placeholder="0" value="0" id="minutesInput">
-                  </td>
-                    
-                  <td>
-                    <input type="submit">
-                  </td>
-
-
-                  <!-- Hidden form inputs: item, user, time-->
-                  <input type="hidden" name="effort_item" placeholder="enter an item" value="<%= currentItem %>">
-                  <%if(!currentUser) {%>
-                    <input type="hidden" name="effort_user" placeholder="Your name please">
-                  <% } else { %>
-                    <input type="hidden" name="effort_user" placeholder="Your name please" value="<%= currentUser.username %>">
-                  <% } %> 
-                  <input class="one column" id="effort_timestamp" type="hidden" name="effort_timestamp" placeholder="yyyy-mm-ddThh:mm:ss.mmmZ" value="<%= Date.now() %>">
-
-
-                </form>
+              <tr onclick="window.location='/items/<%= items[i].label %>'">
+                <td><%= i %></td>
+                <td><%= items[i].label %></td>
+                <td>number</td>
               </tr>
             <% } %>
           </tbody>

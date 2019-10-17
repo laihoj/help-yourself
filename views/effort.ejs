@@ -4,7 +4,21 @@
 	<div class="container">
 		<div class="row">
 			<div class="u-full-width">
-			<% include ./partials/neweffortform %>
+			<div class="data">
+				<table id="effortsTable" class="items u-full-width">
+					<thead>
+						<tr>
+							<th onclick="sortTable('effortsTable',1,'true');">Date</th>
+							<th onclick="sortTable('effortsTable',2,'true');">Effort</th>
+						</tr>
+					</thead>
+					<tbody>
+			  			<tr>
+			  				<td><%= effort.timestamp %></td>
+			  				<td><%= effort.hours %> hour <%= effort.minutes %> mins</td>
+						</tr>
+					</tbody>
+				</table>
 			</div>
 		</div>
 	</div>
