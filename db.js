@@ -12,27 +12,24 @@ const Item = require("./models/item");
 const Effort = require("./models/effort");
 const Relevance = require("./models/relevance");
 
-exports.categories = async function() {
-	return Category.find({}).exec();
-}
-
-exports.items = async function() {
-	return Item.find({}).exec();
-}
-
-exports.efforts = async function() {
-	return Effort.find({}).exec();
-}
-
-exports.relevances = async function() {
-	return Relevance.find({}).exec();
-}
+exports.users = require("./db/user.js");
+exports.categories = require("./db/category.js");
+exports.items = require("./db/item.js");
+exports.efforts = require("./db/effort.js");
+exports.relevances = require("./db/relevance.js");
 
 
+
+
+
+
+
+/***************** DEPRECATED *******************/
 exports.getCategoriesByUser = async function(user) {
 	return Category.find({user: user}).exec();
 }
 
+/***************** DEPRECATED *******************/
 exports.getItemByLabel = async function(label) {
 	let items = await Item.find({label: label}).exec();
 	if(items.length > 0)
@@ -41,23 +38,56 @@ exports.getItemByLabel = async function(label) {
 	} else return {"label": "Item label does not produce a hit"};
 }
 
+/***************** DEPRECATED *******************/
 exports.getItemsByUser = async function(user) {
 	return Item.find({user: user}).exec();
 }
 
+/***************** DEPRECATED *******************/
 exports.getItemsByCategory = async function(category) {
 	return Item.find({category: category}).exec();
 }
 
+/***************** DEPRECATED *******************/
 exports.getEffortsByUser = async function(user) {
 	return Effort.find({user: user}).exec();
 }
 
+/***************** DEPRECATED *******************/
+exports.getEffortByID = async function(id) {
+	return Effort.findOne({_id: id}).exec();
+}
+
+/***************** DEPRECATED *******************/
+exports.getItemByID = async function(id) {
+	return Item.findOne({_id: id}).exec();
+}
+
+/***************** DEPRECATED *******************/
+exports.getCategoryByID = async function(id) {
+	return Category.findOne({_id: id}).exec();
+}
+
+/***************** DEPRECATED *******************/
+exports.getRelevanceByID = async function(id) {
+	return Relevance.findOne({_id: id}).exec();
+}
+
+/***************** DEPRECATED *******************/
+exports.getUserByID = async function(id) {
+	return User.findOne({_id: id}).exec();
+}
+
+
+
+
 //try not to use
+/***************** DEPRECATED *******************/
 exports.getRelevancesByUser = async function(user) {
 	return Relevance.find({user: user}).exec();
 }
 
+/***************** DEPRECATED *******************/
 exports.getRelevanceByUser = async function(user) {
 	let relevances = await Relevance.find({user: user}).exec();
 	if(relevances.length > 0) {
@@ -66,9 +96,7 @@ exports.getRelevanceByUser = async function(user) {
 	else return {"label": "Item label does not produce a hit"};
 }
 
-
-
-
+/***************** DEPRECATED *******************/
 exports.saveCategory = async function(label, user) {
 	var category = new Category({
 		label: label,
@@ -78,6 +106,7 @@ exports.saveCategory = async function(label, user) {
  	return category.save();
 }
 
+/***************** DEPRECATED *******************/
 exports.saveItem = async function(label, category, user) {
 	var item = new Item({
 		label: label,
@@ -88,8 +117,14 @@ exports.saveItem = async function(label, category, user) {
  	return item.save();
 }
 
+/***************** DEPRECATED *******************/
+exports.deleteItem = async function(label) {
+	let item = await exports.getItemByLabel(label);
+	//TODO: delete item from relevances also
+	return item.delete();
+}
 
-
+/***************** DEPRECATED *******************/
 exports.findItemByLabelAndUpdate = async function(label, category) {
 	let itemToUpdate = await exports.getItemByLabel(label);
 	itemToUpdate.category = category;
@@ -97,6 +132,7 @@ exports.findItemByLabelAndUpdate = async function(label, category) {
 
 }
 
+/***************** DEPRECATED *******************/
 exports.addRelevance = async function(user, key, value) {
 	let res = await exports.getRelevanceByUser(user);
 	console.log(res);
@@ -104,6 +140,7 @@ exports.addRelevance = async function(user, key, value) {
 	return res.save();
 }
 
+/***************** DEPRECATED *******************/
 exports.findRelevancesByUserAndUpdate = async function(user, relevances) {
 	let res = await exports.getRelevanceByUser(user);
 	let relevancesToUpdate = res.relevances;
@@ -125,8 +162,7 @@ exports.findRelevancesByUserAndUpdate = async function(user, relevances) {
 
 }
 
-
-
+/***************** DEPRECATED *******************/
 exports.saveEffort = async function(hours, minutes, item, timestamp, user) {
 	var effort = new Effort({
 		hours: hours,
@@ -138,6 +174,7 @@ exports.saveEffort = async function(hours, minutes, item, timestamp, user) {
  	return effort.save();
 }
 
+/***************** DEPRECATED *******************/
 exports.saveRelevance = async function(user) {
 	var relevance = new Relevance({
 		user: user,
@@ -146,11 +183,12 @@ exports.saveRelevance = async function(user) {
  	return relevance.save();
 }
 
-
+/***************** DEPRECATED *******************/
 exports.getUser = async function(user) {
 	return User.find({username: user}).exec();
 }
 
+/***************** DEPRECATED *******************/
 exports.saveUser = async function(username, password) {
 	const newUser = new User({username:username});
 	await newUser.setPassword(password);

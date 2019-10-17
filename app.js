@@ -64,48 +64,56 @@ const db = require('./db.js');
 
 
 app.get("/", async function(req, res) {
-	let items = await db.items();
+	let items = await db.items.all();
 	res.render("index", {items:items});
 });
 
 
 app.get("/api/categories", async function(req,res) {
-	let categories = await db.categories();
+	let categories = await db.categories.all();
 	res.send(categories);
 });
 
 app.get("/api/items", async function(req,res) {
-	let items = await db.items();
+	let items = await db.items.all();
 	res.send(items);
 });
 
 app.get("/api/efforts", async function(req,res) {
-	let efforts = await db.efforts();
+	let efforts = await db.efforts.all();
 	res.send(efforts);
 });
 
 app.get("/api/relevances", async function(req,res) {
-	let relevances = await db.relevances();
+	let relevances = await db.relevances.all();
 	res.send(relevances.relevances);
 });
 
 app.post("/api/categories", auth.isAuthenticated, async function(req,res) {
-	let category = await db.saveCategory(
+	let category = await db.categories.save(
 		req.body.category_label, 
 		req.body.category_user);
 	res.redirect("/categories");
 });
 
 app.post("/api/items", auth.isAuthenticated, async function(req,res) {
-	let item = await db.saveItem(
+	let item = await db.items.save(
 		req.body.item_label, 
 		req.body.item_category, 
 		req.body.item_user);
 	res.redirect("/items");
 });
 
+app.delete("/api/items/:item", auth.isAuthenticated, async function(req,res) {
+	db.deleteItem(req.params.item);
+
+	res.redirect("/items");
+});
+
+
+
 app.post("/api/effort", auth.isAuthenticated, async function(req,res) {
-	let effort = await db.saveEffort(
+	let effort = await db.efforts.save(
 		req.body.effort_hours, 
 		req.body.effort_minutes, 
 		req.body.effort_item, 
@@ -128,74 +136,82 @@ app.get("/api", function(req, res) {
 });
 
 
+app.get("/efforts", auth.isAuthenticated, async function(req, res) {
+	let efforts = await db.efforts.byUser(req.user.username);
+	res.render("efforts",{efforts: efforts});
+});
+
+app.get("/efforts/:effortid", auth.isAuthenticated, async function(req, res) {
+	let effort = await db.efforts.byID(req.params.effortid);
+	res.render("effort",{effort: effort});
+});
+
+
+
 app.get("/items", auth.isAuthenticated, async function(req, res) {
-	let categories = await db.getCategoriesByUser(req.user.username);
+	let categories = await db.categories.byUser(req.user.username);
 	if(categories) {
 		res.locals.categories = categories;
 	}
-	let items = await db.getItemsByUser(req.user.username);
-	let relevances = await db.getRelevanceByUser(req.user.username);
+	let items = await db.items.byUser(req.user.username);
+	let relevances = await db.relevances.byUser(req.user.username);
 	res.render("items",{items:items, relevances:relevances.relevances});
 });
 
 app.get("/items/:item", auth.isAuthenticated, async function(req, res) {
-	let categories = await db.getCategoriesByUser(req.user.username);
+	let categories = await db.categories.byUser(req.user.username);
 	if(categories) {
 		res.locals.categories = categories;
 	}
-	let item = await db.getItemByLabel(req.params.item);
-	// console.log(item);
-	let relevances = await db.getRelevanceByUser(req.user.username);
-	res.render("item",{item:item, relevances:relevances.relevances});
+	let item = await db.items.byLabel(req.params.item);
+	let efforts = await db.efforts.byUser(req.user.username);
+	let relevances = await db.relevances.byUser(req.user.username);
+	res.render("item",{item:item, relevances:relevances.relevances, efforts: efforts});
 });
 
 app.put("/items/:item", auth.isAuthenticated, async function (req, res) {
-	let updatedItem = await db.findItemByLabelAndUpdate(req.body.item_label, req.body.item_category);
+	let updatedItem = await db.itesm.byLabelAndUpdate(req.body.item_label, req.body.item_category);
 	// console.log(updatedItem);
     res.redirect("/items/"+req.params.item);
 });
 
 
 app.get("/categories", auth.isAuthenticated, async function(req, res) {
-	let categories = await db.getCategoriesByUser(req.user.username);
-	let relevances = await db.getRelevanceByUser(req.user.username);
+	let categories = await db.categories.byUser(req.user.username);
+	let relevances = await db.relevances.byUser(req.user.username);
 	res.render("categories",{categories:categories, relevances:relevances.relevances});
 });
 
 app.get("/categories/:category", auth.isAuthenticated, async function(req, res) {
-	let items = await db.getItemsByCategory(req.params.category);
-	let relevances = await db.getRelevanceByUser(req.user.username);
+	let items = await db.categories.byUser(req.params.category);
+	let relevances = await db.relevances.byUser(req.user.username);
 	res.render("category",{items:items, category:req.params.category, relevances:relevances.relevances});
 	// res.render("category",{items:items});
 });
 
 app.get("/relevances", auth.isAuthenticated, async function(req, res) {
-	let relevances = await db.getRelevanceByUser(req.user.username);
+	let relevances = await db.relevances.byUser(req.user.username);
 	res.render("relevances",{relevances:relevances.relevances});
 	// res.render("relevances");
 });
 
 app.put("/relevances", auth.isAuthenticated, async function (req, res) {
-	let updatedRelevance = await db.findRelevancesByUserAndUpdate(req.user.username, req.body);
+	let updatedRelevance = await db.relevances.byUserAndUpdate(req.user.username, req.body);
 	backURL=req.header('Referer') || '/';
 
     res.redirect(backURL);
 });
 
-app.put("/relevances/newrelevance", auth.isAuthenticated, function (req, res) {
-	let relevance = db.addRelevance(
-		req.user.username,
-		req.body.relevance_key, 
-		req.body.relevance_value);
-
-
-
-	// console.log(updatedItem);
-    res.redirect("/relevances");
-});
+// app.put("/relevances/newrelevance", auth.isAuthenticated, function (req, res) {
+// 	let relevance = db.addRelevance(
+// 		req.user.username,
+// 		req.body.relevance_key, 
+// 		req.body.relevance_value);
+//     res.redirect("/relevances");
+// });
 
 app.post("/users", async function(req,res){
-	let user = await db.saveUser(req.body.username, req.body.password);
+	let user = await db.users.save(req.body.username, req.body.password);
 	if(user) {
 		passport.authenticate("local")(req, res, function() {
 			res.redirect(req.session.redirectTo || '/users/' +req.user.username);
@@ -207,19 +223,19 @@ app.post("/users", async function(req,res){
 });
 
 app.get("/users/:user", auth.isAuthenticated, async function(req,res){
-	let categories = await db.getCategoriesByUser(req.user.username);
+	let categories = await db.categories.byUser(req.user.username);
 	if(categories) {
 		res.locals.categories = categories;
 	}
-	let items = await db.getItemsByUser(req.user.username);
+	let items = await db.items.byUser(req.user.username);
 	if(items) {
 		res.locals.items = items;
 	}
-	let efforts = await db.getEffortsByUser(req.user.username);
+	let efforts = await db.efforts.byUser(req.user.username);
 	if(efforts) {
 		res.locals.efforts = efforts;
 	}
-	let relevances = await db.getRelevancesByUser(req.user.username);
+	let relevances = await db.relevances.byUser(req.user.username);
 	if(relevances) {
 		res.locals.relevances = relevances;
 	}
