@@ -20,12 +20,20 @@ exports.get = async function(user) {
 	return User.find({username: user}).exec();
 }
 
+//if username already taken and password matches, user is simply logged in
 exports.save = async function(username, password) {
-	const newUser = new User({username:username});
-	await newUser.setPassword(password);
+	let foundByUsername = await exports.get(username);
+	if(foundByUsername.length != 0) {
+		let report = 'Username "' + username + '" already taken: ' + username;
+        console.log(report);
+	} else {
+		const newUser = new User({username:username});
+		await newUser.setPassword(password);
 
-	const newRelevances = await exports.saveRelevance(username);
-	return newUser.save();
+		//TODO: Rethink rew relevance creation
+		// const newRelevances = await exports.saveRelevance(username);
+		return newUser.save();
+	}
 }
 
 

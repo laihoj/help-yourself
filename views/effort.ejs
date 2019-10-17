@@ -9,12 +9,14 @@
 					<thead>
 						<tr>
 							<th onclick="sortTable('effortsTable',1,'true');">Date</th>
-							<th onclick="sortTable('effortsTable',2,'true');">Effort</th>
+							<th onclick="sortTable('effortsTable',2,'true');">Item</th>
+							<th onclick="sortTable('effortsTable',3,'true');">Effort</th>
 						</tr>
 					</thead>
 					<tbody>
 			  			<tr>
 			  				<td><%= effort.timestamp %></td>
+			  				<td onclick="window.location='/items/<%= effort.item %>'"><%= effort.item %></td>
 			  				<td><%= effort.hours %> hour <%= effort.minutes %> mins</td>
 						</tr>
 					</tbody>

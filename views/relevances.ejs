@@ -16,8 +16,12 @@
 						<tbody>
 		  					<% for(var i = 0; i < relevances.length; i++) { %>
 		  					<tr>
-			  					<td><%= i %></td>
-								<td><%= relevances[i].key %></td>
+			  					<td onclick="window.location='/categories/<%= relevances[i].key %>'">
+			  						<%= i %>
+		  						</td>
+								<td onclick="window.location='/categories/<%= relevances[i].key %>'">
+									<%= relevances[i].key %>
+								</td>
 								<td><input 
 				  						type="range" 
 				  						min="1" 

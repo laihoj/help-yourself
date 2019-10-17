@@ -23,8 +23,12 @@
 				 		<% for(var i = 0; i < items.length; i++) { %>
 				  			<tr>
 				  				<td><%= i %></td>
-				  				<td><a href="/items/<%= items[i].label %>"><%= items[i].label %></a></td>
-								<td><a href="/categories/<%= items[i].category %>"><%= items[i].category %></a></td>
+				  				<td onclick="window.location='/items/<%= items[i].label %>'">
+				  					<%= items[i].label %>
+			  					</td>
+								<td onclick="window.location='/categories/<%= items[i].category %>'">
+									<%= items[i].category %>
+								</td>
 								<td><input 
 									type="range" 
 									min="1" 

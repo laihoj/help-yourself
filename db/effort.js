@@ -16,6 +16,10 @@ exports.byUser = async function(user) {
 	return Effort.find({user: user}).exec();
 }
 
+exports.byItem = async function(item) {
+	return Effort.find({item: item}).exec();
+}
+
 exports.byID = async function(id) {
 	return Effort.findOne({_id: id}).exec();
 }

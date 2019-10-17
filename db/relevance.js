@@ -12,50 +12,67 @@ exports.all = async function() {
 	return Relevance.find({}).exec();
 }
 
-
 exports.byID = async function(id) {
 	return Relevance.findOne({_id: id}).exec();
 }
 
-
-//try not to use
 exports.byUser = async function(user) {
-	return Relevance.find({user: user}).exec();
+	return Relevance.findOne({user: user}).exec();
 }
 
-exports.byUser = async function(user) {
-	let relevances = await Relevance.find({user: user}).exec();
-	if(relevances.length > 0) {
-		return relevances[0];
-	}
-	else return {"label": "Item label does not produce a hit"};
-}
+// exports.byItem = async function(item) {
+// 	let relevance = await Relevance.findOne({user: item.user});
+// 	for(let i = 0; i < relevance.relevances.length; i++) {
+// 		let key = relevance.relevances[i].key;
+// 		if(key === item.label) {
+// 			return relevance.relevances[i];
+// 		}
+// 	}
+// 	return null;
+// 	// return Relevance.findOne({user: user}).exec();
+// }
 
-
+// exports.byCategory = async function(category) {
+// 	console.log("searching by: " + category);
+// 	let relevance = await Relevance.findOne({user: category.user});
+// 	console.log("found: " + relevance);
+// 	for(let i = 0; i < relevance.relevances.length; i++) {
+// 		let key = relevance.relevances[i].key;
+// 		if(key === category.category) {
+// 			return relevance.relevances[i];
+// 		}
+// 	}
+// 	return null;
+// 	// return Relevance.findOne({user: user}).exec();
+// }
 
 exports.add = async function(user, key, value) {
-	let res = await exports.getRelevanceByUser(user);
-	console.log(res);
+	let res = await exports.byUser(user);
+	// console.log(res);
 	res.relevances.push({"key":key, "value":value});
 	return res.save();
 }
 
 exports.byUserAndUpdate = async function(user, relevances) {
-	let res = await exports.getRelevanceByUser(user);
+	let res = await exports.byUser(user);
 	let relevancesToUpdate = res.relevances;
-	console.log("relevances retreived: " + relevancesToUpdate);
+	// console.log("relevances retreived: " + relevancesToUpdate);
 	for(var i = 0; i < relevancesToUpdate.length; i++) {
 		var key 		= relevancesToUpdate[i].key;
 		var value	 	= relevancesToUpdate[i].value;
 		// var newvalue 	= relevances["sovellusohjelmointi_relevance"];
 		var formkey		= relevancesToUpdate[i].key+"_relevance";
-		console.log("Looking for form input by the name: " + formkey);
+		// console.log("Looking for form input by the name: " + formkey);
+		
 		var newvalue 	= relevances[formkey];
+		
 
-		console.log("Key: " + key + ", value: " + value + ", newvalue: " + newvalue);
-		relevancesToUpdate[i].value = newvalue;
+		// console.log("Key: " + key + ", value: " + value + ", newvalue: " + newvalue);
+		if(!isNaN(newvalue)) {
+			relevancesToUpdate[i].value = newvalue;
+		}
 	}
-	console.log("relevances updated: " + res);
+	// console.log("relevances updated: " + res);
 	// relevancesToUpdate.relevances = relevances;
 	return res.save();
 

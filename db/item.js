@@ -24,7 +24,7 @@ exports.byUser = async function(user) {
 	return Item.find({user: user}).exec();
 }
 
-exports.cyCategory = async function(category) {
+exports.byCategory = async function(category) {
 	return Item.find({category: category}).exec();
 }
 
@@ -38,7 +38,7 @@ exports.save = async function(label, category, user) {
 		category: category,
 		user: user
 	});
-	exports.addRelevance(user, label, 50);
+	// exports.addRelevance(user, label, 50);
  	return item.save();
 }
 

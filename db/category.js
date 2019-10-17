@@ -25,7 +25,7 @@ exports.save = async function(label, user) {
 		label: label,
 		user: user
 	});
-	exports.addRelevance(user, label, 50);
+	// exports.addRelevance(user, label, 50);
  	return category.save();
 }
 

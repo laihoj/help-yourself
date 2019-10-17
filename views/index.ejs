@@ -11,8 +11,9 @@
           <thead>
             <tr>
               <th onclick="sortTable('itemsTable',0,'true');">#<i class="fas fa-filter"></i></th>
-              <th onclick="sortTable('itemsTable',1,'true');">Label</th>
-              <th onclick="sortTable('itemsTable',2,'true');">Effort</th>
+              <th onclick="sortTable('itemsTable',1,'false');">Label</th>
+              <th onclick="sortTable('itemsTable',2,'false');">Effort</th>
+              <th onclick="sortTable('itemsTable',3,'true');">Priority</th>
             </tr>
           </thead>
           <tbody>
@@ -20,7 +21,8 @@
               <tr onclick="window.location='/items/<%= items[i].label %>'">
                 <td><%= i %></td>
                 <td><%= items[i].label %></td>
-                <td>number</td>
+                <td><%= items[i].totalEffort %></td>
+                <td><%= items[i].priority %></td>
               </tr>
             <% } %>
           </tbody>
