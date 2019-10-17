@@ -28,3 +28,11 @@ exports.save = async function(label, user) {
 	exports.addRelevance(user, label, 50);
  	return category.save();
 }
+
+
+exports.delete = async function(label) {
+	var message = "category delete not implemented yet";
+	console.log(message);
+	alert(message);
+	return {err: message};
+}

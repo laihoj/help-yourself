@@ -30,3 +30,10 @@ exports.save = async function(hours, minutes, item, timestamp, user) {
 	});
  	return effort.save();
 }
+
+exports.delete = async function(label) {
+	var message = "effort delete not implemented yet";
+	console.log(message);
+	alert(message);
+	return {err: message};
+}

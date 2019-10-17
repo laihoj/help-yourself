@@ -27,3 +27,11 @@ exports.save = async function(username, password) {
 	const newRelevances = await exports.saveRelevance(username);
 	return newUser.save();
 }
+
+
+exports.delete = async function(label) {
+	var message = "user delete not implemented yet";
+	console.log(message);
+	alert(message);
+	return {err: message};
+}

@@ -68,3 +68,11 @@ exports.save = async function(user) {
 	});
  	return relevance.save();
 }
+
+
+exports.delete = async function(label) {
+	var message = "relevance delete not implemented yet";
+	console.log(message);
+	alert(message);
+	return {err: message};
+}
