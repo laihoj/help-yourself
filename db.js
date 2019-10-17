@@ -1,16 +1,7 @@
 /********************************************************
 Mongoose.js and MongoDB
 ********************************************************/
-const mongoose = require('mongoose')
 
-var url = process.env.DATABASEURL;
-mongoose.connect(url, { useNewUrlParser: true });
-
-const User = require("./models/user");
-const Category = require("./models/category");
-const Item = require("./models/item");
-const Effort = require("./models/effort");
-const Relevance = require("./models/relevance");
 
 exports.users = require("./db/user.js");
 exports.categories = require("./db/category.js");
@@ -23,8 +14,21 @@ exports.relevances = require("./db/relevance.js");
 
 
 
-
 /***************** DEPRECATED *******************/
+
+const mongoose = require('mongoose')
+
+var url = process.env.DATABASEURL;
+mongoose.connect(url, { useNewUrlParser: true });
+
+const User = require("./models/user");
+const Category = require("./models/category");
+const Item = require("./models/item");
+const Effort = require("./models/effort");
+const Relevance = require("./models/relevance");
+
+
+
 exports.getCategoriesByUser = async function(user) {
 	return Category.find({user: user}).exec();
 }
