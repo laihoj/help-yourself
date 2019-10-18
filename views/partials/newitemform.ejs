@@ -4,14 +4,25 @@
     <div class="row">
     	    <div class="six columns">
 				<label for="labelInput">Item</label>
-				<input class="u-full-width" type="text" name="item_label" placeholder="enter an item" id="labelInput"><br>
+				<input 
+					class="u-full-width" 
+					type="text" 
+					name="item_label" 
+					placeholder="enter an item" 
+					id="labelInput"
+					required>
 			</div>
 		    <div class="six columns">
         		<label for="categorySelect">Select Category</label>
-				<select class="u-full-width" name="item_category" id="categorySelect">
-				<% for(var i = 0; i < data.length; i++) { %>
-		  		<option value="<%= data[i].label %>"><%= data[i].label %></option>
-        		<% } %>
+				<select 
+					class="u-full-width" 
+					name="item_category" 
+					id="categorySelect"
+					required>
+					<% for(var i = 0; i < data.length; i++) { %>
+		  				<option value="<%= data[i].label %>"><%= data[i].label %></option>
+    				<% } %>
+				</select>
      		</div>   
 		</div>
 		<input type="hidden" name="item_user" placeholder="Your name please" value="<%= currentUser.username %>"><br>
