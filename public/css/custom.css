@@ -43,14 +43,19 @@
   margin-bottom: 0;
 }
 
+.top {
+  top: 0%;
+  margin-top: 0;
+}
+
 .right {
-  right: 5%;
+  right: 0%;
   margin-right: 0;
   border-bottom-right-radius: 40% 
 }
 
 .left {
-  left: 5%;
+  left: 0%;
   margin-right: 0;
   border-bottom-left-radius: 40% 
 }
