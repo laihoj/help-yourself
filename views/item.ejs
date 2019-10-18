@@ -3,8 +3,8 @@
 
 	<hr>
 	<p>Total effort so far in <%= item.label %>: <b><span id="totalEffort"></span></b></p>
+	<button onclick="window.location='/categories/<%= item.category %>'">Category: <%= item.category %></button>
 	<hr>
-	
     <form action="/api/effort" method="post">
 	<h5>Exert effort</h5>
 
