@@ -1,0 +1,56 @@
+<% include ./partials/header %>
+
+<div class="section match">
+	<div class="container">
+		<div class="row">
+			<div class="data">
+				<table id="relevanciesTable" class="categories u-full-width">
+					<thead>
+						<tr>
+							<th onclick="sortTable('relevanciesTable',0,'true');">#<i class="fas fa-filter"></i></th>
+							<th onclick="sortTable('relevanciesTable',1,'true');">Label</th>
+							<th onclick="sortTable('relevanciesTable',2,'true');">Relevance</th>
+						</tr>
+					</thead>
+					<tbody>
+	  					<% for(var i = 0; i < relevancies.length; i++) { %>
+	  					<tr>
+		  					<td onclick="window.location='/categories/<%= relevancies[i].key %>'">
+		  						<%= i %>
+	  						</td>
+							<td onclick="window.location='/categories/<%= relevancies[i].key %>'">
+								<%= relevancies[i].label %>
+							</td>
+							<td>
+								<form action="/api/relevancies/?_method=PUT" method="post" id="<%= relevancies[i].label %>_relevancy_form">
+									<input type="hidden" name="relevancy_label" value="<%= relevancies[i].label %>">
+				 					<input type="hidden" name="relevancy_user" value="<%= currentUser.username %>">
+									<input 
+				  						type="range" 
+				  						min="1" 
+				  						max="100" 
+				  						value="<%= relevancies[i].value %>" 
+				  						class="slider" 
+				  						id="<%= relevancies[i].key %>_relevance" 
+										name="relevancy_value"
+
+										onmouseup="document.getElementById('<%= relevancies[i].label %>_relevancy_form').submit();"
+										ontouchend="document.getElementById('<%= relevancies[i].label %>_relevancy_form').submit();">
+								</form>
+	  						</td>
+						<% } %>
+						</tr>
+					</tbody>
+				</table>
+			</div>			
+		</div>
+	</div>
+</div>
+
+<% include ./partials/footer %>
+
+
+    
+    	    
+				
+				

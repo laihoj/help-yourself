@@ -1,0 +1,11 @@
+<div id="relevanciesDataCollection" style="display: none;">
+<% if(typeof relevancies !== 'undefined') { %>
+	<% for(var i = 0; i < relevancies.length; i++) { %>
+		<span class="relevancyData">
+			<%= relevancies[i].label %>:<%= relevancies[i].value %>
+		</span>
+		<span id="<%= relevancies[i].label %>_key"><%= relevancies[i].value %></span>
+	<% } %>
+<% } %>
+</div>
+<script>getRelevanciesFromFooter()</script>

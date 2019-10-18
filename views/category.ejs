@@ -8,7 +8,7 @@
 			</div>
 
 			<h1><%= category %></h1>
-			<form action="/relevances/?_method=PUT" method="post" id="relevance_form">
+			
 				<div class="data">
 					<table id="itemsTable" class="items u-full-width">
 						<thead>
@@ -25,24 +25,29 @@
 									<td onclick="window.location='/items/<%= items[i].label %>'">
 										<%= items[i].label %>
 									</td>
-									<td><input 
-				  						type="range" 
-				  						min="1" 
-				  						max="100" 
-				  						value="50" 
-				  						class="slider" 
-				  						id="<%= items[i].label %>_relevance" 
-										name="<%= items[i].label %>_relevance" 
+									<td>
+										<form action="/api/relevancies/?_method=PUT" method="post" id="<%= items[i].label %>_relevancy_form">
+										<input type="hidden" name="relevancy_label" value="<%= items[i].label %>">
+					 					<input type="hidden" name="relevancy_user" value="<%= currentUser.username %>">
+										<input 
+					  						type="range" 
+					  						min="1" 
+					  						max="100" 
+					  						value="50" 
+					  						class="slider" 
+					  						id="<%= items[i].label %>_relevance" 
+											name="relevancy_value" 
 
-										onmouseup="updateRelevance('<%= items[i].label %>'); document.getElementById('relevance_form').submit();"
-										ontouchend="updateRelevance('<%= items[i].label %>');document.getElementById('relevance_form').submit();">
+											onmouseup="document.getElementById('<%= items[i].label %>_relevancy_form').submit();"
+											ontouchend="document.getElementById('<%= items[i].label %>_relevancy_form').submit();">
+											</form>
 			  						</td>
 								</tr>
 							<% } %>
 						</tbody>
 					</table>
 				</div>
-			</form>
+			
 		</div>
 	</div>
 </div>

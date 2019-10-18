@@ -49,7 +49,7 @@ exports.delete = async function(id) {
 }
 
 exports.byLabelAndUpdate = async function(label, category) {
-	let itemToUpdate = await exports.getItemByLabel(label);
+	let itemToUpdate = await exports.byLabel(label);
 	itemToUpdate.category = category;
 	return itemToUpdate.save();
 }

@@ -14,11 +14,6 @@
         		<% } %>
      		</div>   
 		</div>
-	User:<br>
-		<%if(!currentUser) {%>
-		<input type="hidden" name="item_user" placeholder="Your name please"><br>
-	<% } else { %>
 		<input type="hidden" name="item_user" placeholder="Your name please" value="<%= currentUser.username %>"><br>
-	<% } %>	
 	<input type="submit"><br>
 </form>

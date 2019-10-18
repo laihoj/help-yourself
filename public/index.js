@@ -11,6 +11,19 @@ function getTotalMinutes() {
 	return total;
 }
 
+
+function getRelevanciesFromFooter() {
+  var data = document.getElementsByClassName("relevancyData");
+  for(var i = 0; i < data.length; i++) {
+    var text = data[0].innerText;
+    var res = text.split(":");
+    var key = res[0];
+    var value = res[1];
+    setCookie(key, value, Date.now() + (10 * 365 * 24 * 60 * 60));
+  }
+
+}
+
 function getRelevancesFromFooter() {
 	var data = document.getElementsByClassName("relevanceData");
 	for(var i = 0; i < data.length; i++) {
@@ -33,14 +46,42 @@ var loadRelevanceSlidersFromFooter = function() {
 	});
 }
 
+var loadRelevanciesSlidersFromFooter = function() {
+  var sliders = document.getElementsByClassName("slider");
+  Array.prototype.forEach.call(sliders, function(slider, index) {
+    var key = slider.id.split("_")[0] + "_key";
+    // var value = parseInt(document.getElementById(key).innerText);
+    // slider.value = value;
+    var newValue = getValueByKeyFromFooter(key);
+    if(newValue == null) 
+    {
+      
+    } else {
+      slider.value = newValue;
+    }
+  });
+}
+
 function getValueByKeyFromFooter(key) {
-	return parseInt(document.getElementById(key).innerText);
+  if(key == null)  {
+  	return null;
+  } else {
+    var element = document.getElementById(key)
+    if(element == null) {
+      return null;
+    } else {
+      return parseInt(element.innerText);
+    }
+    
+  }
+  
 }
 
 var bodyOnLoad = function() {
 	// loadRelevanciesToCookie();
 	// loadRelevanceSlidersFromCookie();
-	loadRelevanceSlidersFromFooter();
+	// loadRelevanceSlidersFromFooter();
+  loadRelevanciesSlidersFromFooter();
 }
 
 var loadRelevanciesToCookie = async function() {
