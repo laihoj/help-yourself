@@ -48,6 +48,17 @@ exports.delete = async function(id) {
 	return res.delete();
 }
 
+
+exports.byIDAndUpdate = async function(id, user, label, category, priority) {
+	let itemToUpdate = await exports.byID(id);
+	// itemToUpdate.id = id;
+	itemToUpdate.user = user;
+	itemToUpdate.label = label;
+	itemToUpdate.category = category;
+	itemToUpdate.priority = priority;
+	return itemToUpdate.save();
+}
+
 exports.byLabelAndUpdate = async function(label, category) {
 	let itemToUpdate = await exports.byLabel(label);
 	itemToUpdate.category = category;

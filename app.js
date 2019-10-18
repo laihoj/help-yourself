@@ -190,6 +190,29 @@ app.put("/api/relevancies", auth.isAuthenticated, async function (req, res) {
     res.redirect(backURL);
 });
 
+app.put("/api/efforts/:id", auth.isAuthenticated, async function (req, res) {
+	let updatedEffort = await db.efforts.byIdAndUpdate(
+		req.body.effort_id,
+		req.user.username,
+		req.body.effort_item,
+		req.body.effort_hours,
+		req.body.effort_minutes,
+		req.body.effort_timestamp,
+		);
+	backURL=req.header('Referer') || '/';
+    res.redirect(backURL);
+});
+
+app.put("/api/items/:id", auth.isAuthenticated, async function (req, res) {
+	let updatedItem = await db.items.byIDAndUpdate(
+		req.body.item_id, 
+		req.body.item_user, 
+		req.body.item_label,
+		req.body.item_category,
+		req.body.item_priority);
+	// console.log(updatedItem);
+    res.redirect("/items/"+req.params.item);
+});
 
 
 app.delete("/api/categories/:id", auth.isAuthenticated, async function(req,res) {
@@ -284,7 +307,11 @@ app.get("/categories/:category", auth.isAuthenticated, async function(req, res) 
 
 app.get("/efforts/:effortid", auth.isAuthenticated, async function(req, res) {
 	let effort = await db.efforts.byID(req.params.effortid);
-	res.render("effort",{effort: effort});
+	if(effort) {
+		res.render("effort",{effort: effort});
+	} else {
+		res.redirect("/efforts");
+	}
 });
 
 app.get("/items/:item", auth.isAuthenticated, async function(req, res) {
@@ -323,7 +350,7 @@ app.get("/users/:user", auth.isAuthenticated, async function(req,res){
 
 
 app.put("/items/:item", auth.isAuthenticated, async function (req, res) {
-	let updatedItem = await db.itesm.byLabelAndUpdate(req.body.item_label, req.body.item_category);
+	let updatedItem = await db.items.byLabelAndUpdate(req.body.item_label, req.body.item_category);
 	// console.log(updatedItem);
     res.redirect("/items/"+req.params.item);
 });

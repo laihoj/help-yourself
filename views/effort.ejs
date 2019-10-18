@@ -1,28 +1,100 @@
 <% include ./partials/header %>
 
-<div class="section match">
-	<div class="container">
-		<div class="row">
-			<div class="u-full-width">
-			<div class="data">
-				<table id="effortsTable" class="items u-full-width">
-					<thead>
-						<tr>
-							<th onclick="sortTable('effortsTable',1,'true');">Date</th>
-							<th onclick="sortTable('effortsTable',2,'true');">Item</th>
-							<th onclick="sortTable('effortsTable',3,'true');">Effort</th>
-						</tr>
-					</thead>
-					<tbody>
-			  			<tr>
-			  				<td><%= effort.timestamp %></td>
-			  				<td onclick="window.location='/items/<%= effort.item %>'"><%= effort.item %></td>
-			  				<td><%= effort.hours %> hour <%= effort.minutes %> mins</td>
-						</tr>
-					</tbody>
-				</table>
-			</div>
+
+
+
+
+<div class="container">
+	<div class="row">
+		<div class="u-full-width">
+			<form  action="/api/efforts/<%= effort._id %>/?_method=PUT" method="post">
+				<div class="row">
+					<div class="six columns">
+						<label for="effort_id">_id</label>
+						<input 
+							class="u-full-width" 
+							type="text" 
+							name="effort_id" 
+							value="<%= effort._id %>" 
+							readonly="readonly">
+					</div>
+
+					<div class="six columns">
+						<label for="effort_user">User</label>
+						<input 
+							class="u-full-width" 
+							type="text" 
+							name="effort_user" 
+							value="<%= effort.user %>" 
+							readonly="readonly"
+					</div>
+
+					<div class="six columns">
+						<label for="effort_hours">Item</label>
+						<input 
+							class="u-full-width" 
+							type="text" 
+							name="effort_item" 
+							value="<%= effort.item %>" 
+							readonly="readonly">
+					</div>
+
+					<div class="six columns">
+						<label for="effort_hours">Hours</label>
+						<input 
+							class="u-full-width" 
+							type="number" 
+							name="effort_hours" 
+							value="<%= effort.hours %>" 
+					</div>
+
+					<div class="six columns">
+						<label for="effort_hours">Minutes</label>
+						<input 
+							class="u-full-width" 
+							type="number" 
+							name="effort_minutes" 
+							value="<%= effort.minutes %>" 
+					</div>
+
+					<div class="six columns">
+						<label for="effort_timestamp">Timestamp</label>
+						<input 
+							class="u-full-width" 
+							type="text" 
+							name="effort_timestamp" 
+							value="<%= effort.timestamp %>" 
+					</div>
+
+
+
+	    			<div class="six columns">
+						<input type="submit">
+					</div>
+				</div>
+			</form>
 		</div>
+	</div>
+
+	<hr>
+
+	<div class="row">
+		<form 
+			action="/api/efforts/<%= effort._id %>/?_method=DELETE" 
+			method="post">
+			<div id="revealDeleteButton">
+				<label for="revealDeleteButton">Delete this Effort?</label>
+				<input name="revealDeleteButton" type="button" 
+					onclick="
+						document.getElementById('deleteItemSubmit').classList.remove('hidden');
+						document.getElementById('revealDeleteButton').classList.add('hidden');
+						" value="Delete">
+			</div>
+			<div id="deleteItemSubmit" class="hidden">
+				<label for="confirmDeleteButton">Confirm delete?</label>
+				<input name="confirmDeleteButton" type="submit" value="confirm">
+			</div>
+		</form>
 	</div>
 </div>
 

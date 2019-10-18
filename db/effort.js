@@ -35,6 +35,17 @@ exports.save = async function(hours, minutes, item, timestamp, user) {
  	return effort.save();
 }
 
+exports.byIdAndUpdate = async function(id, user, item, hours, minutes, timestamp) {
+	let effortToUpdate = await exports.byID(id);
+	effortToUpdate.user = user;
+	effortToUpdate.item = item;
+	effortToUpdate.hours = hours;
+	effortToUpdate.minutes = minutes;
+	effortToUpdate.timestamp = timestamp;
+	return effortToUpdate.save();
+}
+
+
 exports.delete = async function(id) {
 	let res = await exports.byID(id);	
 	return res.delete();

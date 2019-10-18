@@ -9,8 +9,8 @@
 		    <div class="six columns">
         		<label for="categorySelect">Select Category</label>
 				<select class="u-full-width" name="item_category" id="categorySelect">
-				<% for(var i = 0; i < categories.length; i++) { %>
-		  		<option value="<%= categories[i].label %>"><%= categories[i].label %></option>
+				<% for(var i = 0; i < data.length; i++) { %>
+		  		<option value="<%= data[i].label %>"><%= data[i].label %></option>
         		<% } %>
      		</div>   
 		</div>
