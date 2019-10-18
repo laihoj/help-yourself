@@ -57,7 +57,7 @@ exports.byIdAndUpdate = async function(id, user, label, value) {
 
 exports.byLabelAndUpdate = async function(user, label, value) {
 	let relevancyToUpdate = await exports.byLabel(label);
-	console.log("Searched relevancy by " + label + " and got " + relevancyToUpdate);
+	// console.log("Searched relevancy by " + label + " and got " + relevancyToUpdate);
 	if(relevancyToUpdate) 
 	{
 		relevancyToUpdate.user = user;

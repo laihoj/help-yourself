@@ -1,0 +1,34 @@
+<!-- 
+Element Slider:
+	Needs: 
+		currentUser: username;
+		data: [{label: string, value: number}];
+-->
+
+<form 
+action="/api/relevancies/?_method=PUT" 
+class="table_cell_form" 
+method="post" 
+id="<%= data[i].label %>_relevancy_form">
+
+	<input 
+	type="hidden" 
+	name="relevancy_label" 
+	value="<%= data[i].label %>">
+
+	<input 
+	type="hidden" 
+	name="relevancy_user" 
+	value="<%= currentUser.username %>">
+	
+	<input 
+	type="range" 
+	min="1" 
+	max="100" 
+	value="50" 
+	class="slider" 
+	id="<%= data[i].label %>_relevancy" 
+	name="relevancy_value" 
+	onmouseup="document.getElementById('<%= data[i].label %>_relevancy_form').submit();"
+	ontouchend="document.getElementById('<%= data[i].label %>_relevancy_form').submit();">
+</form>

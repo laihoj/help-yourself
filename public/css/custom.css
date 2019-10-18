@@ -5,3 +5,18 @@
 .visible {
 	visibility: visible;
 }
+
+.table_cell_form {
+	margin-bottom: auto;
+	margin-left: auto;
+	margin-top: auto;
+	margin-right: auto;
+}
+
+.table_cell_form .slider {
+	margin-bottom: auto;
+	margin-left: auto;
+	margin-top: auto;
+	margin-right: auto;
+}
+

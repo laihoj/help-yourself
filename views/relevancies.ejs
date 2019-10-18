@@ -22,21 +22,7 @@
 								<%= relevancies[i].label %>
 							</td>
 							<td>
-								<form action="/api/relevancies/?_method=PUT" method="post" id="<%= relevancies[i].label %>_relevancy_form">
-									<input type="hidden" name="relevancy_label" value="<%= relevancies[i].label %>">
-				 					<input type="hidden" name="relevancy_user" value="<%= currentUser.username %>">
-									<input 
-				  						type="range" 
-				  						min="1" 
-				  						max="100" 
-				  						value="<%= relevancies[i].value %>" 
-				  						class="slider" 
-				  						id="<%= relevancies[i].key %>_relevance" 
-										name="relevancy_value"
-
-										onmouseup="document.getElementById('<%= relevancies[i].label %>_relevancy_form').submit();"
-										ontouchend="document.getElementById('<%= relevancies[i].label %>_relevancy_form').submit();">
-								</form>
+								<% include ./partials/relevancyslider %>
 	  						</td>
 						<% } %>
 						</tr>

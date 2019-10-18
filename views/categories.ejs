@@ -14,7 +14,7 @@
 						<tr>
 							<th onclick="sortTable('categoriesTable',0,'true');">#<i class="fas fa-filter"></i></th>
 							<th onclick="sortTable('categoriesTable',1,'true');">Label</th>
-							<th onclick="sortTable('categoriesTable',2,'true');">RelevancY</th>
+							<th onclick="sortTable('categoriesTable',2,'true');">Relevancy</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -25,21 +25,8 @@
 				  					<td onclick="window.location='/categories/<%= categories[i].label %>'">
 				  					<%= categories[i].label %></td>
 				  					<td>
-				  						<form action="/api/relevancies/?_method=PUT" method="post" id="<%= categories[i].label %>_relevancy_form">
-				  							<input type="hidden" name="relevancy_label" value="<%= categories[i].label %>">
-				 							<input type="hidden" name="relevancy_user" value="<%= currentUser.username %>">
-				  							<input 
-				  							type="range" 
-				  							min="1" 
-				  							max="100" 
-				  							value="50" 
-				  							class="slider" 
-				  							id="<%= categories[i].label %>_relevancy" 
-											name="relevancy_value" 
-
-											onmouseup="document.getElementById('<%= categories[i].label %>_relevancy_form').submit();"
-											ontouchend="document.getElementById('<%= categories[i].label %>_relevancy_form').submit();">
-										</form>
+				  						<% include ./partials/relevancyslider %>
+				  						
 			  						</td>
 								</tr>
 							<% } %>
