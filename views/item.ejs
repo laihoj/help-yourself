@@ -7,7 +7,19 @@
 	
     <form action="/api/effort" method="post">
 	<h5>Exert effort</h5>
+
+			<label for="effort_note">Note</label>
+      		<textarea
+      			class="u-full-width"
+      			id="effort_note" 
+      			name="effort_note" 
+      			placeholder="Put effort into ..." 
+      			value=""></textarea>
+		
+
 	<div class="row">
+
+
     	<div class="six columns">
      		<label for="effort_hours">Hours</label>
     		<input 
@@ -39,6 +51,8 @@
       				new Date().getFullYear() + "-" + (new Date().getMonth()+1)+ "-" + new Date().getDate()
       			%>">
 		</div>
+
+		
 
       	<div class="row">
       		<div class="u-full-width">

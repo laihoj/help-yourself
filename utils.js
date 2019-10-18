@@ -42,7 +42,7 @@ exports.assignPriority = async function(item) {
 	item.priority  = priority;
 	
 	item.message  = message;
-	console.log(item.label + " set to "+item);
+	// console.log(item.label + " set to "+item);
 	item.save();
 	return item;
 }

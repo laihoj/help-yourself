@@ -146,7 +146,8 @@ app.post("/api/effort", auth.isAuthenticated, async function(req,res) {
 		req.body.effort_minutes || 0, 
 		req.body.effort_item, 
 		req.body.effort_timestamp || Date.now(), 
-		req.body.effort_user);
+		req.body.effort_user,
+		req.body.effort_note);
 	res.redirect("/");
 });
 
@@ -198,6 +199,7 @@ app.put("/api/efforts/:id", auth.isAuthenticated, async function (req, res) {
 		req.body.effort_hours,
 		req.body.effort_minutes,
 		req.body.effort_timestamp,
+		req.body.effort_note
 		);
 	backURL=req.header('Referer') || '/';
     res.redirect(backURL);

@@ -24,24 +24,26 @@ exports.byID = async function(id) {
 	return Effort.findOne({_id: id}).exec();
 }
 
-exports.save = async function(hours, minutes, item, timestamp, user) {
+exports.save = async function(hours, minutes, item, timestamp, user, note) {
 	var effort = new Effort({
 		hours: hours,
 		minutes: minutes,
 		item: item,
 		timestamp: timestamp,
-		user: user
+		user: user,
+		note: note
 	});
  	return effort.save();
 }
 
-exports.byIdAndUpdate = async function(id, user, item, hours, minutes, timestamp) {
+exports.byIdAndUpdate = async function(id, user, item, hours, minutes, timestamp, note) {
 	let effortToUpdate = await exports.byID(id);
 	effortToUpdate.user = user;
 	effortToUpdate.item = item;
 	effortToUpdate.hours = hours;
 	effortToUpdate.minutes = minutes;
 	effortToUpdate.timestamp = timestamp;
+	effortToUpdate.note = note;
 	return effortToUpdate.save();
 }
 
