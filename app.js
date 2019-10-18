@@ -151,7 +151,7 @@ app.post("/api/effort", auth.isAuthenticated, async function(req,res) {
 		req.body.effort_item, 
 		req.body.effort_timestamp || Date.now(), 
 		req.body.effort_user);
-	res.redirect("/efforts");
+	res.redirect("/");
 });
 
 app.post("/api/items", auth.isAuthenticated, async function(req,res) {
