@@ -10,17 +10,34 @@
 	<div class="row">
     	<div class="six columns">
      		<label for="effort_hours">Hours</label>
-    		<input type="number" name="effort_hours" placeholder="0" value="" id="hoursInput">
+    		<input 
+    			type="number" 
+				name="effort_hours" 
+				placeholder="0" 
+				value="" 
+				id="hoursInput">
 		</div>
 
 		<div class="six columns">
       		<label for="effort_minutes">Minutes</label>
-        	<input type="number" name="effort_minutes" placeholder="0" value="" id="minutesInput">
+        	<input 
+        		type="number" 
+        		name="effort_minutes" 
+        		placeholder="0" 
+        		value="" 
+        		id="minutesInput">
       	</div>
 
 		<div class="six columns">
 			<label for="effort_timestamp">Timestamp</label>
-      		<input class="one column"  id="effort_timestamp" type="text" name="effort_timestamp" placeholder="yyyy-mm-ddThh:mm:ss.mmmZ" value="<%= new Date() %>">
+      		<input 
+      			id="effort_timestamp" 
+      			type="text" 
+      			name="effort_timestamp" 
+      			placeholder="yyyy-mm-ddThh:mm:ss.mmmZ" 
+      			value="<%= 
+      				new Date().getFullYear() + "-" + (new Date().getMonth()+1)+ "-" + new Date().getDate()
+      			%>">
 		</div>
 
       	<div class="row">
