@@ -10,10 +10,31 @@
 	<tbody>
  		<% for(var i = 0; i < efforts.length; i++) { %>
 			<tr>
-  				<td onclick="window.location='/efforts/<%= efforts[i]._id %>'"><%= i %></td>
-  				<td onclick="window.location='/items/<%= efforts[i].item %>'"><%= efforts[i].item %></td>
-  				<td onclick="window.location='/efforts/<%= efforts[i]._id %>'"><%= new Date(efforts[i].timestamp).toLocaleDateString() %></td>
-  				<td onclick="window.location='/efforts/<%= efforts[i]._id %>'"><span class="hours"><%= efforts[i].hours %></span> hour <span class="minutes"><%= efforts[i].minutes %></span> mins</td>
+  				<td 
+  					onclick="window.location='/efforts/<%= efforts[i]._id %>'"
+  					style="width:1%">
+  					<%= i %>
+				</td>
+  				<td 
+  					onclick="window.location='/items/<%= efforts[i].item %>'"
+  				 	style="width:40%">
+  					<%= efforts[i].item %>
+				</td>
+  				<td 
+  					onclick="window.location='/efforts/<%= efforts[i]._id %>'"
+  					style="width:1%">
+  					<%= new Date(efforts[i].timestamp).toLocaleDateString() %>
+  				</td>
+  				<td 
+  					onclick="window.location='/efforts/<%= efforts[i]._id %>'"
+				 	style="width:30%">
+  					<span class="hours">
+  						<%= efforts[i].hours %>
+					</span> hour 
+					<span class="minutes">
+						<%= efforts[i].minutes %>
+					</span> mins
+  				</td>
 			</tr>
 		<% } %>
 	</tbody>

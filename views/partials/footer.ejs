@@ -1,5 +1,27 @@
 </body>
-<% include ./relevances %>
 <% include ./relevancies %>
-<script>bodyOnLoad();</script>
+<script>
+	bodyOnLoad();
+	// Initial state
+var scrollPos = 0;
+// adding scroll event
+window.addEventListener('scroll', function(){
+  // detects new state and compares it with the new one
+  if ((document.body.getBoundingClientRect()).top > scrollPos)
+  	{
+    	document.getElementById('homeButton').classList.add("bottom");
+    	document.getElementById('homeButton').classList.remove("top");
+    	document.getElementById('setupButton').classList.add("bottom");
+    	document.getElementById('setupButton').classList.remove("top");
+    }
+  else {
+  	document.getElementById('homeButton').classList.add("top");
+	document.getElementById('homeButton').classList.remove("bottom");
+	document.getElementById('setupButton').classList.add("top");
+	document.getElementById('setupButton').classList.remove("bottom");
+  }
+  // saves the new position for iteration.
+  scrollPos = (document.body.getBoundingClientRect()).top;
+});
+	</script>
 </html>

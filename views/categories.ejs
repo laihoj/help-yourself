@@ -12,19 +12,17 @@
 				<table id="categoriesTable" class="categories u-full-width">
 					<thead>
 						<tr>
-							<th onclick="sortTable('categoriesTable',0,'true');">#<i class="fas fa-filter"></i></th>
-							<th onclick="sortTable('categoriesTable',1,'true');">Label</th>
-							<th onclick="sortTable('categoriesTable',2,'true');">Relevancy</th>
+							<th onclick="sortTable('categoriesTable',0,'true');">Label</th>
+							<th onclick="sortTable('categoriesTable',1,'true');">Relevancy</th>
 						</tr>
 					</thead>
 					<tbody>
 				 		<% for(var i = 0; i < categories.length; i++) { %>
 					 		
 					  			<tr>
-					  				<td><%= i %></td>
-				  					<td onclick="window.location='/categories/<%= categories[i].label %>'">
+				  					<td style="width:50%" onclick="window.location='/categories/<%= categories[i].label %>'">
 				  					<%= categories[i].label %></td>
-				  					<td>
+				  					<td style="width:50%">
 				  						<% include ./partials/relevancyslider %>
 				  						
 			  						</td>

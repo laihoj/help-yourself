@@ -54,19 +54,17 @@
 				<table id="itemsTable" class="items u-full-width">
 					<thead>
 						<tr>
-							<th onclick="sortTable('itemsTable',0,'true');">#<i class="fas fa-filter"></i></th>
-							<th onclick="sortTable('itemsTable',1,'true');">Label</th>
-							<th onclick="sortTable('itemsTable',2,'true');">Relevance</th>
+							<th onclick="sortTable('itemsTable',0,'true');">Label</th>
+							<th onclick="sortTable('itemsTable',1,'true');">Relevance</th>
 						</tr>
 					</thead>
 					<tbody>
 				 		<% for(var i = 0; i < items.length; i++) { %>
 				  			<tr>
-				  				<td><%= i %></td>
-								<td onclick="window.location='/items/<%= items[i].label %>'">
+								<td style="width:50%" onclick="window.location='/items/<%= items[i].label %>'">
 									<%= items[i].label %>
 								</td>
-								<td>
+								<td style="width:50%">
 									<% include ./partials/relevancyslider %>
 									
 		  						</td>
