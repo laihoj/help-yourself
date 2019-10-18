@@ -21,8 +21,8 @@
               <tr onclick="window.location='/items/<%= items[i].label %>'">
                 <td><%= i %></td>
                 <td><%= items[i].label %></td>
-                <td><%= items[i].totalEffort %></td>
-                <td><%= items[i].priority %></td>
+                <td><%= items[i].message %></td>
+                <td><%= Math.floor(items[i].priority) %></td>
               </tr>
             <% } %>
           </tbody>
@@ -32,5 +32,8 @@
   </div>
 </div>
 
+<script>
+  sortTable('itemsTable',3,'true','desc');
+</script>
 
 <% include ./partials/footer %>

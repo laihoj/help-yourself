@@ -1,5 +1,52 @@
 const db = require('./db.js');
 
+exports.setPriority = async function(item, priority) {
+	item.priority  = priority;
+}
+
+exports.setMessage = async function(item, message) {
+	item.message  = message;
+}
+
+exports.assignPriority = async function(item) {
+	// console.log("assigning priority to " + item);
+	// let globalEffort = 0;
+	let totalEffort = 0;
+	let efforts = await db.efforts.byItem(item.label);
+	let relevancy = 0;
+	let categoryRelevancy = 0;
+	let relevancies = await db.relevancies.byUser(item.user);
+	for(let j = 0; j < relevancies.length; j++) {
+		let label = relevancies[j].label;
+		if(label === item.label) {
+			relevancy = relevancies[j].value / 100;
+			// console.log("relevancy found: " + relevancy);
+		}
+		if(label === item.category) {
+			categoryRelevancy = relevancies[j].value / 100;
+			// console.log("category relevancy found: " + categoryRelevancy);
+		}
+	}
+	// let relevanceByCategory = await db.relevances.byCategory(items[i].category); 
+	//maybe fetch relevance once instead of per each item?
+	for(var j = 0; j < efforts.length; j++) {
+		totalEffort += efforts[j].hours * 60;
+		totalEffort += efforts[j].minutes;
+	}
+	// console.log("total effort for "+item.label+": " +totalEffort);
+	let hours = Math.floor(totalEffort / 60);
+	let minutes = totalEffort % 60;
+	let message = hours + " h " + minutes;
+	totalRelevancy = relevancy * categoryRelevancy;	
+	// console.log("total relevancy for "+item.label+": " +totalRelevancy);
+	priority = totalRelevancy * (8*60 - totalEffort);
+	item.priority  = priority;
+	// console.log("item "+ item.label + " priority set to "+item.priority);
+	item.message  = message;
+	console.log(item.label + " set to "+item);
+	item.save();
+	return item;
+}
 
 exports.sortItemsByTotalEffort = async function (items) {
 	//calculate total effort
@@ -8,16 +55,14 @@ exports.sortItemsByTotalEffort = async function (items) {
 	for(var i = 0; i < items.length; i++) {
 		let totalEffort = 0;
 		let efforts = await db.efforts.byItem(items[i].label);
-		let relevance = await db.relevances.byUser(items[i].user);
-		for(let j = 0; j < relevance.relevances.length; j++) {
-			let key = relevance.relevances[j].key;
+		let relevancies = await db.relevancies.byUser(items[i].user);
+		for(let j = 0; j < relevancies.length; j++) {
+			let key = relevancies[j].label;
 			if(key === items[i].label) {
-				items[i].relevance = relevance.relevances[j].value / 100;
-				// return relevance.relevances[i];
+				items[i].relevancy = relevancies[j].value / 100;
 			}
 			if(key === items[i].category) {
-				items[i].categoryRelevance = relevance.relevances[j].value / 100;
-				// return relevance.relevances[i];
+				items[i].categoryRelevancy = relevancies[j].value / 100;
 			}
 		}
 		// let relevanceByCategory = await db.relevances.byCategory(items[i].category); 
@@ -34,10 +79,10 @@ exports.sortItemsByTotalEffort = async function (items) {
 		let message = hours + " h " + minutes;
 		items[i].totalEffort = message;
 		items[i].totalMinutes = totalEffort;
-		items[i].totalRelevance = items[i].relevance * items[i].categoryRelevance;	
+		items[i].totalRelevancy = items[i].relevancy * items[i].categoryRelevancy;	
 	}
 	for(var i = 0; i < items.length; i++) {
-		items[i].priority  = items[i].totalRelevance * (globalEffort - items[i].totalMinutes);
+		items[i].priority  = items[i].totalRelevancy * (globalEffort - items[i].totalMinutes);
 	}
 
 	const PRIORITY = 1;

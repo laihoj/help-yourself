@@ -46,12 +46,6 @@ app.use(function(req, res, next){
 	next();
 });
 
-// app.use(async function(req, res, next) {
-// 	if(req.isAuthenticated())
-// 	res.locals.relevances = await db.getRelevanceByUser(req.user.username).relevances;
-// 	return next();
-// });
-
 passport.use(new LocalStrategy(User.authenticate()));
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
@@ -71,8 +65,9 @@ Routes
 app.get("/", async function(req, res) {
 	//retreive items
 	let items 	= await db.items.all();
-
-	items = await utils.sortItemsByTotalEffort(items);
+	for(var i = 0; i < items.length; i++) {
+		utils.assignPriority(items[i]);
+	}
 	res.render("index", {items:items});
 });
 

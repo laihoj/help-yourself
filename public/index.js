@@ -163,7 +163,7 @@ function removeClassNameFromEachElement(className, elementList) {
   }
 }
 
-function sortTable(id, n, numeric) {
+function sortTable(id, n, numeric, direction) {
   var table, headers, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
   table = document.getElementById(id);
   headers = table.getElementsByTagName("TH");
@@ -172,7 +172,12 @@ function sortTable(id, n, numeric) {
   header = table.getElementsByTagName("TH")[n];
   switching = true;
   // Set the sorting direction to ascending:
-  dir = "asc"; 
+  if(direction) {
+    dir = direction;
+  } else {
+    dir = "asc";
+  }
+  
   /* Make a loop that will continue until
   no switching has been done: */
   while (switching) {
