@@ -156,8 +156,10 @@ app.post("/api/items", auth.isAuthenticated, async function(req,res) {
 		req.body.item_label, 
 		req.body.item_category, 
 		req.body.item_user);
-	db.relevancies.save(req.body.item_user, req.body.item_label, 50);
-	res.redirect("/items");
+	db.relevancies.save(req.body.item_user, req.body.item_label, 99);
+	backURL=req.header('Referer') || '/';
+    res.redirect(backURL);
+	// res.redirect("/items");
 });
 
 app.post("/api/users", async function(req,res){
