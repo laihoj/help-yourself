@@ -1,0 +1,14 @@
+
+<button id="homeButton" onclick="window.location='/'" class="button-overlay primary fixed bottom right">
+	Home
+</button>
+
+<script>
+	var loc = window.location.href.slice(window.location.origin.length);
+
+	if(loc === "/") {
+		document.getElementById("homeButton").classList.add("hidden");
+	} else {
+		document.getElementById("homeButton").classList.remove("hidden");
+	}
+</script>

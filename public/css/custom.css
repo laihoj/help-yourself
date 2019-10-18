@@ -20,3 +20,31 @@
 	margin-right: auto;
 }
 
+.button-overlay {
+  height:8rem;
+  width:8rem;
+  z-index:30000;
+  border-radius: 100% 100% 100% 100%;
+  /*font-size: 3rem;*/
+  padding: 0px;
+}
+
+.primary {
+  background-color: #33C3F0;
+  border-color: #33C3F0;
+}
+
+.fixed {
+  position: fixed;
+}
+
+.bottom {
+  bottom: 5%;
+  margin-bottom: 0;
+}
+
+.right {
+  right: 5%;
+  margin-right: 0;
+  border-bottom-right-radius: 40% 
+}
