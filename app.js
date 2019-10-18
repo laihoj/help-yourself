@@ -142,8 +142,8 @@ app.post("/api/categories", auth.isAuthenticated, async function(req,res) {
 
 app.post("/api/effort", auth.isAuthenticated, async function(req,res) {
 	let effort = await db.efforts.save(
-		req.body.effort_hours, 
-		req.body.effort_minutes, 
+		req.body.effort_hours || 0, 
+		req.body.effort_minutes || 0, 
 		req.body.effort_item, 
 		req.body.effort_timestamp || Date.now(), 
 		req.body.effort_user);
