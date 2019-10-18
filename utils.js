@@ -9,8 +9,7 @@ exports.setMessage = async function(item, message) {
 }
 
 exports.assignPriority = async function(item) {
-	// console.log("assigning priority to " + item);
-	// let globalEffort = 0;
+	
 	let totalEffort = 0;
 	let efforts = await db.efforts.byItem(item.label);
 	let relevancy = 0;
@@ -20,11 +19,11 @@ exports.assignPriority = async function(item) {
 		let label = relevancies[j].label;
 		if(label === item.label) {
 			relevancy = relevancies[j].value / 100;
-			// console.log("relevancy found: " + relevancy);
+			
 		}
 		if(label === item.category) {
 			categoryRelevancy = relevancies[j].value / 100;
-			// console.log("category relevancy found: " + categoryRelevancy);
+			
 		}
 	}
 	// let relevanceByCategory = await db.relevances.byCategory(items[i].category); 
@@ -33,15 +32,15 @@ exports.assignPriority = async function(item) {
 		totalEffort += efforts[j].hours * 60;
 		totalEffort += efforts[j].minutes;
 	}
-	// console.log("total effort for "+item.label+": " +totalEffort);
+	
 	let hours = Math.floor(totalEffort / 60);
 	let minutes = totalEffort % 60;
 	let message = hours + " h " + minutes;
 	totalRelevancy = relevancy * categoryRelevancy;	
-	// console.log("total relevancy for "+item.label+": " +totalRelevancy);
-	priority = totalRelevancy * (8*60 - totalEffort);
+	
+	priority = totalRelevancy * (8 * 60 * 5 - totalEffort); //minutes of a work week
 	item.priority  = priority;
-	// console.log("item "+ item.label + " priority set to "+item.priority);
+	
 	item.message  = message;
 	console.log(item.label + " set to "+item);
 	item.save();
