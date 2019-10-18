@@ -4,7 +4,8 @@ var itemSchema =  mongoose.Schema({
 	label: String,
 	category: String,
 	user: String,
-	priority: Number
+	priority: Number,
+	effort: String
 });
 
 

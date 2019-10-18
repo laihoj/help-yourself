@@ -41,7 +41,7 @@ exports.assignPriority = async function(item) {
 	priority = totalRelevancy * (8 * 60 * 5 - totalEffort); //minutes of a work week
 	item.priority  = priority;
 	
-	item.message  = message;
+	item.effort  = message;
 	// console.log(item.label + " set to "+item);
 	item.save();
 	return item;

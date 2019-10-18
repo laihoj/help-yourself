@@ -49,13 +49,13 @@ exports.delete = async function(id) {
 }
 
 
-exports.byIDAndUpdate = async function(id, user, label, category, priority) {
+exports.byIDAndUpdate = async function(id, user, label, category, priority, effort) {
 	let itemToUpdate = await exports.byID(id);
-	// itemToUpdate.id = id;
 	itemToUpdate.user = user;
 	itemToUpdate.label = label;
 	itemToUpdate.category = category;
 	itemToUpdate.priority = priority;
+	itemToUpdate.effort = effort;
 	return itemToUpdate.save();
 }
 

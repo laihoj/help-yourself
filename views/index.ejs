@@ -19,7 +19,7 @@
             <% for(var i = 0; i < items.length; i++) { %>
               <tr onclick="window.location='/items/<%= items[i].label %>'">
                 <td style="width:50%"><%= items[i].label %></td>
-                <td style="width:23%"><%= items[i].message %></td>
+                <td style="width:23%"><%= items[i].effort %></td>
                 <td style="width:23%"><%= Math.floor(items[i].priority) %></td>
               </tr>
             <% } %>
@@ -31,7 +31,7 @@
 </div>
 
 <script>
-  sortTable('itemsTable',3,'true','desc');
+  sortTable('itemsTable',2,'true','desc');
 </script>
 
 <% include ./partials/footer %>
