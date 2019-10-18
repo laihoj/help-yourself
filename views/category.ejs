@@ -1,45 +1,82 @@
 <% include ./partials/header %>
 
-<div class="section match">
-	<div class="container">
-		<div class="row">
-			<div class="u-full-width">
-			<h5><%= category.text %></h5> 
-			</div>
+<div class="container">
 
-<% include ./partials/newitemform %>
-			<h1><%= category %></h1>
-			
-			
-
-				<div class="data">
-					<table id="itemsTable" class="items u-full-width">
-						<thead>
-							<tr>
-								<th onclick="sortTable('itemsTable',0,'true');">#<i class="fas fa-filter"></i></th>
-								<th onclick="sortTable('itemsTable',1,'true');">Label</th>
-								<th onclick="sortTable('itemsTable',2,'true');">Relevance</th>
-							</tr>
-						</thead>
-						<tbody>
-					 		<% for(var i = 0; i < items.length; i++) { %>
-					  			<tr>
-					  				<td><%= i %></td>
-									<td onclick="window.location='/items/<%= items[i].label %>'">
-										<%= items[i].label %>
-									</td>
-									<td>
-										<% include ./partials/relevancyslider %>
-										
-			  						</td>
-								</tr>
-							<% } %>
-						</tbody>
-					</table>
-				</div>
-			
+<!--
+	<div class="row">
+		<div class="u-full-width">
+			<h1>Category: <%= category %></h1>
 		</div>
 	</div>
+	<hr>
+-->
+	
+	<h5>New item form</h5>
+	<form action="/api/items" method="post">
+		<div class="row">	
+			
+				<input 
+					type="hidden" 
+					name="item_user" 
+					placeholder="Your name please" 
+					value="<%= currentUser.username %>">
+			
+				<label for="item_label">Item</label>
+				<input 
+					type="text" 
+					name="item_label" 
+					placeholder="enter an item" 
+					id="item_label">
+			
+        		<label for="item_category">Select Category</label>
+        		<input 
+    				type="text" 
+    				name="item_category" 
+    				id="item_category"
+    				value="<%= category %>"
+    				readonly="readonly">
+			
+				<input type="submit">
+			
+		</div>
+	</form>
+	
+
+	<hr>
+
+	<div class="row">
+		
+		
+		
+
+			<div class="data">
+				<table id="itemsTable" class="items u-full-width">
+					<thead>
+						<tr>
+							<th onclick="sortTable('itemsTable',0,'true');">#<i class="fas fa-filter"></i></th>
+							<th onclick="sortTable('itemsTable',1,'true');">Label</th>
+							<th onclick="sortTable('itemsTable',2,'true');">Relevance</th>
+						</tr>
+					</thead>
+					<tbody>
+				 		<% for(var i = 0; i < items.length; i++) { %>
+				  			<tr>
+				  				<td><%= i %></td>
+								<td onclick="window.location='/items/<%= items[i].label %>'">
+									<%= items[i].label %>
+								</td>
+								<td>
+									<% include ./partials/relevancyslider %>
+									
+		  						</td>
+							</tr>
+						<% } %>
+					</tbody>
+				</table>
+			</div>
+		
+	</div>
 </div>
+
 
 <% include ./partials/footer %>
