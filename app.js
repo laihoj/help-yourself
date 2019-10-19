@@ -232,7 +232,7 @@ app.delete("/api/efforts/:id", auth.isAuthenticated, async function(req,res) {
 });
 
 app.delete("/api/items/:id", auth.isAuthenticated, async function(req,res) {
-	let itemToDelete = await db.items.byId(req.params.id);
+	let itemToDelete = await db.items.delete(req.params.id);
 	if(!typeof itemToDelete === 'undefined') {
 		let relevancyToDelete = await db.relevancies.byLabel(itemToDelete.label);
 		if(!typeof relevancyToDelete === 'undefined') {

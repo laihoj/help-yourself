@@ -153,7 +153,7 @@
 	<hr>
 
 	<div class="row">
-		<form action="/api/items/<%= item.label %>/?_method=DELETE" method="post">
+		<form action="/api/items/<%= item._id %>/?_method=DELETE" method="post">
 			<div id="revealDeleteButton">
 				<label for="revealDeleteButton">Delete this item?</label>
 				<input name="revealDeleteButton" type="button" 
