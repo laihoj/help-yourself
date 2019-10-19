@@ -62,7 +62,7 @@ Routes
 
 //************************* Home *************************//
 
-app.get("/", async function(req, res) {
+app.get("/", auth.isAuthenticated, async function(req, res) {
 	//retreive items
 	let items 	= await db.items.all();
 	for(var i = 0; i < items.length; i++) {
