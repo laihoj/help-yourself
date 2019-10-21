@@ -94,7 +94,7 @@ app.post("/login", passport.authenticate("local", {failureRedirect: "/login", fa
 		res.redirect("/login");
 	} else {
 		req.flash("success", "Logged in");
-		res.redirect(req.session.redirectTo || '/users/' +req.user.username);
+		res.redirect(req.session.redirectTo || '/users/' +req.user);
 		delete req.session.redirectTo;
 	}
 });
@@ -135,8 +135,8 @@ app.get("/api/users", async function(req,res) {
 app.post("/api/categories", auth.isAuthenticated, async function(req,res) {
 	let category = await db.categories.save(
 		req.body.category_label, 
-		req.body.category_user);
-	db.relevancies.save(req.body.category_user, req.body.category_label, 50);
+		req.user);
+	db.relevancies.save(req.user, req.body.category_label, 50);
 	res.redirect("/categories");
 });
 
@@ -146,7 +146,7 @@ app.post("/api/effort", auth.isAuthenticated, async function(req,res) {
 		req.body.effort_minutes || 0, 
 		req.body.effort_item, 
 		req.body.effort_timestamp || Date.now(), 
-		req.body.effort_user,
+		req.user,
 		req.body.effort_note);
 	res.redirect("/");
 });
@@ -155,8 +155,8 @@ app.post("/api/items", auth.isAuthenticated, async function(req,res) {
 	let item = await db.items.save(
 		req.body.item_label, 
 		req.body.item_category, 
-		req.body.item_user);
-	db.relevancies.save(req.body.item_user, req.body.item_label, 99);
+		req.user);
+	db.relevancies.save(req.user, req.body.item_label, 99);
 	backURL=req.header('Referer') || '/';
     res.redirect(backURL);
 	// res.redirect("/items");
@@ -166,7 +166,7 @@ app.post("/api/users", async function(req,res){
 	let user = await db.users.save(req.body.username, req.body.password);
 	if(user) {
 		passport.authenticate("local")(req, res, function() {
-			res.redirect(req.session.redirectTo || '/users/' +req.user.username);
+			res.redirect(req.session.redirectTo || '/users/' +req.user);
 			delete req.session.redirectTo;
 		});
 	} else {
@@ -176,7 +176,7 @@ app.post("/api/users", async function(req,res){
 
 app.post("/api/relevancies", auth.isAuthenticated, async function(req,res) {
 	let relevancies = await db.relevancies.save(
-		req.body.relevancy_user,
+		req.user,
 		req.body.relevancy_label, 
 		req.body.relevancy_value);
 	res.redirect("/relevancies");
@@ -186,7 +186,7 @@ app.post("/api/relevancies", auth.isAuthenticated, async function(req,res) {
 
 app.put("/api/relevancies", auth.isAuthenticated, async function (req, res) {
 	let updatedRelevancy = await db.relevancies.byLabelAndUpdate(
-		req.user.username, 
+		req.user,
 		req.body.relevancy_label,
 		req.body.relevancy_value);
 	backURL=req.header('Referer') || '/';
@@ -196,7 +196,7 @@ app.put("/api/relevancies", auth.isAuthenticated, async function (req, res) {
 app.put("/api/efforts/:id", auth.isAuthenticated, async function (req, res) {
 	let updatedEffort = await db.efforts.byIdAndUpdate(
 		req.body.effort_id,
-		req.user.username,
+		req.user,
 		req.body.effort_item,
 		req.body.effort_hours,
 		req.body.effort_minutes,
@@ -210,7 +210,7 @@ app.put("/api/efforts/:id", auth.isAuthenticated, async function (req, res) {
 app.put("/api/items/:id", auth.isAuthenticated, async function (req, res) {
 	let updatedItem = await db.items.byIDAndUpdate(
 		req.body.item_id, 
-		req.body.item_user, 
+		req.body.item_user, //not in use
 		req.body.item_label,
 		req.body.item_category,
 		req.body.item_priority);
@@ -257,30 +257,64 @@ app.delete("/api/relevancies/:id", auth.isAuthenticated, async function(req,res)
     res.redirect(backURL);
 });
 
+app.get("/api/updatemodel/items", auth.isAuthenticated, async function(req,res) {
+	let items = await db.items.all();
+	items.forEach((item) => {
+		db.items.updateUserModel(req.user, item._id);
+	})
+	backURL=req.header('Referer') || '/';
+    res.redirect(backURL);
+});
 
+app.get("/api/updatemodel/efforts", auth.isAuthenticated, async function(req,res) {
+	let items = await db.efforts.all();
+	items.forEach((item) => {
+		db.efforts.updateUserModel(req.user, item._id);
+	})
+	backURL=req.header('Referer') || '/';
+    res.redirect(backURL);
+});
+
+app.get("/api/updatemodel/categories", auth.isAuthenticated, async function(req,res) {
+	let items = await db.categories.all();
+	items.forEach((item) => {
+		db.categories.updateUserModel(req.user, item._id);
+	})
+	backURL=req.header('Referer') || '/';
+    res.redirect(backURL);
+});
+
+app.get("/api/updatemodel/relevancies", auth.isAuthenticated, async function(req,res) {
+	let items = await db.relevancies.all();
+	items.forEach((item) => {
+		db.relevancies.updateUserModel(req.user, item._id);
+	})
+	backURL=req.header('Referer') || '/';
+    res.redirect(backURL);
+});
 //************************* Application *************************//
 
 
 
 app.get("/categories", auth.isAuthenticated, async function(req, res) {
-	let categories = await db.categories.byUser(req.user.username);
-	let relevancies = await db.relevancies.byUser(req.user.username);
+	let categories = await db.categories.byUser(req.user);
+	let relevancies = await db.relevancies.byUser(req.user);
 	let data = categories;
 	res.render("categories",{categories:categories, relevancies:relevancies, data:data});
 });
 
 app.get("/efforts", auth.isAuthenticated, async function(req, res) {
-	let efforts = await db.efforts.byUser(req.user.username);
+	let efforts = await db.efforts.byUser(req.user);
 	res.render("efforts",{efforts: efforts});
 });
 
 app.get("/items", auth.isAuthenticated, async function(req, res) {
-	let categories = await db.categories.byUser(req.user.username);
+	let categories = await db.categories.byUser(req.user);
 	if(categories) {
 		res.locals.categories = categories;
 	}
-	let items = await db.items.byUser(req.user.username);
-	let relevancies = await db.relevancies.byUser(req.user.username);
+	let items = await db.items.byUser(req.user);
+	let relevancies = await db.relevancies.byUser(req.user);
 	let data = items;
 	console.log(data);
 	// console.log("searched relevancies by " + req.user.username + " and found " + relevancies);
@@ -289,7 +323,7 @@ app.get("/items", auth.isAuthenticated, async function(req, res) {
 
 
 app.get("/relevancies", auth.isAuthenticated, async function(req, res) {
-	let relevancies = await db.relevancies.byUser(req.user.username);
+	let relevancies = await db.relevancies.byUser(req.user);
 	let data = relevancies;
 	res.render("relevancies",{relevancies:relevancies, data:data});
 });
@@ -303,7 +337,7 @@ app.get("/relevancies", auth.isAuthenticated, async function(req, res) {
 
 app.get("/categories/:category", auth.isAuthenticated, async function(req, res) {
 	let items = await db.items.byCategory(req.params.category);
-	let relevancies = await db.relevancies.byUser(req.user.username);
+	let relevancies = await db.relevancies.byUser(req.user);
 	let data = items;
 	res.render("category",{items:items, category:req.params.category, relevancies:relevancies, data:data});
 });
@@ -319,30 +353,30 @@ app.get("/efforts/:effortid", auth.isAuthenticated, async function(req, res) {
 });
 
 app.get("/items/:item", auth.isAuthenticated, async function(req, res) {
-	let categories = await db.categories.byUser(req.user.username);
+	let categories = await db.categories.byUser(req.user);
 	if(categories) {
 		res.locals.categories = categories;
 	}
 	let item = await db.items.byLabel(req.params.item);
 	let efforts = await db.efforts.byItem(req.params.item);
-	let relevancies = await db.relevancies.byUser(req.user.username);
+	let relevancies = await db.relevancies.byUser(req.user);
 	res.render("item",{item:item, efforts: efforts, relevancies:relevancies});
 });
 
 app.get("/users/:user", auth.isAuthenticated, async function(req,res){
-	let categories = await db.categories.byUser(req.user.username);
+	let categories = await db.categories.byUser(req.user);
 	if(categories) {
 		res.locals.categories = categories;
 	}
-	let items = await db.items.byUser(req.user.username);
+	let items = await db.items.byUser(req.user);
 	if(items) {
 		res.locals.items = items;
 	}
-	let efforts = await db.efforts.byUser(req.user.username);
+	let efforts = await db.efforts.byUser(req.user);
 	if(efforts) {
 		res.locals.efforts = efforts;
 	}
-	let relevancies = await db.relevancies.byUser(req.user.username);
+	let relevancies = await db.relevancies.byUser(req.user);
 	if(relevancies) {
 		res.locals.relevancies = relevancies;
 	}
@@ -360,7 +394,7 @@ app.put("/items/:item", auth.isAuthenticated, async function (req, res) {
 });
 
 app.put("/relevancies", auth.isAuthenticated, async function (req, res) {
-	let updatedRelevancy = await db.relevancies.byLabelAndUpdate(req.user.username, req.body.relevancy_label, req.body.relevancy_value);
+	let updatedRelevancy = await db.relevancies.byLabelAndUpdate(req.user, req.body.relevancy_label, req.body.relevancy_value);
 	backURL=req.header('Referer') || '/';
     res.redirect(backURL);
 });

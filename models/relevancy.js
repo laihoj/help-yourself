@@ -1,9 +1,15 @@
 var mongoose = require("mongoose");
 
 var relevancySchema =  mongoose.Schema({
-	user: String,
-	label: String,
-	value: Number
+    user: {
+        id: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User"
+        },
+        username: String
+    },
+    label: String,
+    value: Number
 });
 
 

@@ -13,7 +13,7 @@ exports.all = async function() {
 }
 
 exports.byUser = async function(user) {
-	return Effort.find({user: user}).exec();
+	return Effort.find({'user.username': user.username}).exec();
 }
 
 exports.byItem = async function(item) {
@@ -30,7 +30,10 @@ exports.save = async function(hours, minutes, item, timestamp, user, note) {
 		minutes: minutes,
 		item: item,
 		timestamp: timestamp,
-		user: user,
+		user: {
+			id: user._id,
+			username: user.username
+		},
 		note: note
 	});
  	return effort.save();
@@ -38,7 +41,7 @@ exports.save = async function(hours, minutes, item, timestamp, user, note) {
 
 exports.byIdAndUpdate = async function(id, user, item, hours, minutes, timestamp, note) {
 	let effortToUpdate = await exports.byID(id);
-	effortToUpdate.user = user;
+	// effortToUpdate.user = user;
 	effortToUpdate.item = item;
 	effortToUpdate.hours = hours;
 	effortToUpdate.minutes = minutes;
@@ -51,4 +54,13 @@ exports.byIdAndUpdate = async function(id, user, item, hours, minutes, timestamp
 exports.delete = async function(id) {
 	let res = await exports.byID(id);	
 	return res.delete();
+}
+
+exports.updateUserModel = async function(user, id) {
+	let itemToUpdate = await exports.byID(id);
+	itemToUpdate.user = {
+		id: user._id,
+		username: user.username
+	};
+	return itemToUpdate.save();
 }

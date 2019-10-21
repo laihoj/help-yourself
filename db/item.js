@@ -21,7 +21,7 @@ exports.byLabel = async function(label) {
 }
 
 exports.byUser = async function(user) {
-	return Item.find({user: user}).exec();
+	return Item.find({'user.username': user.username}).exec();
 }
 
 exports.byCategory = async function(category) {
@@ -36,7 +36,11 @@ exports.save = async function(label, category, user) {
 	var item = new Item({
 		label: label,
 		category: category,
-		user: user
+		// user: user,
+		user: {
+			id: user._id,
+			username: user.username
+		}
 	});
 	// exports.addRelevance(user, label, 50);
  	return item.save();
@@ -51,7 +55,7 @@ exports.delete = async function(id) {
 
 exports.byIDAndUpdate = async function(id, user, label, category, priority, effort) {
 	let itemToUpdate = await exports.byID(id);
-	itemToUpdate.user = user;
+	// itemToUpdate.user = user;
 	itemToUpdate.label = label;
 	itemToUpdate.category = category;
 	itemToUpdate.priority = priority;
@@ -65,3 +69,11 @@ exports.byLabelAndUpdate = async function(label, category) {
 	return itemToUpdate.save();
 }
 
+exports.updateUserModel = async function(user, id) {
+	let itemToUpdate = await exports.byID(id);
+	itemToUpdate.user = {
+		id: user._id,
+		username: user.username
+	};
+	return itemToUpdate.save();
+}

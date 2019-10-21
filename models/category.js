@@ -2,7 +2,13 @@ var mongoose = require("mongoose");
 
 var categorySchema =  mongoose.Schema({
 	label: String,
-	user: String
+	user: {
+        id: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User"
+        },
+        username: String
+    }
 });
 
 

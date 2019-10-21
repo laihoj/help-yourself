@@ -13,7 +13,7 @@ exports.all = async function() {
 }
 
 exports.byUser = async function(user) {
-	return Category.find({user: user}).exec();
+	return Category.find({'user.username': user.username}).exec();
 }
 
 exports.byID = async function(id) {
@@ -23,7 +23,10 @@ exports.byID = async function(id) {
 exports.save = async function(label, user) {
 	var category = new Category({
 		label: label,
-		user: user
+		user: {
+			id: user._id,
+			username: user.username
+		}
 	});
 	// exports.addRelevance(user, label, 50);
  	return category.save();
@@ -33,4 +36,13 @@ exports.save = async function(label, user) {
 exports.delete = async function(id) {
 	let res = await exports.byID(id);	
 	return res.delete();
+}
+
+exports.updateUserModel = async function(user, id) {
+	let itemToUpdate = await exports.byID(id);
+	itemToUpdate.user = {
+		id: user._id,
+		username: user.username
+	};
+	return itemToUpdate.save();
 }

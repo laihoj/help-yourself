@@ -5,7 +5,13 @@ var effortSchema =  mongoose.Schema({
 	minutes: Number,
 	item: String,
 	timestamp: Date,
-	user: String,
+	user: {
+        id: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User"
+        },
+        username: String
+    },
 	note: String
 });
 

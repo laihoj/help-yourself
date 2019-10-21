@@ -21,34 +21,12 @@ exports.byLabel = async function(label) {
 }
 
 exports.byUser = async function(user) {
-	return Relevancy.find({user: user}).exec();
+	return Relevancy.find({'user.username': user.username}).exec();
 }
-
-// exports.add = async function(user, key, value) {
-// 	let res = await exports.byUser(user);
-// 	// console.log(res);
-// 	res.relevancies.push({"key":key, "value":value});
-// 	return res.save();
-// }
-
-// exports.byUserAndUpdate = async function(user, relevancies) {
-// 	let res = await exports.byUser(user);
-// 	let relevanciesToUpdate = res.relevancies;
-// 	for(var i = 0; i < relevanciesToUpdate.length; i++) {
-// 		var key 		= relevanciesToUpdate[i].key;
-// 		var value	 	= relevanciesToUpdate[i].value;
-// 		var formkey		= relevanciesToUpdate[i].key+"_relevancy";
-// 		var newvalue 	= relevancies[formkey];
-// 		if(!isNaN(newvalue)) {
-// 			relevanciesToUpdate[i].value = newvalue;
-// 		}
-// 	}
-// 	return res.save();
-// }
 
 exports.byIdAndUpdate = async function(id, user, label, value) {
 	let relevancyToUpdate = await exports.byID(id);
-	relevancyToUpdate.user = user;
+	// relevancyToUpdate.user = user;
 	relevancyToUpdate.label = label;
 	relevancyToUpdate.value = value;
 	return relevancyToUpdate.save();
@@ -60,20 +38,22 @@ exports.byLabelAndUpdate = async function(user, label, value) {
 	// console.log("Searched relevancy by " + label + " and got " + relevancyToUpdate);
 	if(relevancyToUpdate) 
 	{
-		relevancyToUpdate.user = user;
+		// relevancyToUpdate.user = user;
 		relevancyToUpdate.label = label;
 		relevancyToUpdate.value = value;
 		return relevancyToUpdate.save();
 	} else {
-		exports.save(user, label, value);
+		exports.save({id:user._id, username: user.username}, label, value);
 	}
-	
 }
 
 
 exports.save = async function(user, label, value) {
 	var relevancy = new Relevancy({
-		user: user,
+		user: {
+			id: user._id,
+			username: user.username
+		},
 		label: label,
 		value: value
 	});
@@ -84,4 +64,14 @@ exports.save = async function(user, label, value) {
 exports.delete = async function(id) {
 	let res = await exports.byID(id);	
 	return res.delete();
+}
+
+
+exports.updateUserModel = async function(user, id) {
+	let itemToUpdate = await exports.byID(id);
+	itemToUpdate.user = {
+		id: user._id,
+		username: user.username
+	};
+	return itemToUpdate.save();
 }

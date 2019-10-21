@@ -3,9 +3,15 @@ var mongoose = require("mongoose");
 var itemSchema =  mongoose.Schema({
 	label: String,
 	category: String,
-	user: String,
 	priority: Number,
-	effort: String
+	effort: String,
+	user: {
+        id: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User"
+        },
+        username: String
+    }
 });
 
 
