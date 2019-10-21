@@ -69,6 +69,7 @@ exports.byLabelAndUpdate = async function(label, category) {
 	return itemToUpdate.save();
 }
 
+/*///update complete, routes decommissioned
 exports.updateUserModel = async function(user, id) {
 	let itemToUpdate = await exports.byID(id);
 	itemToUpdate.user = {
@@ -77,3 +78,4 @@ exports.updateUserModel = async function(user, id) {
 	};
 	return itemToUpdate.save();
 }
+*/

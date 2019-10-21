@@ -38,6 +38,7 @@ exports.delete = async function(id) {
 	return res.delete();
 }
 
+/*///update complete, routes decommissioned
 exports.updateUserModel = async function(user, id) {
 	let itemToUpdate = await exports.byID(id);
 	itemToUpdate.user = {
@@ -46,3 +47,4 @@ exports.updateUserModel = async function(user, id) {
 	};
 	return itemToUpdate.save();
 }
+*/

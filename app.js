@@ -257,6 +257,7 @@ app.delete("/api/relevancies/:id", auth.isAuthenticated, async function(req,res)
     res.redirect(backURL);
 });
 
+/*///update complete, routes decommissioned
 app.get("/api/updatemodel/items", auth.isAuthenticated, async function(req,res) {
 	let items = await db.items.all();
 	items.forEach((item) => {
@@ -292,6 +293,7 @@ app.get("/api/updatemodel/relevancies", auth.isAuthenticated, async function(req
 	backURL=req.header('Referer') || '/';
     res.redirect(backURL);
 });
+*/
 //************************* Application *************************//
 
 
