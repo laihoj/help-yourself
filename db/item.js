@@ -24,6 +24,10 @@ exports.byUser = async function(user) {
 	return Item.find({'user.username': user.username}).exec();
 }
 
+exports.byUserID = async function(userID) {
+	return Item.find({'user.id': userID}).exec();
+}
+
 exports.byCategory = async function(category) {
 	return Item.find({category: category}).exec();
 }

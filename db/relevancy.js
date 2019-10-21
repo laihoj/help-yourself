@@ -24,6 +24,10 @@ exports.byUser = async function(user) {
 	return Relevancy.find({'user.username': user.username}).exec();
 }
 
+exports.byUserID = async function(userID) {
+	return Relevancy.find({'user.id': userID}).exec();
+}
+
 exports.byIdAndUpdate = async function(id, user, label, value) {
 	let relevancyToUpdate = await exports.byID(id);
 	// relevancyToUpdate.user = user;

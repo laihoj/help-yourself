@@ -16,6 +16,10 @@ exports.byUser = async function(user) {
 	return Category.find({'user.username': user.username}).exec();
 }
 
+exports.byUserID = async function(userID) {
+	return Category.find({'user.id': userID}).exec();
+}
+
 exports.byID = async function(id) {
 	return Category.findOne({_id: id}).exec();
 }

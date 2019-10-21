@@ -64,7 +64,8 @@ Routes
 
 app.get("/", auth.isAuthenticated, async function(req, res) {
 	//retreive items
-	let items 	= await db.items.all();
+	// let items 	= await db.items.all();
+	let items 	= await db.items.byUserID(req.user._id);
 	for(var i = 0; i < items.length; i++) {
 		utils.assignPriority(items[i]);
 	}
@@ -117,10 +118,14 @@ app.get("/api/efforts", async function(req,res) {
 });
 
 app.get("/api/items", async function(req,res) {
-	let items = await db.items.all();
+	let items = await db.items.byUserID(req.user._id);
 	res.send(items);
 });
 
+// app.get("/api/items", async function(req,res) {
+// 	let items = await db.items.all();
+// 	res.send(items);
+// });
 
 app.get("/api/relevancies", async function(req,res) {
 	let relevancies = await db.relevancies.all();
@@ -311,12 +316,13 @@ app.get("/efforts", auth.isAuthenticated, async function(req, res) {
 });
 
 app.get("/items", auth.isAuthenticated, async function(req, res) {
-	let categories = await db.categories.byUser(req.user);
+	// let categories = await db.categories.byUser(req.user);
+	let categories = await db.categories.byUserID(req.user._id);
 	if(categories) {
 		res.locals.categories = categories;
 	}
-	let items = await db.items.byUser(req.user);
-	let relevancies = await db.relevancies.byUser(req.user);
+	let items = await db.items.byUserID(req.user._id);
+	let relevancies = await db.relevancies.byUserID(req.user._id);
 	let data = items;
 	console.log(data);
 	// console.log("searched relevancies by " + req.user.username + " and found " + relevancies);
