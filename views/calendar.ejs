@@ -12,15 +12,31 @@
     </div> 
   </div>
   <div class="row">
-    <form action="/calendar/<%= date.year + "/" + date.month + "/" + (parseInt(date.day) - 1)%>">
+    <!-- 
+    <form id="goToTomorrow" action="/calendar/<%= date.year + "/" + date.month + "/" + (parseInt(date.day) + 1)%>">
+    -->
+    <form id="goToYesterday" action="/calendar/">
+
       <input style="float:left;" type="submit" value="Previous" />
     </form>
-    <form action="/calendar/<%= date.year + "/" + date.month + "/" + (parseInt(date.day) + 1)%>">
+    <form id="goToTomorrow" action="/calendar/">
+    <!--<form id="goToTomorrow" action="/calendar/<%= date.year + "/" + date.month + "/" + (parseInt(date.day) + 1)%>">-->
       <input style="float:right;" type="submit" value="Next" />
     </form>
   	</div>
   </div>
 </div>
 
+<script>
+  var date = new Date("<%= date.month + "-"+date.day+"-"+date.year%>");
+  var yesterday = new Date();
+  yesterday.setDate(date.getDate() - 1);
+  var tomorrow = new Date();
+  tomorrow.setDate(date.getDate() + 1);
+
+  document.getElementById("goToYesterday").action = "/calendar/"+yesterday.getFullYear()+"/"+(parseInt(yesterday.getMonth())+1)+"/"+yesterday.getDate()+"/";
+
+  document.getElementById("goToTomorrow").action = "/calendar/"+tomorrow.getFullYear()+"/"+(parseInt(tomorrow.getMonth())+1)+"/"+tomorrow.getDate()+"/";
+</script>
 
 <% include ./partials/footer %>
