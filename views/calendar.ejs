@@ -1,0 +1,26 @@
+<% include ./partials/header %>
+
+<div class="container">
+  <div class="row">
+  	<div class="twelve column" style="margin-top: 5%">
+    <h1>Calendar: <%= date.day + "-"+date.month+"-"+date.year%></h1>		
+  </div>
+  <hr>
+  <div class="row">
+    <div class="data">
+      <% include ./partials/effortstable %>
+    </div> 
+  </div>
+  <div class="row">
+    <form action="/calendar/<%= date.year + "/" + date.month + "/" + (parseInt(date.day) - 1)%>">
+      <input style="float:left;" type="submit" value="Previous" />
+    </form>
+    <form action="/calendar/<%= date.year + "/" + date.month + "/" + (parseInt(date.day) + 1)%>">
+      <input style="float:right;" type="submit" value="Next" />
+    </form>
+  	</div>
+  </div>
+</div>
+
+
+<% include ./partials/footer %>

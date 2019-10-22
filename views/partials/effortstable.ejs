@@ -1,3 +1,6 @@
+<h4>Summary</h4>
+<p>Total effort: <span id="effortsTable_totalEffort"></span>
+
 <table id="effortsTable" class="items u-full-width">
 	<thead>
 		<tr>
@@ -21,7 +24,7 @@
   					<%= efforts[i].item %>
 				</td>
   				<td 
-  					onclick="window.location='/efforts/<%= efforts[i]._id %>'"
+  					onclick="window.location='/calendar/<%= new Date(efforts[i].timestamp).getFullYear() %>/<%= new Date(efforts[i].timestamp).getMonth() + 1%>/<%= new Date(efforts[i].timestamp).getDate() %>'"
   					style="width:1%">
   					<%= new Date(efforts[i].timestamp).toLocaleDateString() %>
   				</td>
@@ -39,3 +42,7 @@
 		<% } %>
 	</tbody>
 </table>
+
+<script>
+  updateInnerText("effortsTable_totalEffort", hoursAndMinutesFromMinutes(getTotalMinutes()));
+</script>

@@ -28,6 +28,10 @@ exports.byID = async function(id) {
 	return Effort.findOne({_id: id}).exec();
 }
 
+exports.byDate = async function(userID, year, month, day) {
+	return Effort.find({'user.id': userID, timestamp: new Date(year+"-"+month+"-"+day)}).exec();
+}
+
 exports.save = async function(hours, minutes, item, timestamp, user, note) {
 	var effort = new Effort({
 		hours: hours,

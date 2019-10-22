@@ -108,12 +108,20 @@ app.get("/api", function(req, res) {
 });
 
 app.get("/api/categories", async function(req,res) {
-	let categories = await db.categories.all();
+	let categories = await db.categories.byUserID(req.user._id);
+	// let categories = await db.categories.all();
 	res.send(categories);
 });
 
 app.get("/api/efforts", async function(req,res) {
-	let efforts = await db.efforts.all();
+	let efforts = await db.efforts.byUserID(req.user._id);
+	// let efforts = await db.efforts.all();
+	res.send(efforts);
+});
+
+app.get("/api/efforts/bytime/:year/:month/:day", async function(req,res) {
+	let efforts = await db.efforts.byDate(req.user._id, req.params.year,req.params.month,req.params.day);
+	// let efforts = await db.efforts.all();
 	res.send(efforts);
 });
 
@@ -128,7 +136,9 @@ app.get("/api/items", async function(req,res) {
 // });
 
 app.get("/api/relevancies", async function(req,res) {
-	let relevancies = await db.relevancies.all();
+	let relevancies = await db.relevancies.byUserID(req.user._id);
+	// let relevancies = await db.relevancies.all();
+
 	res.send(relevancies);
 });
 
@@ -340,6 +350,14 @@ app.get("/relevancies", auth.isAuthenticated, async function(req, res) {
 //app.get("/users")
 
 
+
+app.get("/calendar/:year/:month/:day", auth.isAuthenticated, async function(req, res) {
+	let date = {year: req.params.year,
+				month: req.params.month,
+				day: req.params.day};
+	let efforts = await db.efforts.byDate(req.user._id, req.params.year,req.params.month,req.params.day);
+	res.render("calendar",{efforts: efforts, date: date});
+});
 
 
 

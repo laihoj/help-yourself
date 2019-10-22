@@ -23,5 +23,8 @@ window.addEventListener('scroll', function(){
   // saves the new position for iteration.
   scrollPos = (document.body.getBoundingClientRect()).top;
 });
+
+updateInnerText("effortsTable_totalEffort", hoursAndMinutesFromMinutes(getTotalMinutes()));
+updateInnerText("totalEffort", hoursAndMinutesFromMinutes(getTotalMinutes()));
 	</script>
 </html>

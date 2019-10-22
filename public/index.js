@@ -1,3 +1,12 @@
+function hoursAndMinutesFromMinutes(minutes) {
+  var message = Math.floor(minutes / 60) + " hours " + minutes % 60 + " mins";
+  return message;
+}
+
+function updateInnerText(id, text) {
+  document.getElementById(id).innerText = text;
+}
+
 function getTotalMinutes() {
 	var hours = document.getElementsByClassName("hours");
 	var minutes = document.getElementsByClassName("minutes");
