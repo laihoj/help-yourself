@@ -107,25 +107,25 @@ app.get("/api", function(req, res) {
 	res.render("api");
 });
 
-app.get("/api/categories", async function(req,res) {
+app.get("/api/categories", auth.isAuthenticated, async function(req,res) {
 	let categories = await db.categories.byUserID(req.user._id);
 	// let categories = await db.categories.all();
 	res.send(categories);
 });
 
-app.get("/api/efforts", async function(req,res) {
+app.get("/api/efforts", auth.isAuthenticated, async function(req,res) {
 	let efforts = await db.efforts.byUserID(req.user._id);
 	// let efforts = await db.efforts.all();
 	res.send(efforts);
 });
 
-app.get("/api/efforts/bytime/:year/:month/:day", async function(req,res) {
+app.get("/api/efforts/bytime/:year/:month/:day", auth.isAuthenticated, async function(req,res) {
 	let efforts = await db.efforts.byDate(req.user._id, req.params.year,req.params.month,req.params.day);
 	// let efforts = await db.efforts.all();
 	res.send(efforts);
 });
 
-app.get("/api/items", async function(req,res) {
+app.get("/api/items", auth.isAuthenticated, async function(req,res) {
 	let items = await db.items.byUserID(req.user._id);
 	res.send(items);
 });
@@ -135,14 +135,14 @@ app.get("/api/items", async function(req,res) {
 // 	res.send(items);
 // });
 
-app.get("/api/relevancies", async function(req,res) {
+app.get("/api/relevancies", auth.isAuthenticated, async function(req,res) {
 	let relevancies = await db.relevancies.byUserID(req.user._id);
 	// let relevancies = await db.relevancies.all();
 
 	res.send(relevancies);
 });
 
-app.get("/api/users", async function(req,res) {
+app.get("/api/users", auth.isAuthenticated, async function(req,res) {
 	let users = await db.users.all();
 	res.send(users);
 });

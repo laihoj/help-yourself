@@ -28,8 +28,26 @@ exports.byID = async function(id) {
 	return Effort.findOne({_id: id}).exec();
 }
 
+
+  // var date = new Date("<%= date.month + "-"+date.day+"-"+date.year%>");
+  // var yesterday = new Date();
+  // yesterday.setDate(date.getDate() - 1);
+  // var tomorrow = new Date();
+  // tomorrow.setDate(date.getDate() + 1);
+
+  // document.getElementById("goToYesterday").action = "/calendar/"+yesterday.getFullYear()+"/"+(parseInt(yesterday.getMonth())+1)+"/"+yesterday.getDate()+"/";
+
+  // document.getElementById("goToTomorrow").action = "/calendar/"+tomorrow.getFullYear()+"/"+(parseInt(tomorrow.getMonth())+1)+"/"+tomorrow.getDate()+"/";
+
+
 exports.byDate = async function(userID, year, month, day) {
-	return Effort.find({'user.id': userID, timestamp: new Date(year+"-"+month+"-"+day)}).exec();
+	// let date = new Date(month+"-"+day+"-"+year);
+	let date = new Date(year+"-"+month+"-"+day);
+	let yesterday = new Date();
+	let tomorrow = new Date();
+	yesterday.setDate(date.getDate() - 1);
+	tomorrow.setDate(date.getDate() + 1);
+	return Effort.find({'user.id': userID, timestamp: {$gt: yesterday, $lte: date}}).exec();
 }
 
 exports.save = async function(hours, minutes, item, timestamp, user, note) {
