@@ -173,7 +173,7 @@ app.post("/api/items", auth.isAuthenticated, async function(req,res) {
 		req.body.item_category, 
 		req.user,
 		req.body.item_parent);
-	db.relevancies.save(req.user, req.body.item_label, 99);
+	db.relevancies.save(req.user, req.body.item_label, 99, item);
 	backURL=req.header('Referer') || '/';
     res.redirect(backURL);
 	// res.redirect("/items");
@@ -381,14 +381,31 @@ app.get("/efforts/:effortid", auth.isAuthenticated, async function(req, res) {
 });
 
 app.get("/items/:item", auth.isAuthenticated, async function(req, res) {
-	let categories = await db.categories.byUser(req.user);
-	if(categories) {
-		res.locals.categories = categories;
-	}
+
+	let categories = await db.categories.byUser(req.user);	//LEGACY: SOON DEPRECATED
+	if(categories) {										//LEGACY: SOON DEPRECATED
+		res.locals.categories = categories;					//LEGACY: SOON DEPRECATED
+	}														//LEGACY: SOON DEPRECATED
 	let item = await db.items.byLabel(req.params.item);
+	let data;
+	if(item) {
+		data = await db.byItem(item);
+		// let relations = await db.relations.byItem(item);
+		// if(relations) {
+		// 	let parent = await db.items.byID(relations.parent.id);
+
+		// }
+	}
+	
+	// let parent = await db.relations.itemItem.byChild(item);
+	// let children = await db.relations.itemItem.byParent(item);
+	// let user = await db.relations.itemUser.byItem(item);
+	// let effort = await db.relations.EffortItem.byItem(item);
+	// let relevancy = await db.relations.RelevancyItem.byItem(item);
+
 	let efforts = await db.efforts.byItem(req.params.item);
 	let relevancies = await db.relevancies.byUser(req.user);
-	res.render("item",{item:item, efforts: efforts, relevancies:relevancies});
+	res.render("item",{item:item, efforts: efforts, relevancies:relevancies, data: data});
 });
 
 app.get("/users/:user", auth.isAuthenticated, async function(req,res){

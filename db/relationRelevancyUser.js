@@ -28,7 +28,7 @@ exports.findOne = async function(relevancyObj, userObj) {
 }
 
 /********************************************************
-Get one by filter
+Get by filter
 ********************************************************/
 
 exports.byID = async function(id) {
@@ -38,12 +38,12 @@ exports.byID = async function(id) {
 }
 exports.byRelevancy = async function(relevancyObj) {
 	return RelevancyUser.findOne({
-		_id: relevancyObj.id
+		'relevancy.id': relevancyObj._id
 	}).exec();
 }
 exports.byUser = async function(userObj) {
-	return RelevancyUser.findOne({
-		_id: userObj.id
+	return RelevancyUser.find({
+		'relevancy.id': userObj._id
 	}).exec();
 }
 

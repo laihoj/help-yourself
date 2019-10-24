@@ -26,8 +26,16 @@ exports.byItem = async function(item) {
 	return Effort.find({item: item}).exec();
 }
 
+// exports.byItemObject = async function(itemObj) {
+// 	return Effort.find({item: item}).exec();
+// }
+
 exports.byID = async function(id) {
-	return Effort.findOne({_id: id}).exec();
+	// console.log("searching by: " + id);
+	
+	let res = await Effort.findOne({_id: id});
+	// console.log("found after search: " + res);
+	return res;
 }
 
 

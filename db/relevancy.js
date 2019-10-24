@@ -1,4 +1,4 @@
-/********************************************************
+/*******************************************************
 Mongoose.js and MongoDB
 ********************************************************/
 const mongoose = require('mongoose')
@@ -8,6 +8,7 @@ mongoose.connect(url, { useNewUrlParser: true });
 
 const Relevancy = require("./../models/relevancy");
 const relations = require('./relations.js');
+// const Items = require('./item.js');
 const Item = require("./../models/item");
 
 exports.all = async function() {
@@ -54,7 +55,7 @@ exports.byLabelAndUpdate = async function(user, label, value) {
 }
 
 
-exports.save = async function(user, label, value) {
+exports.save = async function(user, label, value, item) {
 	var relevancy = new Relevancy({
 		user: {
 			id: user._id,
@@ -63,11 +64,15 @@ exports.save = async function(user, label, value) {
 		label: label,
 		value: value
 	});
-
-	let item = await Item.findOne({'user.id':user._id, label: label});
-	if(item) {
+	// console.log("searching items by :" + user._id + " and "+label);
+	// let item = await Item.findOne({label: label}).exec();
+	// let item = await Item.findOne({'user.id':user._id}).exec();
+	// let item = await Items.byLabel(label);
+	// let item = await Item.findOne({'user.id':user._id, label: label});
+	// console.log("If item found, create relation to relevancy: " + item);
+	// if(item) {
 		relations.relevancyItem.save(relevancy, item);
-	}
+	// }
 	relations.relevancyUser.save(relevancy, user);
 
  	return relevancy.save();

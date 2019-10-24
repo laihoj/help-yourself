@@ -14,11 +14,14 @@ exports.all = async function() {
 }
 
 exports.byLabel = async function(label) {
-	let items = await Item.find({label: label}).exec();
-	if(items.length > 0)
-	{	
-		return items[0];
-	} else return {"label": "Item label does not produce a hit"};
+	let item = await Item.findOne({label: label}).exec();
+	return item;
+	
+	// let items = await Item.find({label: label}).exec();
+	// if(items.length > 0)
+	// {	
+	// 	return items[0];
+	// } else return {"label": "Item label does not produce a hit"};
 }
 
 exports.byUser = async function(user) {
@@ -51,13 +54,17 @@ exports.save = async function(label, category, user, parentLabel) {
 	item.save();
 
 	relations.itemUser.save(item, user);
+	// relations.itemUser.save(item, user);
 
 	if(parent) {
 		item.parent = {
 			id: parent._id,
 			label: parent.label
 		}
-		var child = {id: item._id, label: item.label};
+		var child = {
+			_id: item._id, 
+			label: item.label
+		};
 		parent.children.push(child);
 		parent.save();
 		relations.itemItem.save(parent, child);

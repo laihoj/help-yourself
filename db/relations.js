@@ -5,6 +5,82 @@ exports.itemUser 		= require("./relationItemUser.js");
 exports.relevancyItem 	= require("./relationRelevancyItem.js");
 exports.relevancyUser 	= require("./relationRelevancyUser.js");
 
+exports.byItem = async function(item) {
+	// console.log("searching by " +  item);
+	let parent, childs, user, efforts, relevancy;
+
+
+	let parentandchild 		= await exports.itemItem.byChild(item);
+	// console.log("found parent child: " + parentandchild);
+	if(parentandchild) 
+		parent = parentandchild.parent;
+
+	let childsofparent 		= await exports.itemItem.byParent(item);
+	// console.log("found children parent: " + childsofparent);
+	if(childsofparent) 
+		childs = childsofparent;
+
+	let useranditem 		= await exports.itemUser.byItem(item);
+	// console.log("found user item: " + useranditem);
+	if(useranditem) 
+		user = useranditem.user;
+
+	let effortsforitem 		= await exports.effortItem.byItem(item);
+	// console.log("found efforts item: " + effortsforitem);
+	if(effortsforitem) 
+		efforts = effortsforitem;
+
+	let relevancyofitem 	= await exports.relevancyItem.byItem(item);
+	// console.log("found relevancy item: " + relevancyofitem);
+	if(relevancyofitem) 
+		relevancy = relevancyofitem.relevancy;
+
+	let data = {
+		parent:		parent,
+		childs: 	childs,
+		user: 		user,
+		efforts: 	efforts,
+		relevancy: 	relevancy,
+	}
+	// console.log("Gonna pass relational data: " + data);
+	return data;
+}
+
+exports.byEffort = async function(effort) {
+	let user 		= await exports.itemUser.byEffort(effort);
+	let items 		= await exports.effortItem.byEffort(effort);
+
+	let data = {
+		user: 	user,
+		items: 	items,
+	}
+	return data;
+}
+
+exports.byUser = async function(user) {
+	let items 		= await exports.itemUser.byUser(user);
+	let efforts 	= await exports.effortItem.byUser(user);
+	let relevancies = await exports.relevancyUser.byUser(user);
+
+	let data = {
+		items: 			items,
+		efforts: 		efforts,
+		relevancies: 	relevancies
+	}
+	return data;
+}
+
+exports.byRelevancy = async function(relevancy) {
+	let items 		= await exports.relevancyItem.byRelevancy(relevancy);
+	let user = await exports.relevancyUser.byRelevancy(relevancy);
+
+	let data = {
+		items: 	items,
+		user: 	user
+	}
+	return data;
+}
+
 /*
 const mongoose = require('mongoose')
 

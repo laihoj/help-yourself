@@ -28,7 +28,7 @@ exports.findOne = async function(effortObj, userObj) {
 }
 
 /********************************************************
-Get one by filter
+Get by filter
 ********************************************************/
 
 exports.byID = async function(id) {
@@ -38,12 +38,12 @@ exports.byID = async function(id) {
 }
 exports.byEffort = async function(effortObj) {
 	return EffortUser.findOne({
-		_id: effortObj.id
+		'effort.id': effortObj._id
 	}).exec();
 }
 exports.byUser = async function(userObj) {
-	return EffortUser.findOne({
-		_id: userObj.id
+	return EffortUser.find({
+		'user.id': userObj._id
 	}).exec();
 }
 

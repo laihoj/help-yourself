@@ -22,13 +22,13 @@ Get one
 
 exports.findOne = async function(relevancyObj, itemObj) {
 	return RelevancyItem.findOne({
-		'relevancy.id':relevancyObj._id, 
+		'relevancy.id': relevancyObj._id, 
 		'item.id': itemObj._id
 	}).exec();
 }
 
 /********************************************************
-Get one by filter
+Get by filter
 ********************************************************/
 
 exports.byID = async function(id) {
@@ -37,13 +37,13 @@ exports.byID = async function(id) {
 	}).exec();
 }
 exports.byRelevancy = async function(relevancyObj) {
-	return RelevancyItem.find({
-		_id: relevancyObj.id
+	return RelevancyItem.findOne({
+		'relevancy.id': relevancyObj._id
 	}).exec();
 }
 exports.byItem = async function(itemObj) {
 	return RelevancyItem.findOne({
-		_id: itemObj.id
+		'item.id': itemObj._id
 	}).exec();
 }
 

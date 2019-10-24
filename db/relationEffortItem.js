@@ -38,12 +38,12 @@ exports.byID = async function(id) {
 }
 exports.byEffort = async function(effortObj) {
 	return EffortItem.findOne({
-		_id: effortObj.id
+		'effort.id': effortObj._id
 	}).exec();
 }
 exports.byItem = async function(itemObj) {
-	return EffortItem.findOne({
-		_id: itemObj.id
+	return EffortItem.find({
+		'item.id': itemObj._id
 	}).exec();
 }
 

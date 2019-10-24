@@ -28,22 +28,24 @@ exports.findOne = async function(parentObj, childObj) {
 }
 
 /********************************************************
-Get one by filter
+Get by filter
 ********************************************************/
 
 exports.byID = async function(id) {
 	return ItemItem.findOne({
-		_id: id
+		id: id
 	}).exec();
 }
+//good for finding children
 exports.byParent = async function(parentObj) {
-	return ItemItem.findOne({
-		_id: parentObj.id
+	return ItemItem.find({
+		'parent.id': parentObj._id
 	}).exec();
 }
+//good for finding a parent
 exports.byChild = async function(childObj) {
 	return ItemItem.findOne({
-		_id: childObj.id
+		'child.id': childObj._id
 	}).exec();
 }
 
