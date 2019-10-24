@@ -1,0 +1,36 @@
+<h5>New item form</h5>
+	<form action="/api/items" method="post">
+		<div class="row">	
+			
+				<input 
+					type="hidden" 
+					name="item_user" 
+					placeholder="Your name please" 
+					value="<%= currentUser.username %>">
+			
+				<label for="item_label">Item</label>
+				<input 
+					type="text" 
+					name="item_label" 
+					placeholder="enter an item" 
+					id="item_label"
+					required>
+
+				<label for="item_parent">Select Parent</label>
+				<select 
+					class="u-full-width" 
+					name="item_parent" 
+					id="item_parent"
+					>
+					<option value=""></option>
+					<% for(var i = 0; i < data.length; i++) { %>
+		  				<option value="<%= data[i].label %>"><%= data[i].label %></option>
+    				<% } %>
+				</select>
+
+
+
+				<input type="submit">
+			
+		</div>
+	</form>

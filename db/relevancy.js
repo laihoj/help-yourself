@@ -7,6 +7,8 @@ var url = process.env.DATABASEURL;
 mongoose.connect(url, { useNewUrlParser: true });
 
 const Relevancy = require("./../models/relevancy");
+const relations = require('./relations.js');
+const Item = require("./../models/item");
 
 exports.all = async function() {
 	return Relevancy.find({}).exec();
@@ -61,6 +63,13 @@ exports.save = async function(user, label, value) {
 		label: label,
 		value: value
 	});
+
+	let item = await Item.findOne({'user.id':user._id, label: label});
+	if(item) {
+		relations.relevancyItem.save(relevancy, item);
+	}
+	relations.relevancyUser.save(relevancy, user);
+
  	return relevancy.save();
 }
 

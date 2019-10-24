@@ -7,6 +7,7 @@ var url = process.env.DATABASEURL;
 mongoose.connect(url, { useNewUrlParser: true });
 
 const Item = require("./../models/item");
+const relations = require('./relations.js');
 
 exports.all = async function() {
 	return Item.find({}).exec();
@@ -36,7 +37,8 @@ exports.byID = async function(id) {
 	return Item.findOne({_id: id}).exec();
 }
 
-exports.save = async function(label, category, user) {
+exports.save = async function(label, category, user, parentLabel) {
+	let parent = await Item.findOne({"user.id": user._id, label: parentLabel});
 	var item = new Item({
 		label: label,
 		category: category,
@@ -46,8 +48,24 @@ exports.save = async function(label, category, user) {
 			username: user.username
 		}
 	});
+	item.save();
+
+	relations.itemUser.save(item, user);
+
+	if(parent) {
+		item.parent = {
+			id: parent._id,
+			label: parent.label
+		}
+		var child = {id: item._id, label: item.label};
+		parent.children.push(child);
+		parent.save();
+		relations.itemItem.save(parent, child);
+	}
+	
+
 	// exports.addRelevance(user, label, 50);
- 	return item.save();
+ 	return item;
 }
 
 //TODO: delete item from relevances also

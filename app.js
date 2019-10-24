@@ -127,10 +127,11 @@ app.get("/api/efforts/bytime/:year/:month/:day", auth.isAuthenticated, async fun
 
 app.get("/api/items", auth.isAuthenticated, async function(req,res) {
 	let items = await db.items.byUserID(req.user._id);
-	res.send(items);
+	res.render("partials/newitemform2", {data: items});
+	// res.send(items);
 });
 
-// app.get("/api/items", async function(req,res) {
+// app.get("/api/items", async function(req,res) {bide
 // 	let items = await db.items.all();
 // 	res.send(items);
 // });
@@ -170,7 +171,8 @@ app.post("/api/items", auth.isAuthenticated, async function(req,res) {
 	let item = await db.items.save(
 		req.body.item_label, 
 		req.body.item_category, 
-		req.user);
+		req.user,
+		req.body.item_parent);
 	db.relevancies.save(req.user, req.body.item_label, 99);
 	backURL=req.header('Referer') || '/';
     res.redirect(backURL);

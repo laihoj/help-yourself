@@ -7,6 +7,8 @@ var url = process.env.DATABASEURL;
 mongoose.connect(url, { useNewUrlParser: true });
 
 const Effort = require("./../models/effort");
+const relations = require('./relations.js');
+const Item = require("./../models/item");
 
 exports.all = async function() {
 	return Effort.find({}).exec();
@@ -50,11 +52,11 @@ exports.byDate = async function(userID, year, month, day) {
 	return Effort.find({'user.id': userID, timestamp: {$gt: yesterday, $lte: date}}).exec();
 }
 
-exports.save = async function(hours, minutes, item, timestamp, user, note) {
+exports.save = async function(hours, minutes, itemLabel, timestamp, user, note) {
 	var effort = new Effort({
 		hours: hours,
 		minutes: minutes,
-		item: item,
+		item: itemLabel,
 		timestamp: timestamp,
 		user: {
 			id: user._id,
@@ -62,6 +64,13 @@ exports.save = async function(hours, minutes, item, timestamp, user, note) {
 		},
 		note: note
 	});
+
+	let item = await Item.findOne({"user.id": user._id, label: itemLabel});
+	if(item) {
+		relations.effortItem.save(effort, item);
+	}
+	relations.effortUser.save(effort, user);
+
  	return effort.save();
 }
 

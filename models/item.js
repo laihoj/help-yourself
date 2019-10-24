@@ -11,7 +11,21 @@ var itemSchema =  mongoose.Schema({
             ref: "User"
         },
         username: String
-    }
+    },
+    parent: {
+        id: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Item"
+        },
+        label: String
+    },
+    children: [{
+        id: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Item"
+        },
+        label: String
+    }]
 });
 
 
