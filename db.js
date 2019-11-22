@@ -5,6 +5,23 @@ exports.efforts 	= require("./db/effort.js");
 exports.relevancies = require("./db/relevancy.js");
 exports.relations 	= require("./db/relations.js");
 
+exports.all = async function() {
+	let users 					= await exports.users.all();
+	let categories 				= await exports.categories.all();
+	let items 					= await exports.items.all();
+	let efforts 				= await exports.efforts.all();
+	let relevancies 			= await exports.relevancies.all();
+
+	let data = {
+		efforts: 				efforts,
+		items: 					items,
+		relevancies: 			relevancies,
+		users: 					users,
+		categories: 			categories,
+	}
+	return data;
+}
+
 
 exports.byItem = async function(item) {
 

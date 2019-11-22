@@ -107,6 +107,11 @@ app.get("/api", function(req, res) {
 	res.render("api");
 });
 
+app.get("/api/migrate/out", async function(req, res) {
+	let data = await db.all();
+	res.send(data);
+});
+
 app.get("/api/categories", auth.isAuthenticated, async function(req,res) {
 	let categories = await db.categories.byUserID(req.user._id);
 	// let categories = await db.categories.all();
