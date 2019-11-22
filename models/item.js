@@ -1,10 +1,6 @@
 var mongoose = require("mongoose");
 
 var itemSchema =  mongoose.Schema({
-	label: String,
-	category: String,
-	priority: Number,
-	effort: String,
 	user: {
         id: {
             type: mongoose.Schema.Types.ObjectId,
@@ -12,20 +8,12 @@ var itemSchema =  mongoose.Schema({
         },
         username: String
     },
-    parent: {
-        id: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "Item"
-        },
-        label: String
-    },
-    children: [{
-        id: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "Item"
-        },
-        label: String
-    }]
+	label: String,
+	priority: Number,
+
+	totalMinutes: Number,
+	totalRelevancy: Number,
+	
 });
 
 

@@ -38,8 +38,10 @@ app.use(flash());
 
 app.use(function(req, res, next){
 	res.locals.currentUser = req.user;
-	res.locals.error = req.flash("error");
-	res.locals.success = req.flash("success");
+	res.locals.error 	= req.flash("error");
+	res.locals.success 	= req.flash("success");
+	res.locals.warning 	= req.flash("warning");
+
 	res.header("Access-Control-Allow-Origin", "*");
   	res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
   	
@@ -63,13 +65,71 @@ Routes
 //************************* Home *************************//
 
 app.get("/", auth.isAuthenticated, async function(req, res) {
-	//retreive items
-	// let items 	= await db.items.all();
-	let items 	= await db.items.byUserID(req.user._id);
+	
+	let items 			= await db.items.byUserID(req.user._id);
+	let itemsbyid = {};
 	for(var i = 0; i < items.length; i++) {
-		utils.assignPriority(items[i]);
+		itemsbyid[items[i].id] = items[i];
 	}
-	res.render("index", {items:items});
+
+	let efforts 		= await db.efforts.byUserID(req.user._id);
+	// console.log("efforts found: " +efforts);
+	let effortsbyid = {};
+	for(var i = 0; i < efforts.length; i++) {
+		effortsbyid[efforts[i].id] = efforts[i];
+	}
+
+	let effortofitem 	= await db.relations.effortItem.byUserID(req.user._id);
+	// console.log("relations found: " +effortofitem);
+	let relationbyitemid = {};
+	for(var i = 0; i < effortofitem.length; i++) {
+		let itemid = effortofitem[i].item.id;
+		let item = itemsbyid[itemid];
+		let effortid = effortofitem[i].effort.id;
+		// item.effort += effortsbyid[effortid].hours;
+	}
+
+	res.render("index", {data:items});
+});
+
+app.get("/beta/graph", auth.isAuthenticated, async function(req, res) {
+	let items 	= await db.items.byUserID(req.user._id);
+	let edges = [];
+	var idlookuptable = {};
+	var index = 1;
+	let relations = [];
+	for(var i = 0; i < items.length; i++) {
+		let childsofparent = await db.relations.itemItem.byParent(items[i]);
+		idlookuptable[items[i]._id] = index;
+		index ++;
+		for(var j = 0; j < childsofparent.length; j++) {
+			relations.push(childsofparent[j]);
+			
+			idlookuptable[childsofparent[j].child.id] = index;
+			index ++;
+		}
+	}
+	// {id: 1, label: 'Abdelmoumene Djabou', title: 'Country: ' + 'Algeria' + '<br>' + 'Team: ' + 'Club Africain', value: 22, group: 24, x: -1392.5499, y: 1124.1614},
+	var nodes = [];
+	for(var i = 0; i < items.length; i++) {
+		nodes.push("{id: " + idlookuptable[items[i]._id] + ", label: " + items[i].label + "}");
+	}
+
+	for(var i = 0; i < relations.length; i++) {
+		edges.push("{from: "+ idlookuptable[relations[i].parent.id] + ", to: " + idlookuptable[relations[i].child.id]+"}");
+		// edges.push("from: " + idlookuptable[key])
+	}
+	// var edges
+	// let children = [...new Set(childs)];
+
+	// var edges = [
+ //  "{from: 1, to: 15}",
+ //  "{from: 1, to: 97}",
+ //  "{from: 1, to: 108}",
+ //  "{from: 1, to: 173}",
+ //  "{from: 1, to: 195}"
+ //  ];
+	res.render("graph", {edges:edges, nodes: nodes, items: items, idlookuptable:idlookuptable});
 });
 
 
@@ -103,14 +163,41 @@ app.post("/login", passport.authenticate("local", {failureRedirect: "/login", fa
 
 //************************* API *************************//
 
+
+
+
 app.get("/api", function(req, res) {
 	res.render("api");
 });
 
-app.get("/api/categories", auth.isAuthenticated, async function(req,res) {
-	let categories = await db.categories.byUserID(req.user._id);
-	// let categories = await db.categories.all();
-	res.send(categories);
+//Use this to 'export' data from old database
+app.get("/api/migrate/out", async function(req, res) {
+	let data = await db.all();
+	// let efforts 				= await db.efforts.all();
+	// let items 					= await db.items.all();
+	// let relevancies 			= await db.relevancies.all();
+	// let users 					= await db.users.all();
+	// let itemItemRelations 		= await db.relations.itemItem.all();
+	// let effortItemRelations 	= await db.relations.effortItem.all();
+	// let relevancyItemRelations 	= await db.relations.relevancyItem.all();
+	// let logs 					= await db.logs.all();
+
+	// let data = {
+	// 	efforts: 				efforts,
+	// 	items: 					items,
+	// 	relevancies: 			relevancies,
+	// 	users: 					users,
+	// 	itemItemRelations: 		itemItemRelations,
+	// 	effortItemRelations: 	effortItemRelations,
+	// 	relevancyItemRelations: relevancyItemRelations,
+	// 	logs: 					logs
+	// }
+	res.send(data);
+});
+
+//get all that data and do something with it. Populate new database by some logic?
+app.get("/api/migrate/in", async function(req, res) {
+	res.send("Not implemented yet");
 });
 
 app.get("/api/efforts", auth.isAuthenticated, async function(req,res) {
@@ -119,11 +206,6 @@ app.get("/api/efforts", auth.isAuthenticated, async function(req,res) {
 	res.send(efforts);
 });
 
-app.get("/api/efforts/bytime/:year/:month/:day", auth.isAuthenticated, async function(req,res) {
-	let efforts = await db.efforts.byDate(req.user._id, req.params.year,req.params.month,req.params.day);
-	// let efforts = await db.efforts.all();
-	res.send(efforts);
-});
 
 app.get("/api/items", auth.isAuthenticated, async function(req,res) {
 	let items = await db.items.byUserID(req.user._id);
@@ -131,10 +213,6 @@ app.get("/api/items", auth.isAuthenticated, async function(req,res) {
 	// res.send(items);
 });
 
-// app.get("/api/items", async function(req,res) {bide
-// 	let items = await db.items.all();
-// 	res.send(items);
-// });
 
 app.get("/api/relevancies", auth.isAuthenticated, async function(req,res) {
 	let relevancies = await db.relevancies.byUserID(req.user._id);
@@ -148,32 +226,35 @@ app.get("/api/users", auth.isAuthenticated, async function(req,res) {
 	res.send(users);
 });
 
-app.post("/api/categories", auth.isAuthenticated, async function(req,res) {
-	let category = await db.categories.save(
-		req.body.category_label, 
-		req.user);
-	db.relevancies.save(req.user, req.body.category_label, 50);
-	res.redirect("/categories");
-});
+
 
 app.post("/api/effort", auth.isAuthenticated, async function(req,res) {
-	let effort = await db.efforts.save(
+	let item = await db.items.byID(req.body.effort_item);
+	let effort = await db.saveEffort(
 		req.body.effort_hours || 0, 
 		req.body.effort_minutes || 0, 
 		req.body.effort_item, 
 		req.body.effort_timestamp || Date.now(), 
 		req.user,
-		req.body.effort_note);
+		req.body.effort_note,
+		item);
 	res.redirect("/");
 });
 
+
+app.get("/api/efforts/bytime/:year/:month/:day", auth.isAuthenticated, async function(req,res) {
+	let efforts = await db.efforts.byDate(req.user._id, req.params.year,req.params.month,req.params.day);
+	// let efforts = await db.efforts.all();
+	res.send(efforts);
+});
+
+
 app.post("/api/items", auth.isAuthenticated, async function(req,res) {
-	let item = await db.items.save(
+	let item = await db.createItem(
 		req.body.item_label, 
-		req.body.item_category, 
+		// req.body.item_category, 
 		req.user,
 		req.body.item_parent);
-	db.relevancies.save(req.user, req.body.item_label, 99, item);
 	backURL=req.header('Referer') || '/';
     res.redirect(backURL);
 	// res.redirect("/items");
@@ -191,30 +272,27 @@ app.post("/api/users", async function(req,res){
 	}
 });
 
-app.post("/api/relevancies", auth.isAuthenticated, async function(req,res) {
-	let relevancies = await db.relevancies.save(
-		req.user,
-		req.body.relevancy_label, 
-		req.body.relevancy_value);
-	res.redirect("/relevancies");
-});
+//not supposed to be in use
+app.put("/api/relevancies/:id", auth.isAuthenticated, async function (req, res) {
+	let relevancyObj = await db.relevancies.byID(req.params.id);
+	await db.updateRelevancy(relevancyObj, req.body.relevancy_value);
 
-
-
-app.put("/api/relevancies", auth.isAuthenticated, async function (req, res) {
-	let updatedRelevancy = await db.relevancies.byLabelAndUpdate(
-		req.user,
-		req.body.relevancy_label,
-		req.body.relevancy_value);
+	// let updatedRelevancy = await db.relevancies.byIdAndUpdate(
+	// 	req.params.id,
+	// 	req.body.relevancy_value,
+	// 	);
 	backURL=req.header('Referer') || '/';
     res.redirect(backURL);
 });
 
 app.put("/api/efforts/:id", auth.isAuthenticated, async function (req, res) {
-	let updatedEffort = await db.efforts.byIdAndUpdate(
-		req.body.effort_id,
-		req.user,
-		req.body.effort_item,
+	let effortObj = await db.efforts.byID(req.params.id);
+	let updatedEffort = await db.updateEffort(
+		effortObj,
+	// let updatedEffort = await db.efforts.byIdAndUpdate(
+		// req.params.id,
+		// req.user,
+		// req.body.effort_item,
 		req.body.effort_hours,
 		req.body.effort_minutes,
 		req.body.effort_timestamp,
@@ -225,53 +303,104 @@ app.put("/api/efforts/:id", auth.isAuthenticated, async function (req, res) {
 });
 
 app.put("/api/items/:id", auth.isAuthenticated, async function (req, res) {
+	let item = await db.items.byID(req.params.id);
 	let updatedItem = await db.items.byIDAndUpdate(
-		req.body.item_id, 
-		req.body.item_user, //not in use
-		req.body.item_label,
-		req.body.item_category,
-		req.body.item_priority);
-	// console.log(updatedItem);
+		req.params.id, 
+		req.body.item_label 			|| item.label,
+		req.body.item_priority 			|| item.priority,
+		req.body.item_totalMinutes 		|| item.totalMinutes,
+		req.body.item_totalRelevancy 	|| item.totalRelevancy
+		);
     res.redirect("/items/"+req.params.item);
 });
 
-
-app.delete("/api/categories/:id", auth.isAuthenticated, async function(req,res) {
-	db.categories.delete(req.params.id);
+app.put("/api/relations/itemitem/:id", auth.isAuthenticated, async function(req, res) {
+	// console.log("search by " +req.params.id);
+	let relation = await db.relations.itemItem.byID(req.params.id);
+	// console.log("found " +relation);
+	let newParent = await db.items.byID(req.body.parent_id);
+	await db.relations.itemItem.update(relation, newParent, relation.child);
+	//TODO
 	backURL=req.header('Referer') || '/';
     res.redirect(backURL);
 });
 
-app.delete("/api/efforts/:id", auth.isAuthenticated, async function(req,res) {
-	db.efforts.delete(req.params.id);
+app.post("/api/relations/itemitem/", auth.isAuthenticated, async function(req, res) {
+	// let relation = await db.relations.itemItem.byID(req.params.id);
+	// let newParent = await db.items.byID(req.body.parent_id);
+	let parent = await db.items.byID(req.body.parent_id);
+	let child = {
+		_id: req.body.child_id,
+		label: req.body.child_label,
+	};
+	await db.relations.itemItem.save(parent, child, req.user);
 	backURL=req.header('Referer') || '/';
     res.redirect(backURL);
+});
+
+app.put("/api/relations/effortitem/:id", auth.isAuthenticated, async function(req, res) {
+	let relationObj = await db.relations.effortItem.byID(req.params.id);
+	let newItemObj = await db.items.byID(req.body.item_id);
+	await db.relations.effortItem.update(relationObj, relationObj.effort, newItemObj);
+
+	backURL=req.header('Referer') || '/';
+    res.redirect(backURL);
+});
+
+//TODO
+app.post("/api/relations/effortitem/", auth.isAuthenticated, async function(req, res) {
+	// let relation = await db.relations.itemItem.byID(req.params.id);
+	// let newParent = await db.items.byID(req.body.parent_id);
+	let effort = {_id: req.body.effort_id};
+	let item = await db.items.byID(req.body.item_id);
+	await db.relations.effortItem.save(effort, item, req.user);
+	backURL=req.header('Referer') || '/';
+    res.redirect(backURL);
+});
+
+// app.delete("/api/categories/:id", auth.isAuthenticated, async function(req,res) {
+// 	db.categories.delete(req.params.id);
+// 	backURL=req.header('Referer') || '/';
+//     res.redirect(backURL);
+// });
+
+app.delete("/api/efforts/:id", auth.isAuthenticated, async function(req,res) {
+	let effortToDelete = await db.efforts.byID(req.params.id);
+	db.deleteEffort(effortToDelete);
+	// backURL=req.header('Referer') || '/';
+ //    res.redirect(backURL);
+ res.redirect("/efforts");
 });
 
 app.delete("/api/items/:id", auth.isAuthenticated, async function(req,res) {
-	let itemToDelete = await db.items.delete(req.params.id);
-	if(!typeof itemToDelete === 'undefined') {
-		let relevancyToDelete = await db.relevancies.byLabel(itemToDelete.label);
-		if(!typeof relevancyToDelete === 'undefined') {
-			relevancyToDelete.delete();
-		}
-		itemToDelete.delete();
-	}
-	backURL=req.header('Referer') || '/';
-    res.redirect(backURL);
+	let itemToDelete = await db.items.byID(req.params.id);
+	db.deleteItem(itemToDelete);
+	// let itemToDelete = await db.items.delete(req.params.id);
+	// if(!typeof itemToDelete === 'undefined') {
+	// 	let relevancyToDelete = await db.relevancies.byLabel(itemToDelete.label);
+	// 	if(!typeof relevancyToDelete === 'undefined') {
+	// 		relevancyToDelete.delete();
+	// 	}
+	// 	itemToDelete.delete();
+	// }
+	// backURL=req.header('Referer') || '/';
+ //    res.redirect(backURL);
+ res.redirect("/items");
 });
 
 app.delete("/api/users/:id", auth.isAuthenticated, async function(req,res) {
 	db.users.delete(req.params.id);
-	backURL=req.header('Referer') || '/';
-    res.redirect(backURL);
+	// backURL=req.header('Referer') || '/';
+ //    res.redirect(backURL);
+ res.redirect("/register");
 });
 
-
+//not supposed to be in use
 app.delete("/api/relevancies/:id", auth.isAuthenticated, async function(req,res) {
 	db.relevancies.delete(req.params.id);
-	backURL=req.header('Referer') || '/';
-    res.redirect(backURL);
+	// backURL=req.header('Referer') || '/';
+ //    res.redirect(backURL);
+ res.redirect("/");
 });
 
 /*///update complete, routes decommissioned
@@ -311,34 +440,44 @@ app.get("/api/updatemodel/relevancies", auth.isAuthenticated, async function(req
     res.redirect(backURL);
 });
 */
+
+
+
+
+
+
+
+
 //************************* Application *************************//
 
 
 
-app.get("/categories", auth.isAuthenticated, async function(req, res) {
-	let categories = await db.categories.byUser(req.user);
-	let relevancies = await db.relevancies.byUser(req.user);
-	let data = categories;
-	res.render("categories",{categories:categories, relevancies:relevancies, data:data});
-});
+// app.get("/categories", auth.isAuthenticated, async function(req, res) {
+// 	let categories = await db.categories.byUser(req.user);
+// 	let relevancies = await db.relevancies.byUser(req.user);
+// 	let data = categories;
+// 	res.render("categories",{categories:categories, relevancies:relevancies, data:data});
+// });
 
 app.get("/efforts", auth.isAuthenticated, async function(req, res) {
-	let efforts = await db.efforts.byUser(req.user);
+	let efforts = await db.efforts.byUserID(req.user._id);
+	// console.log(efforts.length);
+	for(var i = 0; i < efforts.length; i++) {
+		efforts[i] = await db.buildEffortRelations(efforts[i]);
+		efforts[i] = await db.populateEffortData(efforts[i]);
+	}
+	// console.log(efforts);
 	res.render("efforts",{efforts: efforts});
 });
 
 app.get("/items", auth.isAuthenticated, async function(req, res) {
-	// let categories = await db.categories.byUser(req.user);
-	let categories = await db.categories.byUserID(req.user._id);
-	if(categories) {
-		res.locals.categories = categories;
-	}
 	let items = await db.items.byUserID(req.user._id);
-	let relevancies = await db.relevancies.byUserID(req.user._id);
-	let data = items;
-	console.log(data);
-	// console.log("searched relevancies by " + req.user.username + " and found " + relevancies);
-	res.render("items",{items:items, relevancies:relevancies, data:data});
+	for(var i = 0; i < items.length; i++) {
+		items[i] = await db.buildItemRelations(items[i]);
+		items[i] = await db.populateItemData(items[i]);
+	}
+	// console.log(items);
+	res.render("items",{data:items});
 });
 
 
@@ -363,12 +502,12 @@ app.get("/calendar/:year/:month/:day", auth.isAuthenticated, async function(req,
 
 
 
-app.get("/categories/:category", auth.isAuthenticated, async function(req, res) {
-	let items = await db.items.byCategory(req.params.category);
-	let relevancies = await db.relevancies.byUser(req.user);
-	let data = items;
-	res.render("category",{items:items, category:req.params.category, relevancies:relevancies, data:data});
-});
+// app.get("/categories/:category", auth.isAuthenticated, async function(req, res) {
+// 	let items = await db.items.byCategory(req.params.category);
+// 	let relevancies = await db.relevancies.byUser(req.user);
+// 	let data = items;
+// 	res.render("category",{items:items, category:req.params.category, relevancies:relevancies, data:data});
+// });
 
 
 app.get("/efforts/:effortid", auth.isAuthenticated, async function(req, res) {
@@ -376,43 +515,64 @@ app.get("/efforts/:effortid", auth.isAuthenticated, async function(req, res) {
 	if(effort) {
 		res.render("effort",{effort: effort});
 	} else {
+		req.flash("warning", "No such effort found");
 		res.redirect("/efforts");
 	}
 });
 
-app.get("/items/:item", auth.isAuthenticated, async function(req, res) {
-
-	let categories = await db.categories.byUser(req.user);	//LEGACY: SOON DEPRECATED
-	if(categories) {										//LEGACY: SOON DEPRECATED
-		res.locals.categories = categories;					//LEGACY: SOON DEPRECATED
-	}														//LEGACY: SOON DEPRECATED
-	let item = await db.items.byLabel(req.params.item);
-	let data;
-	if(item) {
-		data = await db.byItem(item);
-		// let relations = await db.relations.byItem(item);
-		// if(relations) {
-		// 	let parent = await db.items.byID(relations.parent.id);
-
-		// }
+app.get("/efforts/:effortid/edit", auth.isAuthenticated, async function(req, res) {
+	let effort = await db.efforts.byID(req.params.effortid);
+	let effortofitem = await db.relations.effortItem.byEffort(effort) 
+		|| {item: {id:"", label: ""}, effort: {id:effort._id}};;
+	let items = await db.items.byUser(req.user);
+	if(effort) {
+		res.render("effortEdit",{data: {effort: effort, effortofitem: effortofitem, items: items}});
+	} else {
+		req.flash("warning", "No such effort found");
+		res.redirect("/efforts");
 	}
-	
-	// let parent = await db.relations.itemItem.byChild(item);
-	// let children = await db.relations.itemItem.byParent(item);
-	// let user = await db.relations.itemUser.byItem(item);
-	// let effort = await db.relations.EffortItem.byItem(item);
-	// let relevancy = await db.relations.RelevancyItem.byItem(item);
+});
 
-	let efforts = await db.efforts.byItem(req.params.item);
-	let relevancies = await db.relevancies.byUser(req.user);
-	res.render("item",{item:item, efforts: efforts, relevancies:relevancies, data: data});
+app.get("/items/:itemlabel", auth.isAuthenticated, async function(req, res) {
+	let item = await db.items.byLabel(req.params.itemlabel);
+	await db.buildItemRelations(item);
+	await db.populateItemData(item);
+	res.render("item",{data:item});
+});
+
+app.get("/items/:itemlabel/edit", auth.isAuthenticated, async function(req, res) {
+	let item = await db.items.byLabel(req.params.itemlabel);
+	let parentofchild 	= await db.relations.itemItem.byChild(item)
+		|| {parent: {id:"", label: ""}, child: {id:item._id, label:item.label}};
+	let items = await db.items.byUser(req.user);
+	// let parent = await db.getParent(item);
+	// await db.buildItemRelations(item);
+	// await db.populateItemData(item);
+	res.render("itemEdit",{data:{item: item, parentofchild: parentofchild, items: items}});
+});
+
+app.get("/items/:itemlabel/summary", auth.isAuthenticated, async function(req, res) {
+	let item = await db.items.byLabel(req.params.itemlabel);
+	await db.buildItemRelations(item);
+	await db.populateItemData(item);
+	res.render("itemSummary",{data:item});
+});
+
+app.get("/items/:itemlabel/children", auth.isAuthenticated, async function(req, res) {
+	let item = await db.items.byLabel(req.params.itemlabel);
+	await db.buildItemRelations(item);
+	await db.populateItemData(item);
+	res.render("itemChildren",{data:item});
+});
+
+app.get("/items/id/:id", auth.isAuthenticated, async function(req, res) {
+	let item = await db.items.byID(req.params.id);
+	await db.buildItemRelations(item);
+	await db.populateItemData(item);
+	res.render("item",{data:item, efforts: item.efforts});
 });
 
 app.get("/users/:user", auth.isAuthenticated, async function(req,res){
-	let categories = await db.categories.byUser(req.user);
-	if(categories) {
-		res.locals.categories = categories;
-	}
 	let items = await db.items.byUser(req.user);
 	if(items) {
 		res.locals.items = items;
@@ -433,10 +593,16 @@ app.get("/users/:user", auth.isAuthenticated, async function(req,res){
 
 
 app.put("/items/:item", auth.isAuthenticated, async function (req, res) {
-	let updatedItem = await db.items.byLabelAndUpdate(req.body.item_label, req.body.item_category);
+	let updatedItem = await db.items.byLabelAndUpdate(req.body.item_label);
 	// console.log(updatedItem);
     res.redirect("/items/"+req.params.item);
 });
+
+// app.put("/items/:item", auth.isAuthenticated, async function (req, res) {
+// 	let updatedItem = await db.items.byLabelAndUpdate(req.body.item_label, req.body.item_category);
+// 	// console.log(updatedItem);
+//     res.redirect("/items/"+req.params.item);
+// });
 
 app.put("/relevancies", auth.isAuthenticated, async function (req, res) {
 	let updatedRelevancy = await db.relevancies.byLabelAndUpdate(req.user, req.body.relevancy_label, req.body.relevancy_value);

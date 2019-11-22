@@ -1,13 +1,20 @@
 <% include ./partials/header %>
 <div class="container">
-	<%= data.parent %>
+
+	<% if(data.parent && typeof data.parent.label === 'string') { %>
+	<button onclick="window.location='/items/<%= data.parent.label %>'"><%= data.parent.label %></button>
+	<% } else { %>
+	<button onclick="window.location='/items/'">Home</button>
+	<% } %>
+
+	<button onclick="window.location='/items/<%= data.label %>/summary'">Effort</button>
+	<button onclick="window.location='/items/<%= data.label %>/children'">Children</button>
+
+	<h5><%= data.label %></h5>
+
 	<hr>
-	<p>Total effort so far in <%= item.label %>: <b><span id="totalEffort"></span></b></p>
-	<!--
-	<button onclick="window.location='/categories/<%= item.category %>'">Category: <%= item.category %></button>
-	-->
-	<button onclick="window.location='/items/<%= item.parent.label %>'">Parent: <%= item.parent.label %></button>
-	<hr>
+
+
     <form action="/api/effort" method="post">
 	<h5>Exert effort</h5>
 
@@ -23,7 +30,7 @@
 	<div class="row">
 
 
-    	<div class="six columns">
+    	<div class="four columns">
      		<label for="effort_hours">Hours</label>
     		<input 
     			type="number" 
@@ -33,7 +40,7 @@
 				id="hoursInput">
 		</div>
 
-		<div class="six columns">
+		<div class="four columns">
       		<label for="effort_minutes">Minutes</label>
         	<input 
         		type="number" 
@@ -43,7 +50,7 @@
         		id="minutesInput">
       	</div>
 
-		<div class="six columns">
+		<div class="four columns">
 			<label for="effort_timestamp">Timestamp</label>
       		<input 
       			id="effort_timestamp" 
@@ -64,7 +71,7 @@
     	</div>
 
       	<!-- Hidden form inputs: item, user, time-->
-      	<input type="hidden" name="effort_item" placeholder="enter an item" value="<%= item.label %>">
+      	<input type="hidden" name="effort_item" placeholder="enter an item" value="<%= data._id %>">
 
     	<input type="hidden" name="effort_user" placeholder="Your name please" value="<%= currentUser.username %>">
       
@@ -72,93 +79,16 @@
 
     	</form>
 	</div>
-
-	<hr>
-
-	<% include ./partials/effortstable %>
-
-	<script>
-	/*
-		var totalMinutes = getTotalMinutes();
-		var hours = Math.floor(totalMinutes / 60);
-		var minutes = totalMinutes % 60;
-		document.getElementById("totalEffort").innerText = hours + " hours " + minutes + " mins"
-		*/
-	</script>
-
-	<hr>
-	<div class="row">
-		<div class="u-full-width">
-			<form action="/api/items/<%= item._id %>/?_method=PUT" method="post">
-				<div class="row">
-					<div class="six columns">
-						<label for="item_id">_id</label>
-						<input 
-							class="u-full-width" 
-							type="text" 
-							name="item_id"  
-							value="<%= item._id %>" 
-							readonly="readonly">
-					</div>
-
-					<div class="six columns">
-						<label for="item_user">User</label>
-						<input 
-							type="text" 
-							name="item_user" 
-							value="<%= currentUser.username %>"
-							readonly="readonly">
-					</div>
-
-	    			<div class="six columns">
-						<label for="item_label">Item</label>
-						<input 
-							class="u-full-width" 
-							type="text" 
-							name="item_label" 
-							value="<%= item.label %>" 
-							readonly="readonly">
-					</div>
-
-
-
-	    			<div class="six columns">
-    					<label for="item_category">Select Category</label>
-						<select 
-							class="u-full-width" 
-							name="item_category" 
-							id="item_category" 
-							value="<%= item.category %>">
-						<% for(var i = 0; i < categories.length; i++) { %>
-	  						<option 
-	  							value="<%= categories[i].label %>">
-								<%= categories[i].label %>
-  							</option>
-    					<% } %>
-    					</select>
- 					</div>   
-
- 					<div class="six columns">
-						<label for="item_priority">Priority</label>
-						<input 
-							class="u-full-width" 
-							type="number" 
-							name="item_priority" 
-							value="<%= item.priority %>" 
-							readonly="readonly">
-					</div>
-
-				</div>
-				
-				<input type="submit">
-			</form>
-		</div>
+	
+	<div class="row centered">
+		<hr>
+		<button onclick="window.location='/items/<%= data.label %>/edit'">Edit</button>
 	</div>
 
-	<hr>
-
+<!--
 	<div class="row">
-		<form action="/api/items/<%= item._id %>/?_method=DELETE" method="post">
+		<form action="/api/items/<%= data._id %>/?_method=DELETE" method="post">
+
 			<div id="revealDeleteButton">
 				<label for="revealDeleteButton">Delete this item?</label>
 				<input name="revealDeleteButton" type="button" 
@@ -173,7 +103,7 @@
 			</div>
 		</form>
 	</div>
-			
+	-->		
 
 </div>
 

@@ -7,45 +7,54 @@ var url = process.env.DATABASEURL;
 mongoose.connect(url, { useNewUrlParser: true });
 
 const User = require("./../models/user");
+const logs = require("./log.js");
 
 exports.all = async function() {
-	return User.find({}).exec();
+	let res = await User.find({});
+	return res;
 }
 
 exports.byID = async function(id) {
-	return User.findOne({_id: id}).exec();
+	let res = await User.findOne({_id: id}, function(err, foundUser) {
+		if(err) {
+			console.log("No user found");
+		} else {}
+	}).exec();
+	return res;
 }
 
 exports.get = async function(user) {
-	return User.find({username: user}).exec();
+	let res = await User.findOne({username: user}).exec();
+	return res;
 }
 
 //if username already taken and password matches, user is simply logged in
 exports.save = async function(username, password) {
 	let foundByUsername = await exports.get(username);
-	if(foundByUsername.length != 0) {
-		let report = 'Username "' + username + '" already taken: ' + username;
-        console.log(report);
+	if(foundByUsername) {
+		// let report = 'Username "' + username + '" already taken: ' + username;
+  //       console.log(report);
+  		return false;
 	} else {
 		const newUser = new User({username:username});
 		await newUser.setPassword(password);
-
-		//TODO: Rethink rew relevance creation
-		// const newRelevances = await exports.saveRelevance(username);
-		return newUser.save();
+		let logMessage = "Saved user: " + newUser.username;
+		await logs.save(logMessage);
+		await newUser.save();
+		return newUser;
 	}
 }
 
-
-exports.delete = async function(label) {
-	var message = "user delete not implemented yet";
-	console.log(message);
-	alert(message);
-	return {err: message};
-}
-
-//TODO: delete user delete everything by user
 exports.delete = async function(id) {
 	let res = await exports.byID(id);	
-	return res.delete();
+	res.delete(function(err, deletedUser) {
+		if(err || !deletedUser) {
+			console.log("No user deleted");
+		}
+	});
+	let logMessage = "Deleted user: " + res.username;
+	await logs.save(logMessage);
+	return res;
 }
+
+//TODO: update user

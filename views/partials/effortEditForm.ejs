@@ -1,0 +1,57 @@
+<form  action="/api/efforts/<%= data.effort._id %>/?_method=PUT" method="post">
+			<div class="row">
+				<div class="u-full-width">
+					<!--<label for="effort_id">_id</label>-->
+					<input 
+						class="u-full-width" 
+						type="text" 
+						name="effort_id" 
+						value="<%= data.effort._id %>" 
+						readonly="readonly"
+						hidden>
+				</div>
+
+				<div class="u-full-width">
+					<label for="effort_note">Note</label>
+					<textarea 
+						class="u-full-width" 
+						name="effort_note" >
+						<%= data.effort.note %>
+						</textarea>
+				</div>
+
+				<div class="u-full-width">
+					<label for="effort_hours">Hours</label>
+					<input 
+						class="u-full-width" 
+						type="number" 
+						name="effort_hours" 
+						value="<%= data.effort.hours %>">
+				</div>
+
+				<div class="u-full-width">
+					<label for="effort_hours">Minutes</label>
+					<input 
+						class="u-full-width" 
+						type="number" 
+						name="effort_minutes" 
+						value="<%= data.effort.minutes %>">
+				</div>
+
+				<div class="u-full-width">
+					<label for="effort_timestamp">Timestamp</label>
+					<input 
+						class="u-full-width" 
+						type="text" 
+						name="effort_timestamp" 
+						value="<%= data.effort.timestamp %>"
+						required>
+				</div>
+
+
+
+    			<div class="u-full-width centered">
+					<input type="submit">
+				</div>
+			</div>
+		</form>

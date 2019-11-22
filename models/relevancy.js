@@ -8,8 +8,8 @@ var relevancySchema =  mongoose.Schema({
         },
         username: String
     },
-    label: String,
-    value: Number
+    value: Number,
+    
 });
 
 

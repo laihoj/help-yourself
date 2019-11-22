@@ -1,0 +1,14 @@
+<form  action="/api/items/<%= data.item._id %>/?_method=PUT" method="post">
+	<div class="row">
+		<div class="u-full-width">
+			<label for="item_label">Label</label>
+			<input 
+				class="u-full-width" 
+				type="text" 
+				name="item_label" 
+				value="<%= data.item.label %>">
+		</div>
+		<input type="submit">
+	</div>
+</form>
+

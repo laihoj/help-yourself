@@ -8,8 +8,12 @@
 	<input type="password" name="password" placeholder="password" id="password" required>
 	<br>
 	<br>
-	<input type="submit" class="button-primary">
+	<input id="loginSubmitButton" type="submit" class="button-primary" value="Log In">
 	<br>
 	<br>
 	<p>New user? <a href="/register">Sign up here</a></p>
 </form>
+
+<script>
+document.getElementById("loginSubmitButton").focus();
+</script>

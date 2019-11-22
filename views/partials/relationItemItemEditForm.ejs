@@ -1,0 +1,29 @@
+<%=// data.parentofchild %>
+<%=// data.items %>
+<% if (!data.parentofchild._id) { %>
+	<form action="/api/relations/itemitem/" method="post">
+<% } else { %>
+	<form action="/api/relations/itemitem/<%= data.parentofchild._id %>/?_method=PUT" method="post">
+<% } %>
+	<div class="row">
+		<div class="u-full-width">
+			<label for="parent_id">Parent</label>
+				<select 
+					class="u-full-width" 
+					name="parent_id" 
+					id="parent_id"
+					required
+
+						>
+					<option value="<%= data.parentofchild.parent.id %>"><%= data.parentofchild.parent.label %></option>
+					<% for(var i = 0; i < data.items.length; i++) { %>
+		  				<option value="<%= data.items[i].id %>"><%= data.items[i].label %></option>
+    				<% } %>
+				</select>
+				<input type="text" name="child_label" value="<%= data.item.label %>" hidden>
+				<input type="text" name="child_id" value="<%= data.item.id %>" hidden>
+		
+			<input type="submit">
+		
+	</div>
+</form>

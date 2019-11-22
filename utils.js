@@ -1,5 +1,60 @@
 const db = require('./db.js');
 
+exports.updateItemTotalEffort = async function(itemObj) {
+	let totalMinutes = 0;
+	let userID = itemObj.user.id;
+	let efforts 		= await db.efforts.byUserID(userID);
+	// console.log("efforts found: " +efforts);
+	let effortsbyid = {};
+	for(var i = 0; i < efforts.length; i++) {
+		effortsbyid[efforts[i].id] = efforts[i];
+	}
+
+	let effortofitem 	= await db.relations.effortItem.byItem(itemObj);
+	// console.log("relations found: " +effortofitem);
+	let relationbyitemid = {};
+	for(var i = 0; i < effortofitem.length; i++) {
+		let itemid = effortofitem[i].item.id;
+		let item = itemObj;
+		let effortid = effortofitem[i].effort.id;
+		totalMinutes += effortsbyid[effortid].hours * 60;
+		totalMinutes += effortsbyid[effortid].minutes;
+	}
+	// let hours = Math.floor(totalMinutes / 60);
+	// let minutes = totalMinutes % 60;
+	// let message = hours + " h " + minutes;
+	// itemObj.effort = totalMinutes;
+	let priority = itemObj.totalRelevancy * (8 * 60 * 5 - totalMinutes); //minutes of a work week
+
+
+	await db.updateItem(itemObj, itemObj.label, totalMinutes, priority, itemObj.totalRelevancy);
+	// itemObj.save(); 
+	// console.log("effort: " + message);
+}
+
+exports.updateItemTotalRelevancy = async function(itemObj) {
+	let userID = itemObj.user.id;
+	let totalRelevancy = 100;
+	let currentItem = itemObj;
+	let parentrelation;
+	do {
+		//update total relevancy
+		let relevancyrelation 	= await db.relations.relevancyItem.byItem(currentItem);
+		let relevancy 			= await db.relevancies.byID(relevancyrelation.relevancy.id);
+		totalRelevancy 			= totalRelevancy * relevancy.value / 100;
+		//if there is a parent, iterate again
+		parentrelation 			= await db.relations.itemItem.byChild(currentItem);
+		if (parentrelation) {
+			currentItem 			= await db.items.byID(parentrelation.parent.id);
+		} else currentItem = null;
+	} while (currentItem);
+	let priority = totalRelevancy * (8 * 60 * 5 - itemObj.totalMinutes); //minutes of a work week
+
+	await db.updateItem(itemObj, itemObj.label, itemObj.totalMinutes, priority, totalRelevancy);
+	return itemObj;
+}
+
+
 exports.setPriority = async function(item, priority) {
 	item.priority  = priority;
 }
@@ -8,6 +63,7 @@ exports.setMessage = async function(item, message) {
 	item.message  = message;
 }
 
+//outdated
 exports.assignPriority = async function(item) {
 	
 	let totalEffort = 0;
@@ -47,6 +103,7 @@ exports.assignPriority = async function(item) {
 	return item;
 }
 
+//outdated
 exports.sortItemsByTotalEffort = async function (items) {
 	//calculate total effort
 	// console.log("Sorting: " + items);

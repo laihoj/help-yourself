@@ -1,0 +1,28 @@
+<%=// data.parentofchild %>
+<%=// data.items %>
+<% if (!data.effortofitem._id) { %>
+	<form action="/api/relations/effortitem/" method="post">
+<% } else { %>
+	<form action="/api/relations/effortitem/<%= data.effortofitem._id %>/?_method=PUT" method="post">
+<% } %>
+	<div class="row">
+		<div class="u-full-width">
+			<label for="item_id">Item</label>
+				<select 
+					class="u-full-width" 
+					name="item_id" 
+					id="item_id"
+					required
+
+						>
+					<option value="<%= data.effortofitem.item.id %>"><%= data.effortofitem.item.label %></option>
+					<% for(var i = 0; i < data.items.length; i++) { %>
+		  				<option value="<%= data.items[i].id %>"><%= data.items[i].label %></option>
+    				<% } %>
+				</select>
+				<input type="text" name="effort_id" value="<%= data.effort.id %>" hidden>
+		
+			<input type="submit">
+		
+	</div>
+</form>
