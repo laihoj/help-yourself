@@ -508,12 +508,31 @@ app.get("/efforts", auth.isAuthenticated, async function(req, res) {
 
 app.get("/items", auth.isAuthenticated, async function(req, res) {
 	let items = await db.items.byUserID(req.user._id);
+	var promiseStack = [];
+
 	for(var i = 0; i < items.length; i++) {
-		items[i] = await db.buildItemRelations(items[i]);
-		items[i] = await db.populateItemData(items[i]);
+
+		promiseStack.push(db.populateItemData(items[i]));
+		promiseStack.push(db.buildItemRelations(items[i]));
+		
+		// items[i] = await db.buildItemRelations(items[i]);
+		// items[i] = await db.populateItemData(items[i]);
 	}
+
+	
+	// Promise.all(promiseStack).then(function() {
+	// 	promiseStack = [];
+	// });
+
+	// for(var i = 0; i < items.length; i++) {
+	// 	promiseStack.push(db.populateItemData(items[i]));
+	// }
+
+	Promise.all(promiseStack).then(function() {
+		res.render("items",{data:items});
+	});
 	// console.log(items);
-	res.render("items",{data:items});
+	// res.render("items",{data:items});
 });
 
 
@@ -571,6 +590,17 @@ app.get("/efforts/:effortid/edit", auth.isAuthenticated, async function(req, res
 
 app.get("/items/:itemlabel", auth.isAuthenticated, async function(req, res) {
 	let item = await db.items.byLabel(req.params.itemlabel);
+
+
+	// var promiseStack = [];
+
+	// promiseStack.push(db.buildItemRelations(item));
+	// promiseStack.push(db.populateItemData(item));
+	
+	// Promise.all(promiseStack).then(function() {
+	// 	res.render("item",{data:item});
+	// });
+
 	await db.buildItemRelations(item);
 	await db.populateItemData(item);
 	res.render("item",{data:item});
@@ -589,6 +619,18 @@ app.get("/items/:itemlabel/edit", auth.isAuthenticated, async function(req, res)
 
 app.get("/items/:itemlabel/summary", auth.isAuthenticated, async function(req, res) {
 	let item = await db.items.byLabel(req.params.itemlabel);
+
+
+	// var promiseStack = [];
+
+	// promiseStack.push(db.buildItemRelations(item));
+	// promiseStack.push(db.populateItemData(item));
+	
+	// Promise.all(promiseStack).then(function() {
+	// 	res.render("itemSummary",{data:item});
+	// });
+
+
 	await db.buildItemRelations(item);
 	await db.populateItemData(item);
 	res.render("itemSummary",{data:item});
@@ -596,6 +638,17 @@ app.get("/items/:itemlabel/summary", auth.isAuthenticated, async function(req, r
 
 app.get("/items/:itemlabel/children", auth.isAuthenticated, async function(req, res) {
 	let item = await db.items.byLabel(req.params.itemlabel);
+
+// var promiseStack = [];
+
+// 	promiseStack.push(db.buildItemRelations(item));
+// 	promiseStack.push(db.populateItemData(item));
+	
+// 	Promise.all(promiseStack).then(function() {
+// 		res.render("item",{data:item});
+// 	});
+
+
 	await db.buildItemRelations(item);
 	await db.populateItemData(item);
 	res.render("itemChildren",{data:item});
