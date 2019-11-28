@@ -96,7 +96,7 @@ app.get("/beta/graph", auth.isAuthenticated, async function(req, res) {
 	let items 	= await db.items.byUserID(req.user._id);
 	let edges = [];
 	var idlookuptable = {};
-	var index = 1;
+	var index = 2;
 	let relations = [];
 	for(var i = 0; i < items.length; i++) {
 		let childsofparent = await db.relations.itemItem.byParent(items[i]);
@@ -111,6 +111,11 @@ app.get("/beta/graph", auth.isAuthenticated, async function(req, res) {
 	}
 	// {id: 1, label: 'Abdelmoumene Djabou', title: 'Country: ' + 'Algeria' + '<br>' + 'Team: ' + 'Club Africain', value: 22, group: 24, x: -1392.5499, y: 1124.1614},
 	var nodes = [];
+
+	/*why does this not work?*/
+	nodes.push("{id: " + 1 + ", label: " + req.user.username + "}");
+	edges.push("{from: 1, to: 2}");
+
 	for(var i = 0; i < items.length; i++) {
 		nodes.push("{id: " + idlookuptable[items[i]._id] + ", label: " + items[i].label + "}");
 	}
@@ -210,23 +215,30 @@ request(source, { json: true }, async (err, response, body) => { //request data 
   	}
 
 
+
+
+	var promiseStack = [];
+
 	for(var i = 0; i < response.body.efforts.length; i++) {
   		let effort = response.body.efforts[i];
-  		await db.saveEffortWithItemLabel(
+  		promiseStack.push(db.saveEffortWithItemLabel(
 			effort.hours, 
 			effort.minutes, 
 			effort.item, 
 			effort.timestamp, 
 			effort.user,
-			effort.note);
+			effort.note));
   	}
+  	Promise.all(promiseStack).then(async function() {
+		let items = await db.items.all();
+	  	for(var i = 0; i < items.length; i++) {
+	  		utils.updateItemTotalEffort2(items[i]);
+	  	}
 
-  	let items = await db.items.all();
-  	for(var i = 0; i < items.length; i++) {
-  		utils.updateItemTotalEffort2(items[i]);
-  	}
+		res.redirect("/");
+	});
 
-	res.redirect("/");
+  	
 
 
 	
