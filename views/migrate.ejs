@@ -1,0 +1,17 @@
+<% include ./partials/header %>
+
+<div class="container">
+	<div class="row">
+		<div class="u-full-width centered">
+			<form method="post" action="/api/migrate/in">
+				<label for="db_from">Import data from</label>
+				<input type="text" name="db_from" placeholder="source database url...">
+				<label for="db_to">Import data to</label>
+				<input type="text" name="db_to" placeholder="target database url...">
+				<br>
+				<input type="submit">
+			</form>
+		</div>
+	</div>
+</div>
+<% include ./partials/footer %>

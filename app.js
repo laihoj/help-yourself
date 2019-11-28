@@ -173,31 +173,24 @@ app.get("/api", function(req, res) {
 //Use this to 'export' data from old database
 app.get("/api/migrate/out", async function(req, res) {
 	let data = await db.all();
-	// let efforts 				= await db.efforts.all();
-	// let items 					= await db.items.all();
-	// let relevancies 			= await db.relevancies.all();
-	// let users 					= await db.users.all();
-	// let itemItemRelations 		= await db.relations.itemItem.all();
-	// let effortItemRelations 	= await db.relations.effortItem.all();
-	// let relevancyItemRelations 	= await db.relations.relevancyItem.all();
-	// let logs 					= await db.logs.all();
-
-	// let data = {
-	// 	efforts: 				efforts,
-	// 	items: 					items,
-	// 	relevancies: 			relevancies,
-	// 	users: 					users,
-	// 	itemItemRelations: 		itemItemRelations,
-	// 	effortItemRelations: 	effortItemRelations,
-	// 	relevancyItemRelations: relevancyItemRelations,
-	// 	logs: 					logs
-	// }
 	res.send(data);
 });
 
 //get all that data and do something with it. Populate new database by some logic?
 app.get("/api/migrate/in", async function(req, res) {
-	res.send("Not implemented yet");
+	res.render("migrate");
+	// res.send("Not implemented yet");
+});
+
+app.post("/api/migrate/in", async function(req, res) {
+	let source = req.body.db_from;
+	let target = req.body.db_to;
+	let data = {
+		source: source,
+		target: target,
+	};
+	res.send(data);
+	// res.send("Not implemented yet");
 });
 
 app.get("/api/efforts", auth.isAuthenticated, async function(req,res) {
