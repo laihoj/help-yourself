@@ -54,7 +54,7 @@ exports.save = async function(hours, minutes, itemId, timestamp, user, note) {
 		minutes: minutes,
 		timestamp: timestamp,
 		user: {
-			id: user._id,
+			id: user._id || user.id,  //lazy fix, not sure which one is right. 80% sure user.id is right
 			username: user.username
 		},
 		note: note
