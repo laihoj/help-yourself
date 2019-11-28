@@ -1,5 +1,21 @@
 const db = require('./db.js');
 
+
+exports.updateItemTotalEffort2 = async function(itemObj) {
+	let totalMinutes = 0;
+	let userID = itemObj.user.id;
+	let efforts 		= await db.getEffortsByItem(itemObj);
+	for(var i = 0; i < efforts.length; i++) {
+		totalMinutes += efforts[i].hours * 60;
+		totalMinutes += efforts[i].minutes;
+	}
+	let priority = itemObj.totalRelevancy * (8 * 60 * 5 - totalMinutes); //minutes of a work week
+
+
+	await db.updateItem(itemObj, itemObj.label, totalMinutes, priority, itemObj.totalRelevancy);
+}
+
+
 exports.updateItemTotalEffort = async function(itemObj) {
 	let totalMinutes = 0;
 	let userID = itemObj.user.id;

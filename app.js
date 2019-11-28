@@ -184,12 +184,55 @@ app.get("/api/migrate/in", async function(req, res) {
 
 app.post("/api/migrate/in", async function(req, res) {
 	let source = req.body.db_from;
-	let target = req.body.db_to;
 	let data = {
 		source: source,
-		target: target,
 	};
-	res.send(data);
+
+request(source, { json: true }, async (err, response, body) => { //request data from specified data
+  if (err) { res.send(err); }
+  	
+  	//translate old data model into new data model
+  	for(var i = 0; i < response.body.categories.length; i++) {
+  		let category = response.body.categories[i];
+  		let item = await db.createItem(
+			category.label, 
+			category.user,
+			"");
+  	};
+
+
+	for(var i = 0; i < response.body.items.length; i++) {
+  		let item = response.body.items[i];
+  		await db.createItemWithParentLabel(
+			item.label, 
+			item.user,
+			item.category);
+  	}
+
+
+	for(var i = 0; i < response.body.efforts.length; i++) {
+  		let effort = response.body.efforts[i];
+  		await db.saveEffortWithItemLabel(
+			effort.hours, 
+			effort.minutes, 
+			effort.item, 
+			effort.timestamp, 
+			effort.user,
+			effort.note);
+  	}
+
+  	let items = await db.items.all();
+  	for(var i = 0; i < items.length; i++) {
+  		utils.updateItemTotalEffort2(items[i]);
+  	}
+
+	res.redirect("/");
+
+
+	
+});
+
+	// res.send(data);	
 	// res.send("Not implemented yet");
 });
 

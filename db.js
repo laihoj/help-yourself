@@ -35,44 +35,62 @@ exports.getParent = async function(itemObj) {
 	return parent;
 }
 
-exports.createItem = async function(label, user, parentId) {
-	let item 	= await exports.saveItem(label, user, parentId);
-	let relevancy = await exports.saveRelevancy(user, 99, item)
+exports.createItem = async function(label, userObj, parentId) {
+	let item 	= await exports.saveItem(label, userObj, parentId);
+	let relevancy = await exports.saveRelevancy(userObj, 99, item)
 }
 
-// exports.createItem = async function(label, category, user, parentId) {
-// 	let item 	= await exports.saveItem(label, category, user, parentId);
-// 	let relevancy = await exports.saveRelevancy(user, 99, item)
-// }
+exports.createItemWithParentLabel = async function(label, userObj, parentLabel) {
+	let parent = await exports.items.byLabel(parentLabel);
+	// console.log(parent._id);
+	let item;
+	if(parent){
+		item 	= await exports.saveItem(label, userObj, parent._id);
+	} else {
+		item 	= await exports.saveItem(label, userObj, "");
+	}
+	let relevancy = await exports.saveRelevancy(userObj, 99, item)
+}
+
 
 exports.saveItem = async function(label, user, parentId) {
+	// console.log(parentId);
 	let parent;
 	let item = await exports.items.save(label, user);
-	if (parentId.length > 0)
+	if (parentId) {
+		// console.log("has parent ");
 		parent = await exports.items.byID(parentId);
+	}
 	if(parent)
 		exports.relations.itemItem.save(parent, item, user);
 	return item;
 }
 
-// exports.saveItem = async function(label, category, user, parentId) {
-// 	let parent;
-// 	let item = await exports.items.save(label, category, user);
-// 	if (parentId.length > 0)
-// 		parent = await exports.items.byID(parentId);
-// 	if(parent)
-// 		exports.relations.itemItem.save(parent, item, user);
-// 	return item;
-// }
+//TODO: fix this shit
+exports.getEffortsByItem = async function(itemObj) {
+	let effortofitem 	= await exports.relations.effortItem.byItem(itemObj);
+	var efforts = [];
+	for(var i = 0; i < effortofitem.length; i++) {
+		let effort = await exports.efforts.byID(effortofitem[i].effort.id);
+		efforts.push(effort);
+	}
+	// Promise.all(promiseStack).then(function() {return efforts;});
+	return efforts;
+}
+
+exports.saveEffortWithItemLabel = async function(hours, minutes, itemLabel, timestamp, user, note) {
+	let itemObj = await exports.items.byLabel(itemLabel);
+	// let effort = exports.saveEffort(hours, minutes, itemObj._id, timestamp, user, note, itemObj)
+
+	let effort = await exports.efforts.save(hours, minutes, itemObj._id, timestamp, user, note);
+	let effortitemrelation = await exports.relations.effortItem.save(effort, itemObj, user);
+	return effort;
+}
 
 exports.saveEffort = async function(hours, minutes, itemId, timestamp, user, note, itemObj) {
 	let effort = await exports.efforts.save(hours, minutes, itemId, timestamp, user, note);
 	let effortitemrelation = await exports.relations.effortItem.save(effort, itemObj, user);
-	// console.log("effort created");
-	await utils.updateItemTotalEffort(itemObj);
-	// let logMessage = "Saved effort: " + effort;
-	// await exports.logs.save(logMessage);
-	// let efforts = await exports.efforts.(hours, minutes, itemId, timestamp, user, note);
+	await utils.updateItemTotalEffort2(itemObj);
 	return effort;
 }
 

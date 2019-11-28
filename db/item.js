@@ -44,7 +44,7 @@ exports.save = async function(label, user) {
 	var item = new Item({
 		label: label,
 		user: {
-			id: user._id,
+			id: user._id || user.id,
 			username: user.username
 		},
 		priority: 0,
