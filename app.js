@@ -530,6 +530,13 @@ app.get("/items", auth.isAuthenticated, async function(req, res) {
 		// items[i] = await db.buildItemRelations(items[i]);
 		// items[i] = await db.populateItemData(items[i]);
 	}
+	
+
+	// Promise.all(promiseStack).then(function() {
+	// 	for(var i = 0; i < items.length; i++) {
+	// 		promiseStack.push(db.buildItemRelations(items[i]));
+	// 	}
+	// });
 
 	
 	// Promise.all(promiseStack).then(function() {

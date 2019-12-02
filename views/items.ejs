@@ -18,7 +18,7 @@
 					<tr>
 						<th onclick="sortTable('itemsTable',0,'true');">Label</th>
 						<th onclick="sortTable('itemsTable',1,'true');">Parent</th>
-						<th onclick="sortTable('itemsTable',2,'true');">Relevance</th>
+<!--						<th onclick="sortTable('itemsTable',2,'true');">Relevance</th> 		-->
 					</tr>
 				</thead>
 				<tbody>
@@ -35,10 +35,10 @@
 								onclick="window.location='/items/<%= data[i].parent.label %>'">
 								<%= data[i].parent.label %>
 							</td>
-							<td style="width:25%"">
-								<% relevancy = data[i].relevancy %>
-								<% include ./partials/relevancyslider %>
-							</td>
+<!--							<td style="width:25%">
+								<%// relevancy = data[i].relevancy %>
+								<%// include ./partials/relevancyslider %>
+							</td>-->
 						</tr>
 						
 					<% } %>

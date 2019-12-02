@@ -5,7 +5,7 @@
 
 
 	<% if(data.parent && typeof data.parent.label === 'string') { %>
-	<button onclick="window.location='/items/<%= data.parent.label %>'"><%= data.parent.label %></button>
+	<button onclick="window.location='/items/<%= data.parent.label %>/children'"><%= data.parent.label %></button>
 	<% } else { %>
 	<button onclick="window.location='/items/'">Home</button>
 	<% } %>
@@ -41,7 +41,7 @@
 			  			<tr>
 			  				<td 
 			  					style="width:50%"
-			  					onclick="window.location='/items/<%= data.childs[i].label %>'">
+			  					onclick="window.location='/items/<%= data.childs[i].label %>/children'">
 			  					<%= data.childs[i].label %>
 		  					</td>
 							<td 

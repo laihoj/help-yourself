@@ -216,24 +216,31 @@ exports.buildItemRelations = async function(item) {
 //replace 'pointers' with the respective data
 exports.populateItemData = async function(item) {
 	if(item) {
-		if(item.parent) {
+		if(item.parent) 
 			item.parent = await exports.items.byID(item.parent.id);
-		} else {item.parent = {}}
-		if(item.relevancy) {
+		else 
+			item.parent = {};
+
+		if(item.relevancy)
 			item.relevancy = await exports.relevancies.byID(item.relevancy.id);
-		} else {item.relevancy = {}}
+		else 
+			item.relevancy = {};
+
+
 		if(item.childs) {
 			for (var i = 0; i < item.childs.length; i++) {
 				item.childs[i] = await exports.items.byID(item.childs[i].id);
 				let relevancyrelation = await exports.relations.relevancyItem.byItem(item.childs[i]);
 				item.childs[i].relevancy = await exports.relevancies.byID(relevancyrelation.relevancy.id);
 			}
-		} else {item.childs = {}}
+		} else 
+			item.childs = {};
 
-		if(item.efforts) {
+		if(item.efforts) 
 			for (var i = 0; i < item.efforts.length; i++) 
 				item.efforts[i] = await exports.efforts.byID(item.efforts[i].id);
-		} else {item.efforts = {}}
+		else 
+			item.efforts = {};
 	}
 	return item;
 }
