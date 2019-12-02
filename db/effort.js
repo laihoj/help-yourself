@@ -50,8 +50,8 @@ exports.byDate = async function(userID, year, month, day) {
 
 exports.save = async function(hours, minutes, itemId, timestamp, user, note) {
 	var effort = new Effort({
-		hours: hours,
-		minutes: minutes,
+		hours: hours || 0,
+		minutes: minutes || 0,
 		timestamp: timestamp,
 		user: {
 			id: user._id || user.id,  //lazy fix, not sure which one is right. 80% sure user.id is right
@@ -72,8 +72,8 @@ exports.save = async function(hours, minutes, itemId, timestamp, user, note) {
 }
 
 exports.update = async function(effortObj, hours, minutes, timestamp, note) {
-		effortObj.hours = hours;
-		effortObj.minutes = minutes;
+		effortObj.hours = hours || 0;
+		effortObj.minutes = minutes || 0;
 		effortObj.timestamp = timestamp;
 		effortObj.note = note;
 	effortObj.save();
