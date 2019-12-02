@@ -4,7 +4,7 @@ Mongoose.js and MongoDB
 const mongoose = require('mongoose')
 
 var url = process.env.DATABASEURL;
-mongoose.connect(url, { useNewUrlParser: true });
+mongoose.connect(url, { useNewUrlParser: true , useUnifiedTopology: true});
 
 const RelevancyItem = require("./../models/relationRelevancyItem");
 const logs = require("./log.js");
