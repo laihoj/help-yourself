@@ -197,23 +197,22 @@ request(source, { json: true }, async (err, response, body) => { //request data 
   if (err) { res.send(err); }
   	
   	//translate old data model into new data model
-  	for(var i = 0; i < response.body.categories.length; i++) {
-  		let category = response.body.categories[i];
-  		let item = await db.createItem(
-			category.label, 
-			category.user,
-			"");
-  	};
+  	// for(var i = 0; i < response.body.categories.length; i++) {
+  	// 	let category = response.body.categories[i];
+  	// 	let item = await db.createItem(
+			// category.label, 
+			// category.user,
+			// "");
+  	// };
 
 
 	for(var i = 0; i < response.body.items.length; i++) {
   		let item = response.body.items[i];
-  		await db.createItemWithParentLabel(
+  		await db.createItem(
 			item.label, 
-			item.user,
-			item.category);
+			item.user);
   	}
-
+res.redirect("/");
 
 
 
@@ -221,10 +220,10 @@ request(source, { json: true }, async (err, response, body) => { //request data 
 
 	for(var i = 0; i < response.body.efforts.length; i++) {
   		let effort = response.body.efforts[i];
-  		promiseStack.push(db.saveEffortWithItemLabel(
+  		promiseStack.push(db.saveEffort(
 			effort.hours, 
 			effort.minutes, 
-			effort.item, 
+			effort.item._id || effort.item.id, 
 			effort.timestamp, 
 			effort.user,
 			effort.note));
@@ -236,12 +235,7 @@ request(source, { json: true }, async (err, response, body) => { //request data 
 	  	}
 
 		res.redirect("/");
-	});
-
-  	
-
-
-	
+	});	
 });
 
 	// res.send(data);	
@@ -620,7 +614,7 @@ app.get("/items/:itemlabel", auth.isAuthenticated, async function(req, res) {
 	// 	res.render("item",{data:item});
 	// });
 
-	// await db.buildItemRelations(item);
+	await db.buildItemRelations(item);
 	// await db.populateItemData(item);
 	res.render("item",{data:item});
 });
