@@ -4,84 +4,87 @@ Mongoose.js and MongoDB
 const mongoose = require('mongoose')
 
 var url = process.env.DATABASEURL;
-mongoose.connect(url, { useNewUrlParser: true });
+mongoose.connect(url, { useNewUrlParser: true , useUnifiedTopology: true});
 
 const Relevancy = require("./../models/relevancy");
 const relations = require('./relations.js');
-// const Items = require('./item.js');
 const Item = require("./../models/item");
+const logs = require("./log.js");
 
 exports.all = async function() {
-	return Relevancy.find({}).exec();
+	let res = await Relevancy.find({}).exec();
+	return res;
 }
 
 exports.byID = async function(id) {
-	return Relevancy.findOne({_id: id}).exec();
+	let res = await Relevancy.findOne({_id: id}).exec();
+	return res;
 }
 
 exports.byLabel = async function(label) {
-	return Relevancy.findOne({label: label}).exec();
+	let res = await Relevancy.findOne({label: label}).exec();
+	return res;
 }
 
 exports.byUser = async function(user) {
-	return Relevancy.find({'user.username': user.username}).exec();
+	let res = await Relevancy.find({'user.username': user.username}).exec();
+	return res;
 }
 
 exports.byUserID = async function(userID) {
-	return Relevancy.find({'user.id': userID}).exec();
+	let res = await Relevancy.find({'user.id': userID}).exec();
+	return res;
 }
 
-exports.byIdAndUpdate = async function(id, user, label, value) {
+exports.byIdAndUpdate = async function(id, value) {
 	let relevancyToUpdate = await exports.byID(id);
-	// relevancyToUpdate.user = user;
-	relevancyToUpdate.label = label;
-	relevancyToUpdate.value = value;
-	return relevancyToUpdate.save();
+	relevancyToUpdate = await exports.update(relevancyToUpdate, value);
+	return relevancyToUpdate;
 }
 
 
-exports.byLabelAndUpdate = async function(user, label, value) {
-	let relevancyToUpdate = await exports.byLabel(label);
-	// console.log("Searched relevancy by " + label + " and got " + relevancyToUpdate);
-	if(relevancyToUpdate) 
-	{
-		// relevancyToUpdate.user = user;
-		relevancyToUpdate.label = label;
-		relevancyToUpdate.value = value;
-		return relevancyToUpdate.save();
-	} else {
-		exports.save({id:user._id, username: user.username}, label, value);
-	}
+//NOT SUPPORTED
+// exports.byLabelAndUpdate = async function(user, label, value) {
+// 	let relevancyToUpdate = await exports.byLabel(label);
+// 	if(relevancyToUpdate) 
+// 	{
+// 		relevancyToUpdate.label = label;
+// 		relevancyToUpdate.value = value;
+// 		return relevancyToUpdate.save();
+// 	} else {
+// 		exports.save({id:user._id, username: user.username}, label, value);
+// 	}
+// }
+
+exports.update = async function(relevancyObj, value) {
+	relevancyObj.value = value;
+	relevancyObj.save();
+	let logMessage = "Updated relevancy: " + relevancyObj;
+	await logs.save(logMessage);
+	return relevancyObj;
 }
 
-
-exports.save = async function(user, label, value, item) {
+exports.save = async function(user, value) {
 	var relevancy = new Relevancy({
 		user: {
 			id: user._id,
 			username: user.username
 		},
-		label: label,
 		value: value
 	});
-	// console.log("searching items by :" + user._id + " and "+label);
-	// let item = await Item.findOne({label: label}).exec();
-	// let item = await Item.findOne({'user.id':user._id}).exec();
-	// let item = await Items.byLabel(label);
-	// let item = await Item.findOne({'user.id':user._id, label: label});
-	// console.log("If item found, create relation to relevancy: " + item);
-	// if(item) {
-		relations.relevancyItem.save(relevancy, item);
-	// }
-	relations.relevancyUser.save(relevancy, user);
-
- 	return relevancy.save();
+ 	relevancy.save();
+ 	let logMessage = "Saved relevancy: " + relevancy;
+	await logs.save(logMessage);
+ 	return relevancy;
 }
 
 
 exports.delete = async function(id) {
 	let res = await exports.byID(id);	
-	return res.delete();
+	res.delete();
+	let logMessage = "Deleted relevancy: " + res;
+	await logs.save(logMessage);
+	return res;
 }
 
 /*///update complete, routes decommissioned

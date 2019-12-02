@@ -1,0 +1,29 @@
+<% include ./partials/header %>
+<div class="container centered">
+	<%=// data.item %>
+	<h1>Edit <%= data.item.label %></h1>
+	<% include ./partials/itemEditForm %>
+	<hr>
+	<% include ./partials/relationItemItemEditForm %>
+	<hr>
+
+
+	<div class="row">
+		<form action="/api/items/<%= data.item._id %>/?_method=DELETE" method="post">
+			<div id="revealDeleteButton">
+				<label for="revealDeleteButton">Delete this item?</label>
+				<input name="revealDeleteButton" type="button" 
+					onclick="
+						document.getElementById('deleteItemSubmit').classList.remove('hidden');
+						document.getElementById('revealDeleteButton').classList.add('hidden');
+						" value="Delete">
+			</div>
+			<div id="deleteItemSubmit" class="hidden">
+				<label for="confirmDeleteButton">Confirm delete?</label>
+				<input  name="confirmDeleteButton" type="submit" value="confirm">
+			</div>
+		</form>
+	</div>
+</div>
+
+<% include ./partials/footer %>

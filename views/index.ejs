@@ -1,4 +1,8 @@
 <% include ./partials/header %>
+<%=//  data %>
+
+
+
 
 <div class="container">
   <div class="row">
@@ -16,11 +20,17 @@
             </tr>
           </thead>
           <tbody>
-            <% for(var i = 0; i < items.length; i++) { %>
-              <tr onclick="window.location='/items/<%= items[i].label %>'">
-                <td style="width:50%"><%= items[i].label %></td>
-                <td style="width:23%"><%= items[i].effort %></td>
-                <td style="width:23%"><%= Math.floor(items[i].priority) %></td>
+            <% for(var i = 0; i < data.length; i++) { %>
+              <% 
+              let hours = Math.floor(data[i].totalMinutes  / 60);
+              let minutes = data[i].totalMinutes  % 60;
+              let message = hours + " h " + minutes; 
+              %>
+
+              <tr onclick="window.location='/items/<%= data[i].label %>'">
+                <td style="width:50%"><%= data[i].label %></td>
+                <td style="width:23%"><%= message %></td>
+                <td style="width:23%"><%= Math.floor(data[i].priority) %></td>
               </tr>
             <% } %>
           </tbody>

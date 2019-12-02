@@ -11,6 +11,7 @@
 				<label for="item_label">Item</label>
 				<input 
 					type="text" 
+					class="u-full-width" 
 					name="item_label" 
 					placeholder="enter an item" 
 					id="item_label"
@@ -22,9 +23,14 @@
 					name="item_parent" 
 					id="item_parent"
 					>
-					<option value=""></option>
+					<% if (data.label) { %>
+						<option value="<%= data.id %>"><%= data.label %></option>
+					<% } else { %>
+						<option value=""></option>
+					<% } %>
+					
 					<% for(var i = 0; i < data.length; i++) { %>
-		  				<option value="<%= data[i].label %>"><%= data[i].label %></option>
+		  				<option value="<%= data[i].id %>"><%= data[i].label %></option>
     				<% } %>
 				</select>
 

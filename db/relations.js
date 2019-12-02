@@ -1,82 +1,53 @@
 exports.itemItem 		= require("./relationItemItem.js");
 exports.effortItem 		= require("./relationEffortItem.js");
-exports.effortUser 		= require("./relationEffortUser.js");
-exports.itemUser 		= require("./relationItemUser.js");
 exports.relevancyItem 	= require("./relationRelevancyItem.js");
-exports.relevancyUser 	= require("./relationRelevancyUser.js");
+
+exports.byUser = async function(user) {
+	let itemitem, effortofitem, relevancyofitem;
+
+	itemitem 		= await exports.itemItem.byUser(user);
+	effortofitem 	= await exports.effortItem.byUser(user);
+	relevancyofitem = await exports.relevancyItem.byUser(user);
+
+	data = {
+		itemitem:			itemitem,
+		effortofitem: 		effortofitem,
+		relevancyofitem: 	relevancyofitem,
+	}
+	return data;
+}
 
 exports.byItem = async function(item) {
-	// console.log("searching by " +  item);
-	let parent, childs, user, efforts, relevancy;
+	let parent, childs, user, efforts, relevancy, data;
+	let parentofchild, childsofparent, userofitem, effortsofitem, relevancyofitem;
 
+	parentofchild 	= await exports.itemItem.byChild(item);
+	childsofparent 	= await exports.itemItem.byParent(item);
+	effortsofitem 	= await exports.effortItem.byItem(item);
+	relevancyofitem = await exports.relevancyItem.byItem(item);
 
-	let parentandchild 		= await exports.itemItem.byChild(item);
-	// console.log("found parent child: " + parentandchild);
-	if(parentandchild) 
-		parent = parentandchild.parent;
-
-	let childsofparent 		= await exports.itemItem.byParent(item);
-	// console.log("found children parent: " + childsofparent);
-	if(childsofparent) 
-		childs = childsofparent;
-
-	let useranditem 		= await exports.itemUser.byItem(item);
-	// console.log("found user item: " + useranditem);
-	if(useranditem) 
-		user = useranditem.user;
-
-	let effortsforitem 		= await exports.effortItem.byItem(item);
-	// console.log("found efforts item: " + effortsforitem);
-	if(effortsforitem) 
-		efforts = effortsforitem;
-
-	let relevancyofitem 	= await exports.relevancyItem.byItem(item);
-	// console.log("found relevancy item: " + relevancyofitem);
-	if(relevancyofitem) 
-		relevancy = relevancyofitem.relevancy;
-
-	let data = {
-		parent:		parent,
-		childs: 	childs,
-		user: 		user,
-		efforts: 	efforts,
-		relevancy: 	relevancy,
+	data = {
+		parentofchild:		parentofchild,
+		childsofparent: 	childsofparent,
+		effortsofitem: 		effortsofitem,
+		relevancyofitem: 	relevancyofitem,
 	}
-	// console.log("Gonna pass relational data: " + data);
 	return data;
 }
 
 exports.byEffort = async function(effort) {
-	let user 		= await exports.itemUser.byEffort(effort);
-	let items 		= await exports.effortItem.byEffort(effort);
-
-	let data = {
-		user: 	user,
-		items: 	items,
-	}
-	return data;
-}
-
-exports.byUser = async function(user) {
-	let items 		= await exports.itemUser.byUser(user);
-	let efforts 	= await exports.effortItem.byUser(user);
-	let relevancies = await exports.relevancyUser.byUser(user);
-
-	let data = {
-		items: 			items,
-		efforts: 		efforts,
-		relevancies: 	relevancies
+	let userofeffort, effortofitem, data;
+	effortofitem 		= await exports.effortItem.byEffort(effort);
+	data = {
+		effortofitem: 	effortofitem,
 	}
 	return data;
 }
 
 exports.byRelevancy = async function(relevancy) {
 	let items 		= await exports.relevancyItem.byRelevancy(relevancy);
-	let user = await exports.relevancyUser.byRelevancy(relevancy);
-
 	let data = {
 		items: 	items,
-		user: 	user
 	}
 	return data;
 }

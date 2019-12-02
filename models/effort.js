@@ -1,10 +1,6 @@
 var mongoose = require("mongoose");
 
 var effortSchema =  mongoose.Schema({
-	hours: Number,
-	minutes: Number,
-	item: String,
-	timestamp: Date,
 	user: {
         id: {
             type: mongoose.Schema.Types.ObjectId,
@@ -12,7 +8,11 @@ var effortSchema =  mongoose.Schema({
         },
         username: String
     },
-	note: String
+	hours: Number,
+	minutes: Number,
+	timestamp: Date,
+	note: String,
+	
 });
 
 

@@ -4,99 +4,97 @@ Mongoose.js and MongoDB
 const mongoose = require('mongoose')
 
 var url = process.env.DATABASEURL;
-mongoose.connect(url, { useNewUrlParser: true });
+mongoose.connect(url, { useNewUrlParser: true , useUnifiedTopology: true});
 
 const Effort = require("./../models/effort");
 const relations = require('./relations.js');
 const Item = require("./../models/item");
+const items = require('./item.js');
+const logs = require("./log.js");
 
 exports.all = async function() {
-	return Effort.find({}).exec();
+	let efforts = await Effort.find({});
+	return efforts;
 }
 
 exports.byUser = async function(user) {
-	return Effort.find({'user.username': user.username}).exec();
+	let efforts = await Effort.find({'user.username': user.username});
+	return efforts;
 }
 
 exports.byUserID = async function(userID) {
-	return Effort.find({'user.id': userID}).exec();
+	let efforts = await Effort.find({'user.id': userID});
+	return efforts;
 }
 
 exports.byItem = async function(item) {
-	return Effort.find({item: item}).exec();
+	let efforts = await Effort.find({item: item});
+	return efforts;
 }
 
-// exports.byItemObject = async function(itemObj) {
-// 	return Effort.find({item: item}).exec();
-// }
-
 exports.byID = async function(id) {
-	// console.log("searching by: " + id);
-	
 	let res = await Effort.findOne({_id: id});
-	// console.log("found after search: " + res);
 	return res;
 }
 
-
-  // var date = new Date("<%= date.month + "-"+date.day+"-"+date.year%>");
-  // var yesterday = new Date();
-  // yesterday.setDate(date.getDate() - 1);
-  // var tomorrow = new Date();
-  // tomorrow.setDate(date.getDate() + 1);
-
-  // document.getElementById("goToYesterday").action = "/calendar/"+yesterday.getFullYear()+"/"+(parseInt(yesterday.getMonth())+1)+"/"+yesterday.getDate()+"/";
-
-  // document.getElementById("goToTomorrow").action = "/calendar/"+tomorrow.getFullYear()+"/"+(parseInt(tomorrow.getMonth())+1)+"/"+tomorrow.getDate()+"/";
-
-
 exports.byDate = async function(userID, year, month, day) {
-	// let date = new Date(month+"-"+day+"-"+year);
 	let date = new Date(year+"-"+month+"-"+day);
 	let yesterday = new Date();
 	let tomorrow = new Date();
 	yesterday.setDate(date.getDate() - 1);
 	tomorrow.setDate(date.getDate() + 1);
-	return Effort.find({'user.id': userID, timestamp: {$gt: yesterday, $lte: date}}).exec();
+	let efforts = await Effort.find({'user.id': userID, timestamp: {$gt: yesterday, $lte: date}});
+	return efforts;
+	
 }
 
-exports.save = async function(hours, minutes, itemLabel, timestamp, user, note) {
+exports.save = async function(hours, minutes, itemId, timestamp, user, note) {
 	var effort = new Effort({
-		hours: hours,
-		minutes: minutes,
-		item: itemLabel,
+		hours: hours || 0,
+		minutes: minutes || 0,
 		timestamp: timestamp,
 		user: {
-			id: user._id,
+			id: user._id || user.id,  //lazy fix, not sure which one is right. 80% sure user.id is right
 			username: user.username
 		},
 		note: note
 	});
 
-	let item = await Item.findOne({"user.id": user._id, label: itemLabel});
-	if(item) {
-		relations.effortItem.save(effort, item);
-	}
-	relations.effortUser.save(effort, user);
+	// let item = await items.byID(itemId);
+	// if(item) {
+	// 	relations.effortItem.save(effort, item);
+	// }
 
  	return effort.save();
+ 	let logMessage = "Saved effort: " + effort;
+	await logs.save(logMessage);
+	return effort;
 }
 
-exports.byIdAndUpdate = async function(id, user, item, hours, minutes, timestamp, note) {
+exports.update = async function(effortObj, hours, minutes, timestamp, note) {
+		effortObj.hours = hours || 0;
+		effortObj.minutes = minutes || 0;
+		effortObj.timestamp = timestamp;
+		effortObj.note = note;
+	effortObj.save();
+	let logMessage = "Updated effort: " + effortObj;
+	await logs.save(logMessage);
+	return effortObj;
+}
+
+exports.byIdAndUpdate = async function(id, hours, minutes, timestamp, note) {
 	let effortToUpdate = await exports.byID(id);
-	// effortToUpdate.user = user;
-	effortToUpdate.item = item;
-	effortToUpdate.hours = hours;
-	effortToUpdate.minutes = minutes;
-	effortToUpdate.timestamp = timestamp;
-	effortToUpdate.note = note;
-	return effortToUpdate.save();
+	await exports.update(effortToUpdate, hours, minutes, timestamp, note );
+	return effortToUpdate;
 }
 
 
 exports.delete = async function(id) {
 	let res = await exports.byID(id);	
-	return res.delete();
+	res.delete();
+	let logMessage = "Deleted effort: " + res;
+	await logs.save(logMessage);
+	return res;
 }
 
 /*///update complete, routes decommissioned

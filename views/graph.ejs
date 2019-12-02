@@ -1,0 +1,109 @@
+
+
+<% include ./partials/header %>
+
+
+<script type="text/javascript" src="/vis.js"></script>
+<link type="text/css" rel="stylesheet" href="/vis-network.min.css">
+
+
+edges: <%= edges %>
+<br>
+nodes: <%= nodes %>
+<br>
+<% for (var key in idlookuptable) { %>
+<%     if (idlookuptable.hasOwnProperty(key)) {%>
+key: <%= key %>, value: <%= idlookuptable[key] %>
+<%    }}%>
+
+
+
+<div id="mynetwork"></div>
+
+<script type="text/javascript">
+  var network;
+
+// create an array with edges
+/*
+var edges = [
+  {from: 1, to: 15},
+  {from: 1, to: 97},
+  {from: 1, to: 108},
+  {from: 1, to: 173},
+  {from: 1, to: 195}
+  ];
+  */
+<%=// nodes %>
+
+
+  var edges = [<%= edges %>];
+  var nodes = [
+  
+  <% for(var i = 0; i < items.length; i++) { %>
+    {id: <%= idlookuptable[items[i]._id] %>, label: '<%= items[i].label %>'}, %>
+  <% } %>
+  ];
+
+
+  /*
+var nodes = [
+  {id: 1, label: 'Abdelmoumene Djabou', title: 'Country: ' + 'Algeria' + '<br>' + 'Team: ' + 'Club Africain', value: 22, group: 24, x: -1392.5499, y: 1124.1614},
+  {id: 2, label: 'Abel Aguilar', title: 'Country: ' + 'Colombia' + '<br>' + 'Team: ' + 'Toulouse', value: 24, group: 11, x: -660.82574, y: 1009.18976},
+  {id: 3, label: 'Abel Hernández', title: 'Country: ' + 'Uruguay' + '<br>' + 'Team: ' + 'Palermo', value: 22, group: 6, x: -85.6025, y: -6.6782646}
+  ];
+  */
+
+  function redrawAll() {
+    // remove positoins
+    for (var i = 0; i < nodes.length; i++) {
+      delete nodes[i].x;
+      delete nodes[i].y;
+    }
+
+    // create a network
+    var container = document.getElementById('mynetwork');
+    var data = {
+      nodes: nodes,
+      edges: edges
+    };
+    var options = {
+      nodes: {
+        shape: 'dot',
+        scaling: {
+          min: 10,
+          max: 30
+        },
+        font: {
+          size: 12,
+          face: 'Tahoma'
+        }
+      },
+      edges: {
+        width: 0.15,
+        color: {inherit: 'from'},
+        smooth: {
+          type: 'continuous'
+        }
+      },
+      physics: {
+        stabilization: false,
+        barnesHut: {
+          gravitationalConstant: -80000,
+          springConstant: 0.001,
+          springLength: 200
+        }
+      },
+      interaction: {
+        tooltipDelay: 200,
+        hideEdgesOnDrag: true
+      }
+    };
+
+    // Note: data is coming from ./datasources/WorldCup2014.js
+    network = new vis.Network(container, data, options);
+  }
+
+  redrawAll()
+</script>
+
+<% include ./partials/footer %>

@@ -4,33 +4,38 @@
 <table id="effortsTable" class="items u-full-width">
 	<thead>
 		<tr>
+		<!--
 			<th onclick="sortTable('effortsTable',0,'true');">#<i class="fas fa-filter"></i></th>
+			
 			<th onclick="sortTable('effortsTable',1,'true');">Item</th>
+			-->
 			<th onclick="sortTable('effortsTable',2,'true');">Date</th>
 			<th onclick="sortTable('effortsTable',3,'true');">Effort</th>
+			<th onclick="sortTable('effortsTable',4,'true');">Note</th>
 		</tr>
 	</thead>
 	<tbody>
  		<% for(var i = 0; i < efforts.length; i++) { %>
 			<tr>
+<!--
   				<td 
   					onclick="window.location='/efforts/<%= efforts[i]._id %>'"
   					style="width:1%">
+
   					<%= i %>
 				</td>
-  				<td 
-  					onclick="window.location='/items/<%= efforts[i].item %>'"
-  				 	style="width:40%">
-  					<%= efforts[i].item %>
-				</td>
+-->
   				<td 
   					onclick="window.location='/calendar/<%= new Date(efforts[i].timestamp).getFullYear() %>/<%= new Date(efforts[i].timestamp).getMonth() + 1%>/<%= new Date(efforts[i].timestamp).getDate() %>'"
   					style="width:1%">
+
   					<%= new Date(efforts[i].timestamp).toLocaleDateString() %>
   				</td>
+
   				<td 
   					onclick="window.location='/efforts/<%= efforts[i]._id %>'"
-				 	style="width:30%">
+				 	style="width:7%">
+
   					<span class="hours">
   						<%= efforts[i].hours %>
 					</span> hour 
@@ -38,6 +43,14 @@
 						<%= efforts[i].minutes %>
 					</span> mins
   				</td>
+
+  				<td 
+  					onclick="window.location='/efforts/<%= efforts[i]._id %>'"
+				 	style="width:30%">
+
+					<%= efforts[i].note %>
+  				</td>
+
 			</tr>
 		<% } %>
 	</tbody>

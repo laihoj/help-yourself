@@ -1,9 +1,9 @@
 <% include ./partials/header %>
-
-<div class="container">
+<%= //data[0].totalRelevancy	 %>
+<div class="container centered">
 	<div class="row">
 		<div class="u-full-width">
-		<% include ./partials/newitemform %>
+		<% include ./partials/newitemform2 %>
 		</div>
 	</div>
 
@@ -17,27 +17,28 @@
 				<thead>
 					<tr>
 						<th onclick="sortTable('itemsTable',0,'true');">Label</th>
-						<th onclick="sortTable('itemsTable',1,'true');">Category</th>
-						<th onclick="sortTable('itemsTable',2,'true');">Relevance</th>
+						<th onclick="sortTable('itemsTable',1,'true');">Parent</th>
+<!--						<th onclick="sortTable('itemsTable',2,'true');">Relevance</th> 		-->
 					</tr>
 				</thead>
 				<tbody>
-			 		<% for(var i = 0; i < items.length; i++) { %>
+			 		<% for(var i = 0; i < data.length; i++) { %>
 				 		
 			  			<tr>
 			  				<td 
 			  					style="width:50%"
-			  					onclick="window.location='/items/<%= items[i].label %>'">
-			  					<%= items[i].label %>
+			  					onclick="window.location='/items/<%= data[i].label %>'">
+			  					<%= data[i].label %>
 		  					</td>
 							<td 
 								style="width:25%"" 
-								onclick="window.location='/categories/<%= items[i].category %>'">
-								<%= items[i].category %>
+								onclick="window.location='/items/<%= data[i].parent.label %>'">
+								<%= data[i].parent.label %>
 							</td>
-							<td style="width:25%"">
-								<% include ./partials/relevancyslider %>
-							</td>
+<!--							<td style="width:25%">
+								<%// relevancy = data[i].relevancy %>
+								<%// include ./partials/relevancyslider %>
+							</td>-->
 						</tr>
 						
 					<% } %>

@@ -6,15 +6,17 @@ Element Slider:
 -->
 
 <form 
-action="/api/relevancies/?_method=PUT" 
+action="/api/relevancies/<%= relevancy.id %>/?_method=PUT" 
 class="table_cell_form" 
 method="post" 
-id="<%= data[i].label %>_relevancy_form">
+id="<%= relevancy.id %>_relevancy_form">
 
+	<!--
 	<input 
 	type="hidden" 
 	name="relevancy_label" 
-	value="<%= data[i].label %>">
+	value="<%= relevancy.label %>">
+	-->
 
 	<input 
 	type="hidden" 
@@ -25,10 +27,11 @@ id="<%= data[i].label %>_relevancy_form">
 	type="range" 
 	min="1" 
 	max="100" 
-	value="50" 
+	value="<%= relevancy.value %>" 
 	class="slider" 
-	id="<%= data[i].label %>_relevancy" 
+	id="<%= relevancy.id %>_relevancy" 
 	name="relevancy_value" 
-	onmouseup="document.getElementById('<%= data[i].label %>_relevancy_form').submit();"
-	ontouchend="document.getElementById('<%= data[i].label %>_relevancy_form').submit();">
+	onmouseup="document.getElementById('<%= relevancy.id %>_relevancy_form').submit();"
+	ontouchend="document.getElementById('<%= relevancy.id %>_relevancy_form').submit();">
 </form>
+
