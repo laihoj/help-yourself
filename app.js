@@ -613,8 +613,8 @@ app.get("/items/:itemlabel", auth.isAuthenticated, async function(req, res) {
 	// 	res.render("item",{data:item});
 	// });
 
-	await db.buildItemRelations(item);
-	await db.populateItemData(item);
+	// await db.buildItemRelations(item);
+	// await db.populateItemData(item);
 	res.render("item",{data:item});
 });
 
