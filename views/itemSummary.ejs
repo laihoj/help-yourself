@@ -5,6 +5,7 @@
 	<!--<p>Total effort so far in <%= data.label %>: <b><span id="totalEffort"></span></b></p>-->
 
 	<button onclick="window.location='/items/<%= data.label %>/'">Item</button>
+	<button onclick="window.location='/items/<%= data.label %>/children'">Children</button>
 	
 	
 	<% if(data.parent && typeof data.parent.label === 'string') { %>
