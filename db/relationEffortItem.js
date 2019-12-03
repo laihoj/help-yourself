@@ -42,19 +42,19 @@ exports.byID = async function(id) {
 }
 exports.byEffort = async function(effortObj) {
 	let effortitem = await EffortItem.findOne({
-		'effort.id': effortObj._id
+		'effort.id': effortObj._id || effortObj.id
 	});
 	return effortitem;
 }
 exports.byItem = async function(itemObj) {
 	let effortitems = await EffortItem.find({
-		'item.id': itemObj._id
+		'item.id': itemObj._id || itemObj.id
 	});
 	return effortitems;
 }
 exports.byUser = async function(userObj) {
 	let effortitems = await EffortItem.find({
-		'user.id': userObj._id
+		'user.id': userObj._id || userObj._id
 	});
 	return effortitems;
 }
