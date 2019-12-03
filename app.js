@@ -360,13 +360,13 @@ app.put("/api/relations/itemitem/:id", auth.isAuthenticated, async function(req,
 	// console.log("search by " +req.params.id);
 	let relation = await db.relations.itemItem.byID(req.params.id);
 	// console.log("found " +relation);
-	let oldParent = relation.parent;
+	let oldLabel = relation.parent.label;
 	let newParent = await db.items.byID(req.body.parent_id);
 	await db.relations.itemItem.update(relation, newParent, relation.child);
 	//TODO
 	// backURL=req.header('Referer') || '/';
  //    res.redirect(backURL);
- res.redirect("/items/"+oldParent.label+"/children");
+ res.redirect("/items/"+oldLabel+"/children");
 });
 
 app.post("/api/relations/itemitem/", auth.isAuthenticated, async function(req, res) {
@@ -384,11 +384,13 @@ app.post("/api/relations/itemitem/", auth.isAuthenticated, async function(req, r
 
 app.put("/api/relations/effortitem/:id", auth.isAuthenticated, async function(req, res) {
 	let relationObj = await db.relations.effortItem.byID(req.params.id);
+	var oldLabel = relationObj.item.label;
 	let newItemObj = await db.items.byID(req.body.item_id);
 	await db.relations.effortItem.update(relationObj, relationObj.effort, newItemObj);
 
-	backURL=req.header('Referer') || '/';
-    res.redirect(backURL);
+	// backURL=req.header('Referer') || '/';
+ //    res.redirect(backURL);
+ 	res.redirect("/items/"+oldLabel+"/summary");
 });
 
 //TODO

@@ -1,9 +1,9 @@
 const db = require('./db.js');
 
-
+//todo: might not work when 
 exports.updateItemTotalEffort2 = async function(itemObj) {
 	let totalMinutes = 0;
-	let userID = itemObj.user.id;
+	// let userID = itemObj.user.id;
 	let efforts 		= await db.getEffortsByItem(itemObj);
 	for(var i = 0; i < efforts.length; i++) {
 		totalMinutes += efforts[i].hours * 60;
