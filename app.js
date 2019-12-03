@@ -360,11 +360,13 @@ app.put("/api/relations/itemitem/:id", auth.isAuthenticated, async function(req,
 	// console.log("search by " +req.params.id);
 	let relation = await db.relations.itemItem.byID(req.params.id);
 	// console.log("found " +relation);
+	let oldParent = relation.parent;
 	let newParent = await db.items.byID(req.body.parent_id);
 	await db.relations.itemItem.update(relation, newParent, relation.child);
 	//TODO
-	backURL=req.header('Referer') || '/';
-    res.redirect(backURL);
+	// backURL=req.header('Referer') || '/';
+ //    res.redirect(backURL);
+ res.redirect("/items/"+oldParent.label+"/children");
 });
 
 app.post("/api/relations/itemitem/", auth.isAuthenticated, async function(req, res) {

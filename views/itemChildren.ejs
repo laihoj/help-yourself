@@ -1,7 +1,7 @@
 <% include ./partials/header %>
 <div class="container">
 
-	<button onclick="window.location='/items/<%= data.label %>/'">Back</button>
+	<button onclick="window.location='/items/<%= data.label %>/'">Item</button>
 
 
 	<% if(data.parent && typeof data.parent.label === 'string') { %>
