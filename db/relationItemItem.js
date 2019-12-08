@@ -68,7 +68,7 @@ Create
 exports.save = async function(parentObj, childObj, userObj) {
 	let relation = new ItemItem({
 		user: {
-			id: userObj._id,
+			id: userObj._id || userObj.id,
 			username: userObj.username
 		},
 		parent: {
