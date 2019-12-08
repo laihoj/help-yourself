@@ -92,6 +92,37 @@ app.get("/", auth.isAuthenticated, async function(req, res) {
 	res.render("index", {data:items});
 });
 
+/*
+issue with ssl certificate?
+*/
+// app.get("/beta/treeify", auth.isAuthenticated, async function(req, res) {
+// 	let source = "api/items/treeify";
+// 	request(source, function(err, response, body) { //request data from specified data
+// 	  	if (err) { res.send(err); }
+// 	  	console.log("Response: " + response);
+// 	  	console.log("Body: " + body);
+// 	  	res.send(body);
+// 	});
+// });
+
+app.get("/beta/treeify", auth.isAuthenticated, async function(req, res) {
+	let itemitem 		= await db.relations.itemItem.byUser(req.user);
+
+	//format the data to be appropriate with function found from internet
+	let list = [];
+	itemitem.forEach(function(obj) {
+		let item = {};
+		item['id'] = obj.child.id;
+		item['label'] = obj.child.label;
+		item['parent'] = obj.parent.id;
+		list.push(item);
+	});
+ 	let treeList = utils.treeify(list);
+	res.render("itemTree", {data: treeList, list: list});
+});
+
+
+
 app.get("/beta/graph", auth.isAuthenticated, async function(req, res) {
 	let items 	= await db.items.byUserID(req.user._id);
 	let edges = [];
@@ -193,53 +224,52 @@ app.post("/api/migrate/in", async function(req, res) {
 		source: source,
 	};
 
-request(source, { json: true }, async (err, response, body) => { //request data from specified data
-  if (err) { res.send(err); }
-  	
-  	//translate old data model into new data model
-  	// for(var i = 0; i < response.body.categories.length; i++) {
-  	// 	let category = response.body.categories[i];
-  	// 	let item = await db.createItem(
-			// category.label, 
-			// category.user,
-			// "");
-  	// };
-
-
-	for(var i = 0; i < response.body.items.length; i++) {
-  		let item = response.body.items[i];
-  		await db.createItem(
-			item.label, 
-			item.user);
-  	}
-res.redirect("/");
-
-
-
-	var promiseStack = [];
-
-	for(var i = 0; i < response.body.efforts.length; i++) {
-  		let effort = response.body.efforts[i];
-  		promiseStack.push(db.saveEffort(
-			effort.hours, 
-			effort.minutes, 
-			effort.item._id || effort.item.id, 
-			effort.timestamp, 
-			effort.user,
-			effort.note));
-  	}
-  	Promise.all(promiseStack).then(async function() {
-		let items = await db.items.all();
-	  	for(var i = 0; i < items.length; i++) {
-	  		utils.updateItemTotalEffort2(items[i]);
+	request(source, { json: true }, async (err, response, body) => { //request data from specified data
+	  	if (err) { res.send(err); }
+		for(var i = 0; i < response.body.items.length; i++) {
+	  		let item = response.body.items[i];
+	  		await db.createItem(
+				item.label, 
+				item.user);
 	  	}
-
 		res.redirect("/");
-	});	
+		var promiseStack = [];
+		for(var i = 0; i < response.body.efforts.length; i++) {
+	  		let effort = response.body.efforts[i];
+	  		promiseStack.push(db.saveEffort(
+				effort.hours, 
+				effort.minutes, 
+				effort.item._id || effort.item.id, 
+				effort.timestamp, 
+				effort.user,
+				effort.note)
+	  		);
+	  	}
+	  	Promise.all(promiseStack).then(async function() {
+			let items = await db.items.all();
+	  		for(var i = 0; i < items.length; i++) {
+		  			utils.updateItemTotalEffort2(items[i]);
+	  		}
+			res.redirect("/");
+		});	
+	});
 });
 
-	// res.send(data);	
-	// res.send("Not implemented yet");
+//creates a tree structure of the item relations and returns this structure
+app.get("/api/items/treeify", auth.isAuthenticated, async function(req, res) {
+	let itemitem 		= await db.relations.itemItem.byUser(req.user);
+
+	//format the data to be appropriate with function found from internet
+	let list = [];
+	itemitem.forEach(function(obj) {
+		let item = {};
+		item['id'] = obj.child.id;
+		item['label'] = obj.child.label;
+		item['parent'] = obj.parent.id;
+		list.push(item);
+	});
+ 	let treeList = utils.treeify(list);
+	res.send(treeList);
 });
 
 app.get("/api/efforts", auth.isAuthenticated, async function(req,res) {

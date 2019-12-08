@@ -1,5 +1,28 @@
 const db = require('./db.js');
 
+//credit: https://stackoverflow.com/a/22367819
+//creates a tree structure of the item relations and returns this structure
+exports.treeify = function(list) {
+	let idAttr = 'id';
+    let parentAttr = 'parent';
+    let childrenAttr = 'children';
+
+	var treeList = [];
+    var lookup = {};
+	list.forEach(function(obj) {
+        lookup[obj[idAttr]] = obj;
+        obj[childrenAttr] = [];
+    });
+    list.forEach(function(obj) {
+        if (obj[parentAttr] != null && typeof lookup[obj[parentAttr]] !== 'undefined') {
+            lookup[obj[parentAttr]][childrenAttr].push(obj);
+        } else {
+            treeList.push(obj);
+        }
+    });
+    return treeList;
+}
+
 //todo: might not work when 
 exports.updateItemTotalEffort2 = async function(itemObj) {
 	let totalMinutes = 0;

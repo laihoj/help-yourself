@@ -1,0 +1,107 @@
+<% include ./partials/header %>
+<style>
+.item {
+	border: solid black 1px;
+	border-radius: 5px;
+	padding: 3px;
+	margin: 3px;
+	width: auto;
+	float: left;
+}
+
+.label {
+	float: left;
+	width: 100%;
+}
+</style>
+
+<%= data[0].label %>
+<%= list[0].id %>
+<div class="container">
+
+	<div class="item" id="root">
+	<span class="label" onclick="window.location='/items/You%>'">You</span>
+
+<%	for(var i = 0; i < list.length; i++) {		%>
+		<div class="item" id="<%=list[i].id%>" data-parent="<%=list[i].parent%>">
+<span class="label" onclick="window.location='/items/<%=list[i].label%>'"><%= 		list[i].label 						%></span>
+		</div>
+<%	}											%>	
+	
+<!--
+<%	for(var i = 0; i < data.length; i++) {		%>
+		<div class="item">
+<%= 		data[i].label 						%>
+		</div>
+<%	}											%>	
+-->
+<!--
+<% 
+	var stack = [], node, ii;
+	for(var i = 0; i < data.length; i++) 
+		stack.push(data[i]);
+
+	while (stack.length > 0) {
+	    node = stack.pop();
+	    %>
+	    	<div class="item"><%= node.label %>
+	    <%
+	    if (node.children && node.children.length) {
+	        for (ii = 0; ii < node.children.length; ii += 1) {
+	            stack.push(node.children[ii]);
+          	 	%>
+	            	<div class="item"><%= node.children[ii].label %></div>
+	            <%
+	        }
+	    }
+	    %>
+	        </div>
+        <%
+	}
+%>
+-->
+		</div>
+	</div>
+</div>
+
+<script>
+var root = document.getElementById("root");
+for(var i = 0; i < root.childNodes.length; i++) {
+	var node = root.childNodes[i];
+	console.log(node["data-parent"]);
+	if(typeof node.getAttribute === 'function') {
+		var newParentId = node.getAttribute("data-parent");
+		if(newParentId) {
+			var newParent = document.getElementById(newParentId);
+			if(newParent)
+				newParent.appendChild(node);
+		}
+	}
+}
+</script>
+<!--
+<div class="container">
+	<div class="item" id="root">
+	<% function hello() {return "hello"};%>
+	<% function getChildren(data) {return data.children};%>
+	<%= getChildren(data) %>
+	<% data.forEach(function(item) { %>
+		<div class="item">
+			<%= item.label %>
+		</div>
+	<% }); %>
+	</div>
+</div>
+-->
+
+<script>
+//	var data = <%= data %>;
+//	function getChildren(data) {
+//		return data.children;
+//	};
+//	var root = document.getElementById("root");
+//	root.innerText = data[0].label;
+</script>
+
+
+<% include ./partials/footer %>
