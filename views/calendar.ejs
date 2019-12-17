@@ -28,10 +28,20 @@
 </div>
 
 <script>
-  var date = new Date("<%= date.month + "-"+date.day+"-"+date.year%>");
+  //var date = new Date("<%= date.month + "-"+date.day+"-"+date.year%>");
+  var date = new Date();
+  date.setDate(<%=date.day%>);
+  date.setMonth(<%=date.month%>);
+  date.setFullYear(<%=date.year%>);
   var yesterday = new Date();
+  yesterday.setDate(<%=date.day%>);
+  yesterday.setMonth(<%=date.month -1%>);
+  yesterday.setFullYear(<%=date.year%>);
   yesterday.setDate(date.getDate() - 1);
   var tomorrow = new Date();
+  tomorrow.setDate(<%=date.day%>);
+  tomorrow.setMonth(<%=date.month-1%>);
+  tomorrow.setFullYear(<%=date.year%>);
   tomorrow.setDate(date.getDate() + 1);
 
   document.getElementById("goToYesterday").action = "/calendar/"+yesterday.getFullYear()+"/"+(parseInt(yesterday.getMonth())+1)+"/"+yesterday.getDate()+"/";
