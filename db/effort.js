@@ -38,12 +38,17 @@ exports.byID = async function(id) {
 }
 
 exports.byDate = async function(userID, year, month, day) {
-	let date = new Date(year+"-"+month+"-"+day);
-	let yesterday = new Date();
-	let tomorrow = new Date();
-	yesterday.setDate(date.getDate() - 1);
-	tomorrow.setDate(date.getDate() + 1);
-	let efforts = await Effort.find({'user.id': userID, timestamp: {$gt: yesterday, $lte: date}});
+	let efforts;
+	try {
+		let date = new Date(year+"-"+month+"-"+day);
+		let yesterday = new Date();
+		let tomorrow = new Date();
+		yesterday.setDate(date.getDate() - 1);
+		tomorrow.setDate(date.getDate() + 1);
+		efforts = await Effort.find({'user.id': userID, timestamp: {$gt: yesterday, $lte: date}});
+	} catch(err) {
+		console.log(err);
+	}
 	return efforts;
 	
 }

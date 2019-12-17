@@ -310,7 +310,14 @@ app.post("/api/effort", auth.isAuthenticated, async function(req,res) {
 		req.user,
 		req.body.effort_note,
 		item);
-	res.redirect("/");
+
+	var d = new Date();
+	var day = d.getDate();
+	var month = d.getMonth() + 1;
+	var year = d.getFullYear();
+	var string = "/calendar/"+year+"/"+month+"/"+day;
+	// console.log(string);
+	res.redirect(string);
 });
 
 
