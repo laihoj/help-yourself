@@ -11,6 +11,9 @@
 			-->
 			<th onclick="sortTable('effortsTable',2,'true');">Date</th>
 			<th onclick="sortTable('effortsTable',3,'true');">Effort</th>
+			<% if (efforts && efforts[0] && efforts[0].item) { %>
+				<th onclick="sortTable('effortsTable',3,'true');">Item</th>
+			<% } %>
 			<th onclick="sortTable('effortsTable',4,'true');">Note</th>
 		</tr>
 	</thead>
@@ -38,6 +41,15 @@
 
   					<span class="hours"><%= efforts[i].hours %></span>h<span class="minutes"><%= efforts[i].minutes %></span>m
   				</td>
+
+				<% if (efforts && efforts[i] && efforts[i].item) { %>
+					<td 
+  					onclick="window.location='/items/<%= efforts[i].item.label %>'"
+				 	style="width:30%">
+
+					<%= efforts[i].item.label %>
+  				</td>
+				<% } %>
 
   				<td 
   					onclick="window.location='/efforts/<%= efforts[i]._id %>'"
