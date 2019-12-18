@@ -92,7 +92,7 @@ exports.saveEffortWithItemLabel = async function(hours, minutes, itemLabel, time
 exports.saveEffort = async function(hours, minutes, itemId, timestamp, user, note, itemObj) {
 	let effort = await exports.efforts.save(hours, minutes, itemId, timestamp, user, note);
 	let effortitemrelation = await exports.relations.effortItem.save(effort, itemObj, user);
-	await utils.updateItemTotalEffort2(itemObj);
+	await utils.updateItemTotalEffort3(user, itemObj);
 	return effort;
 }
 
@@ -106,7 +106,17 @@ exports.updateRelevancy = async function(relevancyObj, value) {
 	let relevancy = await exports.relevancies.update(relevancyObj, value);
 	let relevancyitemrelation = await exports.relations.relevancyItem.byRelevancy(relevancyObj); 
 	let itemObj = await exports.items.byID(relevancyitemrelation.item.id); 
-	await utils.updateItemTotalRelevancy(itemObj);
+	await utils.updateItemTotalRelevancy3(itemObj);
+	// let relevancyitemrelation = await exports.relations.relevancyItem.save(relevancy, itemObj, user); 
+	return relevancy;
+}
+
+exports.updateRelevancy3 = async function(userObj, relevancyObj, value) {
+	let relevancy = await exports.relevancies.update(relevancyObj, value);
+	let relevancyitemrelation = await exports.relations.relevancyItem.byRelevancy(relevancyObj); 
+	let itemObj = await exports.items.byID(relevancyitemrelation.item.id); 
+	await utils.updateItemTotalRelevancy3(itemObj);
+	// await utils.updateItemTotalEffort3(userObj, itemObj);
 	// let relevancyitemrelation = await exports.relations.relevancyItem.save(relevancy, itemObj, user); 
 	return relevancy;
 }
@@ -115,7 +125,8 @@ exports.updateEffort = async function(effortObj, hours, minutes, timestamp, note
 	let effort = await exports.efforts.update(effortObj, hours, minutes, timestamp, note);
 	let effortitemrelation = await exports.relations.effortItem.byEffort(effortObj); 
 	let itemObj = await exports.items.byID(effortitemrelation.item.id); 
-	await utils.updateItemTotalEffort(itemObj);
+	// await utils.updateItemTotalRelevancy3(itemObj);
+	await utils.updateItemTotalEffort3(itemObj.user, itemObj);
 	return effort;
 }
 
@@ -191,7 +202,7 @@ exports.deleteEffort = async function(effortObj) {
 	if(effortObj)
 		exports.efforts.delete(effortObj);
 
-	await utils.updateItemTotalEffort(itemObj);
+	await utils.updateItemTotalEffort3(itemObj);
 }
 
 //basically builds the pointers

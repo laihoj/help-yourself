@@ -207,6 +207,20 @@ app.get("/api", function(req, res) {
 });
 
 //Use this to 'export' data from old database
+app.get("/api/priorities/update", async function(req, res) {
+	let items = await db.items.byUser(req.user);
+	var promiseStack = [];
+	for(var i = 0; i < items.length; i++) 
+		promiseStack.push(utils.updateItemTotalEffort3(req.user, items[i]));
+
+
+	Promise.all(promiseStack).then(function() {
+		backURL=req.header('Referer') || '/';
+    	res.redirect(backURL);
+	});
+});
+
+//Use this to 'export' data from old database
 app.get("/api/migrate/out", async function(req, res) {
 	let data = await db.all();
 	res.send(data);
@@ -351,10 +365,9 @@ app.post("/api/users", async function(req,res){
 	}
 });
 
-//not supposed to be in use
 app.put("/api/relevancies/:id", auth.isAuthenticated, async function (req, res) {
 	let relevancyObj = await db.relevancies.byID(req.params.id);
-	await db.updateRelevancy(relevancyObj, req.body.relevancy_value);
+	await db.updateRelevancy3(req.user, relevancyObj, req.body.relevancy_value);
 
 	// let updatedRelevancy = await db.relevancies.byIdAndUpdate(
 	// 	req.params.id,
@@ -606,6 +619,21 @@ app.get("/calendar/:year/:month/:day", auth.isAuthenticated, async function(req,
 				month: req.params.month,
 				day: req.params.day};
 	let efforts = await db.efforts.byDate(req.user._id, req.params.year,req.params.month,req.params.day);
+
+	for(var i = 0; i < efforts.length; i++) {
+		let relation = await db.relations.effortItem.byEffort(efforts[i]);
+		let item = await db.items.byID(relation.item.id);
+		efforts[i].item = item;
+	}
+
+
+
+	// Promise.all(promiseStack).then(function() {
+	// 	backURL=req.header('Referer') || '/';
+ //    	res.redirect(backURL);
+	// });
+
+
 	res.render("calendar",{efforts: efforts, date: date});
 });
 

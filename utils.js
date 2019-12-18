@@ -1,4 +1,5 @@
 const db = require('./db.js');
+const Effort = require("./models/effort");
 
 //credit: https://stackoverflow.com/a/22367819
 //creates a tree structure of the item relations and returns this structure
@@ -23,11 +24,66 @@ exports.treeify = function(list) {
     return treeList;
 }
 
+
+exports.updateItemTotalEffort3 = async function(userObj, itemObj) {
+	let totalMinutes = 0;
+	let efforts;
+	let date = new Date();
+	let week_ago = new Date();
+	week_ago.setDate(date.getDate() - 7);
+
+	efforts = await db.getEffortsByItem(itemObj);
+	// console.log(efforts);
+	let recent_efforts = efforts.filter(function(effort){
+		let timeDate = new Date(effort.timestamp);
+	    return timeDate >= week_ago ;
+	});
+	// console.log(recent_efforts);
+			
+
+	for(var i = 0; i < recent_efforts.length; i++) {
+		totalMinutes += recent_efforts[i].hours * 60;
+		totalMinutes += recent_efforts[i].minutes;
+	}
+	let priority = itemObj.totalRelevancy * (24 * 60 * 7 - totalMinutes) / 60 / 100; //minutes in a week
+
+
+	return await db.updateItem(itemObj, itemObj.label, totalMinutes, priority, itemObj.totalRelevancy);
+}
+
+
+
+exports.updateItemTotalRelevancy3 = async function(itemObj) {
+	let userID = itemObj.user.id;
+	let totalRelevancy = 100;
+	let currentItem = itemObj;
+	let parentrelation;
+	do {
+		//update total relevancy
+		let relevancyrelation 	= await db.relations.relevancyItem.byItem(currentItem);
+		let relevancy 			= await db.relevancies.byID(relevancyrelation.relevancy.id);
+		totalRelevancy 			= totalRelevancy * relevancy.value / 100;
+		//if there is a parent, iterate again
+		parentrelation 			= await db.relations.itemItem.byChild(currentItem);
+		if (parentrelation) {
+			currentItem 			= await db.items.byID(parentrelation.parent.id);
+		} else currentItem = null;
+	} while (currentItem);
+	let priority = totalRelevancy * (24 * 60 * 7 - itemObj.totalMinutes) / 60 / 100; //minutes in a week
+
+	await db.updateItem(itemObj, itemObj.label, itemObj.totalMinutes, priority, totalRelevancy);
+	return itemObj;
+}
+
+
+
 //todo: might not work when 
 exports.updateItemTotalEffort2 = async function(itemObj) {
 	let totalMinutes = 0;
 	// let userID = itemObj.user.id;
 	let efforts 		= await db.getEffortsByItem(itemObj);
+			
+
 	for(var i = 0; i < efforts.length; i++) {
 		totalMinutes += efforts[i].hours * 60;
 		totalMinutes += efforts[i].minutes;
@@ -38,6 +94,9 @@ exports.updateItemTotalEffort2 = async function(itemObj) {
 	await db.updateItem(itemObj, itemObj.label, totalMinutes, priority, itemObj.totalRelevancy);
 }
 
+exports.refreshItemPriority = async function(itemObj) {
+
+}
 
 exports.updateItemTotalEffort = async function(itemObj) {
 	let totalMinutes = 0;
