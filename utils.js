@@ -1,5 +1,6 @@
 const db = require('./db.js');
 const Effort = require("./models/effort");
+// const Item 	 = require("./models/item");
 
 //credit: https://stackoverflow.com/a/22367819
 //creates a tree structure of the item relations and returns this structure
@@ -21,9 +22,162 @@ exports.treeify = function(list) {
             treeList.push(obj);
         }
     });
-    return treeList;
+
+    let treeRoot = {
+    	label:"root", 
+    	children: treeList
+    };
+    return treeRoot;
 }
 
+
+// function hasChildren(node) {
+//     return (typeof node === 'object')
+//         && (typeof node.children !== 'undefined')
+//         && (node.children.length > 0);
+// }
+
+
+
+exports.listifyItemRelations = async function(userObj) {
+	let itemitem 		= await db.relations.itemItem.byUser(userObj);
+	let list = [];
+	itemitem.forEach(function(obj) {
+		let item = {};
+		item['id'] = obj.child.id;
+		item['label'] = obj.child.label;
+		item['parent'] = obj.parent.id;
+		list.push(item);
+	});
+	return list;
+}
+
+exports.updateListCumulativeEffort = async function(list) {
+	var promiseStack = [];
+	let itemObjs = {};
+	for(let i = 0; i < list.length; i++) {
+		let item = list[i];
+		let efforts;
+		let totalMinutes = 0;
+		let itemObj = await db.items.byID(item.id);
+		itemObjs[item.id] = itemObj;
+
+
+		let date = new Date();
+		let week_ago = new Date();
+		week_ago.setDate(date.getDate() - 7);
+		efforts = await db.getEffortsByItem(itemObj);
+		let recent_efforts = efforts.filter(function(effort){
+			let timeDate = new Date(effort.timestamp);
+		    return timeDate >= week_ago ;
+		});
+				
+
+		for(var j = 0; j < recent_efforts.length; j++) {
+			totalMinutes += recent_efforts[j].hours * 60;
+			totalMinutes += recent_efforts[j].minutes;
+		}
+
+		item.totalMinutes = totalMinutes;
+		item.cumulativeMinutes = 0;
+
+
+
+	};
+
+	for(let i = 0; i < list.length; i++) {
+		let currentItem = list[i];
+		let nextParentId = currentItem.parent;
+		while(nextParentId) {
+			let parentItem;
+			parentItem = list.filter(function(item) {
+				return item['id'].equals(nextParentId);
+			});
+			if(parentItem.length > 0) {
+				parentItem[0].cumulativeMinutes += currentItem.totalMinutes;
+				nextParentId = parentItem[0].parent;
+			} else
+				nextParentId = false;
+		}
+	}
+
+
+
+	for(let i = 0; i < list.length; i++) {
+		let currentItem = list[i];
+		currentItem.cumulativeMinutes += currentItem.totalMinutes;
+		let itemObj = itemObjs[currentItem.id];
+		console.log(itemObj);
+		let data = {cumulativeMinutes: currentItem.cumulativeMinutes};
+		promiseStack.push(db.items.update2(itemObj, data));
+	}
+
+	Promise.all(promiseStack).then(function() {});
+
+	console.log(list);
+}
+
+
+
+// exports.traverse = function (tree, chain, count) {
+// 	console.log(chain);
+// 	// for(let i = 0; i < )
+// 	if(count > 10)
+// 		return count;
+// 	for (let child of tree.children) {
+// 		const res = (child, chain) => {
+// 			chain.push(child.id);
+// 			return exports.traverse(child, chain, count + 1);
+// 		};
+// 		if(res)
+// 			return res;
+// 	}
+	
+// 	// return "finished";
+// }
+
+
+// //breadth first
+
+// const doThing = (tree, path) => {
+//   const stack = [tree];
+  
+//   while (stack.length) {
+//     const curr = stack.pop();
+//     path.push(curr);
+//     //do thing
+
+//     stack.push(...curr.child);
+//   }
+// };
+
+// //breadth first
+// const search = (tree, target) => {
+//   const stack = [tree];
+  
+//   while (stack.length) {
+//     const curr = stack.pop();
+    
+//     if (curr.id === target) {
+//       return curr.label;
+//     }
+
+//     stack.push(...curr.child);
+//   }
+// };
+
+// exports.updateTreeTotalEffort = async function(userObj, tree) {
+// 	//find all childless objects and count upwards
+// 	let currentChain = [];
+// 	tree.forEach(item => {
+
+// 	})
+// }
+
+// //wtf is this
+// exports.goDeeper = function(tree, index) {
+// 	return tree[index];
+// }
 
 exports.updateItemTotalEffort3 = async function(userObj, itemObj) {
 	let totalMinutes = 0;
@@ -33,12 +187,10 @@ exports.updateItemTotalEffort3 = async function(userObj, itemObj) {
 	week_ago.setDate(date.getDate() - 7);
 
 	efforts = await db.getEffortsByItem(itemObj);
-	// console.log(efforts);
 	let recent_efforts = efforts.filter(function(effort){
 		let timeDate = new Date(effort.timestamp);
 	    return timeDate >= week_ago ;
 	});
-	// console.log(recent_efforts);
 			
 
 	for(var i = 0; i < recent_efforts.length; i++) {
@@ -47,8 +199,13 @@ exports.updateItemTotalEffort3 = async function(userObj, itemObj) {
 	}
 	let priority = itemObj.totalRelevancy * (24 * 60 * 7 - totalMinutes) / 60 / 100; //minutes in a week
 
-
-	return await db.updateItem(itemObj, itemObj.label, totalMinutes, priority, itemObj.totalRelevancy);
+	let data = {
+		label: itemObj.label, 
+		priority: priority, 
+		totalMinutes: totalMinutes, 
+		totalRelevancy: itemObj.totalRelevancy
+	};
+	return await db.updateItem2(itemObj, data);
 }
 
 

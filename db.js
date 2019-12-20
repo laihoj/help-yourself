@@ -133,6 +133,20 @@ exports.updateEffort = async function(effortObj, hours, minutes, timestamp, note
 
 	// await db.items.update(itemObj, itemObj.label, itemObj.effort, priority, totalRelevancy);
 
+
+exports.updateItem2 = async function(itemObj, data, parentId) {
+	let parentObj;
+	let relationObj;
+	itemObj = await exports.items.update2(itemObj, data);
+	if (parentId > 0)
+		parentObj = await exports.items.byID(parentId);
+	if(parentObj) {
+		relationObj = exports.relations.itemItem.findOne(parentObj, itemObj);
+		exports.relations.itemItem.update(relationObj, parentObj, itemObj);
+	}
+	return itemObj;
+}
+
 exports.updateItem = async function(itemObj, label, totalMinutes, priority, totalRelevancy, parentId) {
 	let parentObj;
 	let relationObj;
@@ -148,6 +162,22 @@ exports.updateItem = async function(itemObj, label, totalMinutes, priority, tota
 	// await exports.logs.save(logMessage);
 	return itemObj;
 }
+
+// exports.updateItem2 = async function(itemObj, data) {
+// 	let parentObj;
+// 	let relationObj;
+// 	itemObj = await exports.items.update(itemObj, label, totalMinutes, priority, totalRelevancy);
+// 	// let itemObj = await exports.items.byIDAndUpdate(label, "", itemObj.user);
+// 	if (parentId > 0)
+// 		parentObj = await exports.items.byID(parentId);
+// 	if(parentObj) {
+// 		relationObj = exports.relations.itemItem.findOne(parentObj, itemObj);
+// 		exports.relations.itemItem.update(relationObj, parentObj, itemObj);
+// 	}
+// 	// let logMessage = "Saved item: " + item;
+// 	// await exports.logs.save(logMessage);
+// 	return itemObj;
+// }
 
 exports.deleteItem = async function(itemObj) {
 	// let relations 		= await exports.relations.byItem(itemObj);

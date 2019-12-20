@@ -206,8 +206,19 @@ app.get("/api", function(req, res) {
 	res.render("api");
 });
 
-//Use this to 'export' data from old database
-app.get("/api/priorities/update", async function(req, res) {
+
+app.get("/api/efforts/refresh", async function(req, res) {
+
+
+	let list = await utils.listifyItemRelations(req.user);
+	await utils.updateListCumulativeEffort(list);
+
+	backURL=req.header('Referer') || '/';
+	res.redirect(backURL);
+
+});
+
+app.get("/api/priorities/refresh", async function(req, res) {
 	let items = await db.items.byUser(req.user);
 	var promiseStack = [];
 	for(var i = 0; i < items.length; i++) 
@@ -219,6 +230,9 @@ app.get("/api/priorities/update", async function(req, res) {
     	res.redirect(backURL);
 	});
 });
+
+
+
 
 //Use this to 'export' data from old database
 app.get("/api/migrate/out", async function(req, res) {

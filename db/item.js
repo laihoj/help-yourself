@@ -86,7 +86,21 @@ exports.delete = async function(id) {
 	return res;
 }
 
-exports.update = async function(itemObj, label, totalMinutes, priority, totalRelevancy) {
+exports.update2 = async function(itemObj, data) {
+	itemObj.label 				= data.label || itemObj.label || "NO LABEL";
+	itemObj.priority 			= data.priority || itemObj.priority || 0;
+	itemObj.totalMinutes 		= data.totalMinutes || itemObj.totalMinutes || 0;
+	itemObj.totalRelevancy 		= data.totalRelevancy || itemObj.totalRelevancy || 0;
+	itemObj.cumulativeMinutes 	= data.cumulativeMinutes || itemObj.cumulativeMinutes || 0;
+	itemObj.save();
+	let logMessage = "Updated item: " + itemObj;
+	await logs.save(logMessage);
+	return itemObj;
+}
+
+
+//deprecated
+exports.update = async function(itemObj, label, totalMinutes, priority, totalRelevancy, cumulativeMinutes) {
 	itemObj.label = label;
 	// if (typeof priority == 'number') {
 		itemObj.priority = priority;
@@ -97,15 +111,16 @@ exports.update = async function(itemObj, label, totalMinutes, priority, totalRel
 	// if (typeof totalRelevancy == 'number') {
 		itemObj.totalRelevancy = totalRelevancy;
 	// } else {console.log("Failed to update " + itemObj + " totalRelevancy");}
+		itemObj.cumulativeMinutes = cumulativeMinutes;
 	itemObj.save();
 	let logMessage = "Updated item: " + itemObj;
 	await logs.save(logMessage);
 	return itemObj;
 }
 
-exports.byIDAndUpdate = async function(id, label, priority, totalMinutes, totalRelevancy) {
+exports.byIDAndUpdate = async function(id, label, priority, totalMinutes, totalRelevancy, cumulativeMinutes) {
 	let itemToUpdate = await exports.byID(id);
-	exports.update(itemToUpdate, label, totalMinutes, priority, totalRelevancy);
+	exports.update(itemToUpdate, label, totalMinutes, priority, totalRelevancy, cumulativeMinutes);
 	return itemToUpdate;
 }
 

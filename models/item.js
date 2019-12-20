@@ -13,6 +13,8 @@ var itemSchema =  mongoose.Schema({
 
 	totalMinutes: Number,
 	totalRelevancy: Number,
+
+	cumulativeMinutes: Number
 	
 });
 

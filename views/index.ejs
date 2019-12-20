@@ -8,8 +8,11 @@
   <div class="row">
   	<div class="twelve column" style="margin-top: 5%">
 			<h1>Help Yourself</h1>
-      <form id="goToYesterday" action="/api/priorities/update/">
+      <form action="/api/priorities/refresh/">
         <input type="submit" value="Refresh Priorities" />
+      </form>
+      <form action="/api/efforts/refresh/">
+        <input type="submit" value="Refresh Efforts" />
       </form>
     </div>
     <div class="row">
@@ -20,6 +23,9 @@
               <th onclick="sortTable('itemsTable',0,'false');">Label</th>
               <th onclick="sortTable('itemsTable',1,'false');">Effort</th>
               <th onclick="sortTable('itemsTable',2,'true');">Priority</th>
+              <% if (data[0].cumulativeMinutes) { %>
+                <th onclick="sortTable('itemsTable',3,'true');">Cumulative</th>
+              <% } %>
             </tr>
           </thead>
           <tbody>
@@ -29,11 +35,19 @@
               let minutes = data[i].totalMinutes  % 60;
               let message = hours + " h " + minutes; 
               %>
+              <% 
+              let cumulativehours = Math.floor(data[i].cumulativeMinutes  / 60);
+              let cumulativeminutes = data[i].cumulativeMinutes  % 60;
+              let cumulativeMessage = cumulativehours + " h " + cumulativeminutes; 
+              %>
 
               <tr onclick="window.location='/items/<%= data[i].label %>'">
                 <td style="width:50%"><%= data[i].label %></td>
                 <td style="width:23%"><%= message %></td>
                 <td style="width:23%"><%= Math.floor(data[i].priority) %></td>
+                <% if (data[i].cumulativeMinutes) { %>
+                <td style="width:23%"><%= cumulativeMessage %></td>
+                <% } %>
               </tr>
             <% } %>
           </tbody>
