@@ -107,14 +107,14 @@ exports.updateListCumulativeEffort = async function(list) {
 		let currentItem = list[i];
 		currentItem.cumulativeMinutes += currentItem.totalMinutes;
 		let itemObj = itemObjs[currentItem.id];
-		console.log(itemObj);
+		// console.log(itemObj);
 		let data = {cumulativeMinutes: currentItem.cumulativeMinutes};
 		promiseStack.push(db.items.update2(itemObj, data));
 	}
 
 	Promise.all(promiseStack).then(function() {});
 
-	console.log(list);
+	// console.log(list);
 }
 
 
