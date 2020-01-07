@@ -86,17 +86,65 @@ exports.delete = async function(id) {
 	return res;
 }
 
+
 exports.update2 = async function(itemObj, data) {
 	itemObj.label 				= data.label || itemObj.label || "NO LABEL";
-	itemObj.priority 			= data.priority || itemObj.priority || 0;
-	itemObj.totalMinutes 		= data.totalMinutes || itemObj.totalMinutes || 0;
-	itemObj.totalRelevancy 		= data.totalRelevancy || itemObj.totalRelevancy || 0;
-	itemObj.cumulativeMinutes 	= data.cumulativeMinutes || itemObj.cumulativeMinutes || 0;
+	if(typeof data.priority === 'number')
+		itemObj.priority 			= data.priority;
+	else if(typeof itemObj.priority === 'undefined')
+		itemObj.priority = 0;
+
+	if(typeof data.totalMinutes === 'number')
+		itemObj.totalMinutes 			= data.totalMinutes;
+	else if(typeof itemObj.totalMinutes === 'undefined')
+		itemObj.totalMinutes = 0;
+
+	if(typeof data.totalRelevancy === 'number')
+		itemObj.totalRelevancy 		= data.totalRelevancy;
+	else if(typeof itemObj.totalRelevancy === 'undefined')
+		itemObj.totalRelevancy = 0;
+
+	if(typeof data.cumulativeMinutes === 'number')
+		itemObj.cumulativeMinutes 	= data.cumulativeMinutes;
+	else if(typeof itemObj.cumulativeMinutes === 'undefined')
+		itemObj.cumulativeMinutes = 0;
+
+
+	
+
+	// 	itemObj.priority 			= data.priority || itemObj.priority || 0;
+	// 	itemObj.totalMinutes 		= data.totalMinutes || itemObj.totalMinutes || 0;
+	// itemObj.totalRelevancy 		= data.totalRelevancy || itemObj.totalRelevancy || 0;
+	// itemObj.cumulativeMinutes 	= data.cumulativeMinutes || itemObj.cumulativeMinutes || 0;
 	itemObj.save();
 	let logMessage = "Updated item: " + itemObj;
 	await logs.save(logMessage);
 	return itemObj;
 }
+
+// exports.update2 = async function(itemObj, data) {
+// 	itemObj.label 				= data.label || itemObj.label || "NO LABEL";
+// 	if(data.priority == 0)
+// 		itemObj.priority = 0;
+// 	else
+// 		itemObj.priority 			= data.priority || itemObj.priority || 0;
+// 	if(data.totalMinutes == 0)
+// 		itemObj.totalMinutes = 0;
+// 	else
+// 		itemObj.totalMinutes 		= data.totalMinutes || itemObj.totalMinutes || 0;
+// 	if(data.totalRelevancy == 0)
+// 		itemObj.totalRelevancy = 0;
+// 	else
+// 	itemObj.totalRelevancy 		= data.totalRelevancy || itemObj.totalRelevancy || 0;
+// 	if(data.cumulativeMinutes == 0)
+// 		itemObj.cumulativeMinutes = 0;
+// 	else
+// 	itemObj.cumulativeMinutes 	= data.cumulativeMinutes || itemObj.cumulativeMinutes || 0;
+// 	itemObj.save();
+// 	let logMessage = "Updated item: " + itemObj;
+// 	await logs.save(logMessage);
+// 	return itemObj;
+// }
 
 
 //deprecated

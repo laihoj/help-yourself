@@ -14,6 +14,9 @@
       <form action="/api/efforts/refresh/">
         <input type="submit" value="Refresh Efforts" />
       </form>
+      <form action="/api/refresh/">
+        <input type="submit" value="Refresh" />
+      </form>
     </div>
     <div class="row">
       <div class="data">
@@ -23,9 +26,8 @@
               <th onclick="sortTable('itemsTable',0,'false');">Label</th>
               <th onclick="sortTable('itemsTable',1,'false');">Effort</th>
               <th onclick="sortTable('itemsTable',2,'true');">Priority</th>
-              <% if (data[0].cumulativeMinutes) { %>
-                <th onclick="sortTable('itemsTable',3,'true');">Cumulative</th>
-              <% } %>
+
+              <th onclick="sortTable('itemsTable',3,'true');">Cumulative</th>
             </tr>
           </thead>
           <tbody>
@@ -43,10 +45,10 @@
 
               <tr onclick="window.location='/items/<%= data[i].label %>'">
                 <td style="width:50%"><%= data[i].label %></td>
-                <td style="width:23%"><%= message %></td>
+                <td style="width:23%" data-totalMinutes="<%= data[i].totalMinutes%>"><%= message %></td>
                 <td style="width:23%"><%= Math.floor(data[i].priority) %></td>
-                <% if (data[i].cumulativeMinutes) { %>
-                <td style="width:23%"><%= cumulativeMessage %></td>
+                <% if (typeof data[i].cumulativeMinutes !== "undefined") { %>
+                  <td style="width:23%" data-totalMinutes="<%= data[i].cumulativeMinutes%>"><%= cumulativeMessage %></td>
                 <% } %>
               </tr>
             <% } %>

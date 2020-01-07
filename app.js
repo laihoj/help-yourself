@@ -56,6 +56,7 @@ var domain = process.env.DOMAIN || "localhost:3000";
 
 const db = require('./db.js');
 const utils = require('./utils.js');
+const utils2 = require('./utils2.js');
 
 /********************************************************
 Routes
@@ -222,7 +223,7 @@ app.get("/api/priorities/refresh", async function(req, res) {
 	let items = await db.items.byUser(req.user);
 	var promiseStack = [];
 	for(var i = 0; i < items.length; i++) 
-		promiseStack.push(utils.updateItemTotalEffort3(req.user, items[i]));
+		promiseStack.push(utils.updateItemTotalEffort3(req.user, items[i])); //4 -> by cumulative time
 
 
 	Promise.all(promiseStack).then(function() {
@@ -231,6 +232,17 @@ app.get("/api/priorities/refresh", async function(req, res) {
 	});
 });
 
+
+app.get("/api/refresh", async function(req, res) {
+
+	// await utils2.resetMinutes(req.user); <- bad, don't use
+	await utils2.refreshTotalMinutes(req.user);
+	await utils2.refreshCumulativeMinutes(req.user);
+	await utils2.refreshPriority(req.user);
+	
+	// await utils2.refresh(req.user);
+	res.redirect("/");
+});
 
 
 
@@ -281,6 +293,14 @@ app.post("/api/migrate/in", async function(req, res) {
 			res.redirect("/");
 		});	
 	});
+});
+
+
+
+//creates a list structure of the item relations and returns this structure
+app.get("/api/items/listify", auth.isAuthenticated, async function(req, res) {
+	let list = await utils.listifyItemRelations(req.user);
+	res.send(list);
 });
 
 //creates a tree structure of the item relations and returns this structure

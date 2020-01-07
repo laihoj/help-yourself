@@ -38,9 +38,112 @@ exports.treeify = function(list) {
 // }
 
 
+/*
+exports.updateItemAncestryCumulativeEffort = async function(list, itemId) {
+	var promiseStack = [];
+	let itemObjs = {};
 
+	//find itemid in list
+	//get that item from mongo
+	//find parent of item in list
+	//get parent from mongo
+	//find parent of parent
+	//etc
+
+	for(let i = 0; i < list.length; i++) {
+		let item = list[i];
+		let efforts;
+		let totalMinutes = 0;
+		let itemObj = await db.items.byID(item.id);
+		itemObjs[item.id] = itemObj;
+
+
+		let date = new Date();
+		let week_ago = new Date();
+		week_ago.setDate(date.getDate() - 7);
+		efforts = await db.getEffortsByItem(itemObj);
+		let recent_efforts = efforts.filter(function(effort){
+			let timeDate = new Date(effort.timestamp);
+		    return timeDate >= week_ago ;
+		});
+				
+
+		for(var j = 0; j < recent_efforts.length; j++) {
+			totalMinutes += recent_efforts[j].hours * 60;
+			totalMinutes += recent_efforts[j].minutes;
+		}
+
+		item.totalMinutes = totalMinutes;
+		item.cumulativeMinutes = 0;
+
+
+
+	};
+
+	for(let i = 0; i < list.length; i++) {
+		let currentItem = list[i];
+		let nextParentId = currentItem.parent;
+		while(nextParentId) {
+			let parentItem;
+			parentItem = list.filter(function(item) {
+				return item['id'].equals(nextParentId);
+			});
+			if(parentItem.length > 0) {
+				parentItem[0].cumulativeMinutes += currentItem.totalMinutes;
+				nextParentId = parentItem[0].parent;
+			} else
+				nextParentId = false;
+		}
+	}
+
+
+
+	for(let i = 0; i < list.length; i++) {
+		let currentItem = list[i];
+		currentItem.cumulativeMinutes += currentItem.totalMinutes;
+		let itemObj = itemObjs[currentItem.id];
+		// console.log(itemObj);
+		let data = {cumulativeMinutes: currentItem.cumulativeMinutes};
+		promiseStack.push(db.items.update2(itemObj, data));
+	}
+
+	Promise.all(promiseStack).then(function() {});
+
+	// console.log(list);
+}
+*/
+
+//garbage. dont use
+exports.updateItemAncestryCumulativeEffort = async function(itemId, minutes) {
+	console.log("[DONT USE ME]: updateItemAncestryCumulativeEffort");
+	let item = await db.items.byID(itemId);
+	let list = await exports.listifyItemRelations(item.user);
+	let nextItem, nextItemId;
+	nextItemId = itemId;
+
+	//find first parent
+	for(let i = 0; i < list.length; i++) 
+		if(list[i]['child'] == nextItemId) 
+			nextItemId = list[i]['parent'];
+
+	do {
+		nextItem = await db.items.byID(nextItemId);
+
+		for(let i = 0; i < list.length; i++) 
+			if(list[i]['child'] == nextItemId) 
+				nextItemId = list[i]['parent'];
+
+	} while (nextItemId);
+	
+}
+
+
+/*
+input: (Object) user
+output: [{id, label, parent}]
+*/
 exports.listifyItemRelations = async function(userObj) {
-	let itemitem 		= await db.relations.itemItem.byUser(userObj);
+	let itemitem = await db.relations.itemItem.byUser(userObj);
 	let list = [];
 	itemitem.forEach(function(obj) {
 		let item = {};
@@ -208,6 +311,37 @@ exports.updateItemTotalEffort3 = async function(userObj, itemObj) {
 	return await db.updateItem2(itemObj, data);
 }
 
+
+/*
+update priorty based on cumulative time
+*/
+//NOT IN USE???
+exports.updateItemTotalRelevancy4 = async function(itemObj) {
+	let userID = itemObj.user.id;
+	let totalRelevancy = 100;
+	let currentItem = itemObj;
+	let parentrelation;
+	do {
+		//update total relevancy
+		let relevancyrelation 	= await db.relations.relevancyItem.byItem(currentItem);
+		let relevancy 			= await db.relevancies.byID(relevancyrelation.relevancy.id);
+		totalRelevancy 			= totalRelevancy * relevancy.value / 100;
+		//if there is a parent, iterate again
+		parentrelation 			= await db.relations.itemItem.byChild(currentItem);
+		if (parentrelation) {
+			currentItem 			= await db.items.byID(parentrelation.parent.id);
+		} else currentItem = null;
+	} while (currentItem);
+	let priority = totalRelevancy * (24 * 60 * 7 - itemObj.cumulativeMinutes) / 60 / 100; //minutes in a week
+
+	// await db.updateItem(itemObj, itemObj.label, itemObj.totalMinutes, priority, totalRelevancy);
+	let data = {
+		totalRelevancy: totalRelevancy, 
+		priority: priority
+	};
+	await db.updateItem2(itemObj, data);
+	return itemObj;
+}
 
 
 exports.updateItemTotalRelevancy3 = async function(itemObj) {

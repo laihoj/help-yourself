@@ -54,7 +54,7 @@ exports.byItem = async function(itemObj) {
 }
 exports.byUser = async function(userObj) {
 	let res = await RelevancyItem.find({
-		'user.id': userObj._id
+		'user.id': userObj._id || userObj.id
 	});
 	return res;
 }

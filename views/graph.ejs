@@ -6,7 +6,7 @@
 <script type="text/javascript" src="/vis.js"></script>
 <link type="text/css" rel="stylesheet" href="/vis-network.min.css">
 
-
+<!--
 edges: <%= edges %>
 <br>
 nodes: <%= nodes %>
@@ -15,7 +15,7 @@ nodes: <%= nodes %>
 <%     if (idlookuptable.hasOwnProperty(key)) {%>
 key: <%= key %>, value: <%= idlookuptable[key] %>
 <%    }}%>
-
+-->
 
 
 <div id="mynetwork"></div>
@@ -40,7 +40,7 @@ var edges = [
   var nodes = [
   
   <% for(var i = 0; i < items.length; i++) { %>
-    {id: <%= idlookuptable[items[i]._id] %>, label: '<%= items[i].label %>'}, %>
+    {id: <%= idlookuptable[items[i]._id] %>, label: '<%= items[i].label +', t: ' + items[i].totalMinutes + ', c: ' +items[i].cumulativeMinutes %>'}, %>
   <% } %>
   ];
 
