@@ -2,24 +2,81 @@ const db = require('./db.js');
 const Effort = require("./models/effort");
 const utils = require('./utils.js');
 
+//garbage function, dont use
 exports.refreshPriority = async function(userObj) {
-	// let items;
+	let items;
 
-	// items = await db.items.byUser(userObj);
+	//get correct cumulativeMinutes for all items
+	let list, itemObjs, promiseStack, itemsCumulative;
+	itemObjs = {};
+	itemPrios = {};
+	promiseStack = [];
+	items = await db.items.byUser(userObj);
+	itemsCumulative = {};
+	for(let i = 0; i < items.length; i++) {
+		let item = items[i];
+		itemObjs[item.id] = item;
+		itemPrios[item.id] = 0;		//item priority lookup
+		itemsCumulative[item.id] = item.cumulativeMinutes;
+	}
+		//for each item, accumulate time to each ancestor
+	list = await utils.listifyItemRelations(userObj);
+	//then calculate priorities for everything
+	for(let i = 0; i < list.length; i++) {
+		let currentItemListed, 
+			currentItemObj, 
+			currentItemObjTotalMinutes, 
+			nextParentId;
 
-	// for(let i = 0; i < items.length; i++) {
-	// 	let priority, data, itemObj;
-	// 	itemObj = items[i];
-	// 	priority = itemObj.totalRelevancy * (24 * 60 * 7 - totalMinutes) / 60 / 100; //minutes in a week
+		currentItemListed = list[i];
+		currentItemObj = itemObjs[currentItemListed.id];
+		currentItemObjTotalMinutes = currentItemObj.totalMinutes;
+		nextParentId = currentItemListed.parent;
 
-	// 	data = {
-	// 		priority: priority, 
-	// 	};
-	// 	return await db.updateItem2(itemObj, data);
-	// }
+		if(nextParentId) {
+			//update priority
+			let parentRelevancy, selfPrio, cumulativeMinutes, relevancy;
+			parentRelevancy = itemObjs[nextParentId].totalRelevancy;
+			parentCumulativeMinutes = itemsCumulative[nextParentId];
+			cumulativeMinutes = itemsCumulative[currentItemListed.id];
+			relevancy = itemObjs[currentItemListed.id].totalRelevancy;
+			console.log(itemObjs[currentItemListed.id].label+": "+parentCumulativeMinutes +"*"+relevancy +"/"+cumulativeMinutes +"/"+parentRelevancy);
+
+			if (cumulativeMinutes == 0 || parentRelevancy == 0)
+				selfPrio = 0;
+			else
+				selfPrio = relevancy * parentCumulativeMinutes / cumulativeMinutes  / parentRelevancy;
+
+			console.log(selfPrio);
+			itemPrios[currentItemListed.id] = selfPrio;
+
+			// let parentItemListed, parentItemObj;
+			// parentItemListed = list.filter(function(item) {
+			// 	return item['id'].equals(nextParentId);
+			// });
+			// if(parentItemListed.length > 0) {
+			// 	nextParentId = parentItemListed[0].parent;
+			// } else
+			// 	nextParentId = false;
+		}
+	}
+
+	//save calculations
+	for(let i = 0; i < items.length; i++) {
+		let currentItemListed, currentItemObj, itemObj, data;
+		currentItem = items[i];
+		currentItemObj = itemObjs[currentItem.id];
+		data = {
+			// cumulativeMinutes: itemsCumulative[currentItemObj.id],
+			priority: itemPrios[currentItemObj.id]
+		};
+		promiseStack.push(db.items.update2(currentItemObj, data));
+	}
+	Promise.all(promiseStack).then(function() {});
 }
 
 
+//idk what this does? at least not save, thats for sure. NOT IN USE?
 exports.refreshTotalRelevancy = async function(userObj) {
 	let list, items, itemObjs, relevancyObjs, itemsRelevancy, relevancyrelation;
 	list = await utils.listifyItemRelations(userObj);
@@ -81,12 +138,14 @@ exports.refreshCumulativeMinutes = async function(userObj) {
 	//get correct cumulativeMinutes for all items
 	let list, itemObjs, promiseStack, itemsCumulative;
 	itemObjs = {};
+	itemPrios = {};
 	promiseStack = [];
 	items = await db.items.byUser(userObj);
 	itemsCumulative = {};
 	for(let i = 0; i < items.length; i++) {
 		let item = items[i];
 		itemObjs[item.id] = item;
+		itemPrios[item.id] = 0;		//item priority lookup
 		itemsCumulative[item.id] = 0;
 	}
 		//for each item, accumulate time to each ancestor
@@ -103,7 +162,8 @@ exports.refreshCumulativeMinutes = async function(userObj) {
 		nextParentId = currentItemListed.parent;
 
 		while(nextParentId) {
-			itemsCumulative[nextParentId] += currentItemObjTotalMinutes;	
+			//update cumulative minutes
+			itemsCumulative[nextParentId] += currentItemObjTotalMinutes;
 			let parentItemListed, parentItemObj;
 			parentItemListed = list.filter(function(item) {
 				return item['id'].equals(nextParentId);
@@ -114,31 +174,32 @@ exports.refreshCumulativeMinutes = async function(userObj) {
 				nextParentId = false;
 		} 
 	}
-		//finally, accumulate own time to self
 
-	
+	//finally, accumulate own time to self	
 	for(let i = 0; i < items.length; i++) {
 		let currentItemListed, currentItemObj, itemObj, data;
-
-
 		currentItem = items[i];
 		currentItemObj = itemObjs[currentItem.id];
 		itemsCumulative[currentItemObj.id] += currentItemObj.totalMinutes;
-		data = {
-			cumulativeMinutes: itemsCumulative[currentItemObj.id]
-		};
-		await db.items.update2(currentItemObj, data);
-	}
-	for(let i = 0; i < items.length; i++) {
-		let currentItem = items[i];
-		console.log(currentItem.label + ": "+ itemsCumulative[currentItem.id]);
 	}
 
+	//save calculations
+	for(let i = 0; i < items.length; i++) {
+		let currentItemListed, currentItemObj, itemObj, data;
+		currentItem = items[i];
+		currentItemObj = itemObjs[currentItem.id];
+		data = {
+			cumulativeMinutes: itemsCumulative[currentItemObj.id],
+			// priority: itemPrios[currentItemObj.id]
+		};
+		promiseStack.push(db.items.update2(currentItemObj, data));
+	}
+	Promise.all(promiseStack).then(function() {});
 }
 
 exports.refreshTotalMinutes = async function(userObj) {
-	let items;
-
+	let items, promiseStack;
+	promiseStack = [];
 	//get correct totalMinutes for all items
 	items = await db.items.byUser(userObj);
 	for(let i = 0; i < items.length; i++) {
@@ -157,10 +218,12 @@ exports.refreshTotalMinutes = async function(userObj) {
 			totalMinutes: totalMinutes,
 		};
 
-		await db.items.update2(itemObj, data);
+		promiseStack.push(db.items.update2(itemObj, data));
 	}
+	Promise.all(promiseStack).then(function() {});
 }
 
+//garbage, dont use
 exports.resetMinutes = async function(userObj) {
 	let items;
 

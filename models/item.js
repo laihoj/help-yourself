@@ -1,4 +1,5 @@
 var mongoose = require("mongoose");
+// var Float = require('mongoose-float').loadType(mongoose);
 
 var itemSchema =  mongoose.Schema({
 	user: {

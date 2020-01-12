@@ -207,7 +207,17 @@ app.get("/api", function(req, res) {
 	res.render("api");
 });
 
+app.get("/api/items/tree", auth.isAuthenticated, async function(req, res) {
+	let tree = await utils2.tree(req.user);
+	res.send(tree);
+});
 
+app.get("/api/items/primeancestor", auth.isAuthenticated, async function(req, res) {
+	let primeancestor = await utils2.refreshPriority(req.user);
+	res.send(primeancestor);
+});
+
+//DONT USE
 app.get("/api/efforts/refresh", async function(req, res) {
 
 
@@ -219,6 +229,7 @@ app.get("/api/efforts/refresh", async function(req, res) {
 
 });
 
+//DONT USE
 app.get("/api/priorities/refresh", async function(req, res) {
 	let items = await db.items.byUser(req.user);
 	var promiseStack = [];
@@ -239,6 +250,8 @@ app.get("/api/refresh", async function(req, res) {
 	await utils2.refreshTotalMinutes(req.user);
 	await utils2.refreshCumulativeMinutes(req.user);
 	await utils2.refreshPriority(req.user);
+	// await utils2.refreshTotalRelevancy(req.user);
+	
 	
 	// await utils2.refresh(req.user);
 	res.redirect("/");

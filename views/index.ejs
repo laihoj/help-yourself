@@ -8,12 +8,14 @@
   <div class="row">
   	<div class="twelve column" style="margin-top: 5%">
 			<h1>Help Yourself</h1>
+      <!--
       <form action="/api/priorities/refresh/">
         <input type="submit" value="Refresh Priorities" />
       </form>
       <form action="/api/efforts/refresh/">
         <input type="submit" value="Refresh Efforts" />
       </form>
+      -->
       <form action="/api/refresh/">
         <input type="submit" value="Refresh" />
       </form>
@@ -28,6 +30,7 @@
               <th onclick="sortTable('itemsTable',2,'true');">Priority</th>
 
               <th onclick="sortTable('itemsTable',3,'true');">Cumulative</th>
+              <th onclick="sortTable('itemsTable',4,'true');">Relevancy</th>
             </tr>
           </thead>
           <tbody>
@@ -46,9 +49,12 @@
               <tr onclick="window.location='/items/<%= data[i].label %>'">
                 <td style="width:50%"><%= data[i].label %></td>
                 <td style="width:23%" data-totalMinutes="<%= data[i].totalMinutes%>"><%= message %></td>
-                <td style="width:23%"><%= Math.floor(data[i].priority) %></td>
+                <td style="width:23%"><%= data[i].priority %></td>
                 <% if (typeof data[i].cumulativeMinutes !== "undefined") { %>
                   <td style="width:23%" data-totalMinutes="<%= data[i].cumulativeMinutes%>"><%= cumulativeMessage %></td>
+                <% } %>
+                <% if (typeof data[i].totalRelevancy !== "undefined") { %>
+                  <td style="width:23%" data-totalRelevancy="<%= data[i].totalRelevancy%>"><%= data[i].totalRelevancy %></td>
                 <% } %>
               </tr>
             <% } %>
