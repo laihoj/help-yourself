@@ -40,24 +40,16 @@ exports.refreshPriority = async function(userObj) {
 			parentCumulativeMinutes = itemsCumulative[nextParentId];
 			cumulativeMinutes = itemsCumulative[currentItemListed.id];
 			relevancy = itemObjs[currentItemListed.id].totalRelevancy;
-			console.log(itemObjs[currentItemListed.id].label+": "+parentCumulativeMinutes +"*"+relevancy +"/"+cumulativeMinutes +"/"+parentRelevancy);
+			// console.log(itemObjs[currentItemListed.id].label+": "+parentCumulativeMinutes +"*"+relevancy +"/"+cumulativeMinutes +"/"+parentRelevancy);
 
 			if (cumulativeMinutes == 0 || parentRelevancy == 0)
 				selfPrio = 0;
 			else
 				selfPrio = relevancy * parentCumulativeMinutes / cumulativeMinutes  / parentRelevancy;
 
-			console.log(selfPrio);
+			// console.log(selfPrio);
 			itemPrios[currentItemListed.id] = selfPrio;
 
-			// let parentItemListed, parentItemObj;
-			// parentItemListed = list.filter(function(item) {
-			// 	return item['id'].equals(nextParentId);
-			// });
-			// if(parentItemListed.length > 0) {
-			// 	nextParentId = parentItemListed[0].parent;
-			// } else
-			// 	nextParentId = false;
 		}
 	}
 
@@ -77,6 +69,7 @@ exports.refreshPriority = async function(userObj) {
 
 
 //idk what this does? at least not save, thats for sure. NOT IN USE?
+/*
 exports.refreshTotalRelevancy = async function(userObj) {
 	let list, items, itemObjs, relevancyObjs, itemsRelevancy, relevancyrelation;
 	list = await utils.listifyItemRelations(userObj);
@@ -131,6 +124,7 @@ exports.refreshTotalRelevancy = async function(userObj) {
 	}
 
 }
+*/
 
 exports.refreshCumulativeMinutes = async function(userObj) {
 	let items;
@@ -209,9 +203,19 @@ exports.refreshTotalMinutes = async function(userObj) {
 		itemObj = items[i];
 		efforts = await db.getEffortsByItem(itemObj);
 
-		for(j = 0; j < efforts.length; j++) {
-			totalMinutes += efforts[j].hours * 60;
-			totalMinutes += efforts[j].minutes;
+
+		let date = new Date();
+		let week_ago = new Date();
+		week_ago.setDate(date.getDate() - 7);
+		let recent_efforts = efforts.filter(function(effort){
+			let timeDate = new Date(effort.timestamp);
+		    return timeDate >= week_ago ;
+		});
+
+
+		for(j = 0; j < recent_efforts.length; j++) {
+			totalMinutes += recent_efforts[j].hours * 60;
+			totalMinutes += recent_efforts[j].minutes;
 		}
 
 		data = {
@@ -224,6 +228,7 @@ exports.refreshTotalMinutes = async function(userObj) {
 }
 
 //garbage, dont use
+/*
 exports.resetMinutes = async function(userObj) {
 	let items;
 
@@ -241,114 +246,11 @@ exports.resetMinutes = async function(userObj) {
 		await db.items.update2(itemObj, data);
 	}
 }
+*/
 
 exports.refresh = async function(userObj) {
-	// let items;
-
-
-	//reset totalMinutes and cumulativeMinutes
-	// exports.resetMinutes(userObj);
-	// items = await db.items.byUser(userObj);
-	// for(let i = 0; i < items.length; i++) {
-	// 	let itemObj, data;
-	// 	itemObj = items[i];
-	// 	data = {
-	// 		totalMinutes: 0,
-	// 		cumulativeMinutes: 0,
-	// 	};
-
-	// 	await db.items.update2(itemObj, data);
-	// }
-
 	exports.refreshTotalMinutes(userObj);
-
-	
-
-	
-
-	// //get correct totalMinutes for all items
-	// items = await db.items.byUser(userObj);
-	// for(let i = 0; i < items.length; i++) {
-	// 	let totalMinutes, efforts, itemObj, data, j;
-
-	// 	totalMinutes = 0;
-	// 	itemObj = items[i];
-	// 	efforts = await db.getEffortsByItem(itemObj);
-
-	// 	for(j = 0; j < efforts.length; j++) {
-	// 		totalMinutes += efforts[j].hours * 60;
-	// 		totalMinutes += efforts[j].minutes;
-	// 	}
-
-	// 	data = {
-	// 		totalMinutes: totalMinutes,
-	// 	};
-
-	// 	await db.items.update2(itemObj, data);
-	// }
-
-	exports.refreshCumulativeMinutes(userObj);
-
-	
-
-	// //get correct cumulativeMinutes for all items
-	// let list, itemObjs, promiseStack, itemsCumulative;
-	// itemObjs = {};
-	// promiseStack = [];
-	// items = await db.items.byUser(userObj);
-	// itemsCumulative = {};
-	// for(let i = 0; i < items.length; i++) {
-	// 	let item = items[i];
-	// 	itemObjs[item.id] = item;
-	// 	itemsCumulative[item.id] = 0;
-	// }
-	// 	//for each item, accumulate time to each parent
-	// list = await utils.listifyItemRelations(userObj);
-	// for(let i = 0; i < list.length; i++) {
-	// 	let currentItemListed, 
-	// 		currentItemObj, 
-	// 		currentItemObjTotalMinutes, 
-	// 		nextParentId;
-
-	// 	currentItemListed = list[i];
-	// 	currentItemObj = itemObjs[currentItemListed.id];
-	// 	currentItemObjTotalMinutes = currentItemObj.totalMinutes;
-	// 	nextParentId = currentItemListed.parent;
-	// 	while(nextParentId) {
-	// 		let parentItemListed, parentItemObj;
-	// 		parentItemListed = list.filter(function(item) {
-	// 			return item['id'].equals(nextParentId);
-	// 		});
-	// 		if(parentItemListed.length > 0) {
-	// 			// parentItemObj;
-				
-	// 			// parentItemObj = itemObjs[parentItemListed[0].id];
-	// 			itemsCumulative[parentItemListed[0].id] += currentItemObjTotalMinutes;
-	// 			// parentItemObj.cumulativeMinutes += currentItemObjTotalMinutes;
-	// 			nextParentId = parentItemListed[0].parent;
-	// 		} else
-	// 			nextParentId = false;
-	// 	}
-	// 	currentItemObj.cumulativeMinutes += currentItemObj.totalMinutes;
-	// }
-	// 	//finally, accumulate own time to self
-	// for(let i = 0; i < list.length; i++) {
-	// 	let currentItemListed, currentItemObj, itemObj, data;
-
-
-	// 	currentItemListed = list[i];
-	// 	currentItemObj = itemObjs[currentItemListed.id];
-	// 	// currentItemObj.cumulativeMinutes += currentItemObj.totalMinutes;
-	// 	itemsCumulative[currentItemObj.id] += currentItemObj.totalMinutes;
-	// 	data = {
-	// 		cumulativeMinutes: itemsCumulative[currentItemObj.id]
-	// 	};
-	// 	await db.items.update2(currentItemObj, data);
-	// }
-
-	//get correct priorities for all items
-
-	
+	exports.refreshCumulativeMinutes(userObj);	
 	exports.refreshPriority(userObj);
 }
 
