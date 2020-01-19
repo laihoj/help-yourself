@@ -1,6 +1,181 @@
 const db = require('./db.js');
 const Effort = require("./models/effort");
 const utils = require('./utils.js');
+const TreeModel = require('tree-model');
+
+exports.tree2 = function(hashmap) {
+
+	let tree = new TreeModel();
+
+	let keys = Object.keys(hashmap);
+	let nodes = {};
+	let rootNode;
+
+	//create a bunch of nodes
+	for(let i = 0; i < keys.length; i++) {
+		// let item = hashmap[keys[i]];
+		let node = tree.parse(
+			{
+				id: keys[i]
+			});
+		nodes[keys[i]] = node;
+	}
+
+	//connect the nodes
+	for(let i = 0; i < keys.length; i++) {
+		let node = nodes[keys[i]];
+		let childrenIds = hashmap[keys[i]].children;
+		for(let j = 0; j < childrenIds.length; j++) {
+			let id = childrenIds[j].id;
+			let child = nodes[id];
+			node.addChild(child);
+		}
+	}
+
+	//find the root
+	let rootAttempt = keys[0];
+	let parent = hashmap[rootAttempt].parent;
+	while(typeof hashmap[parent] !== 'undefined') {
+		rootAttempt = hashmap[rootAttempt].parent;
+		parent = hashmap[parent];
+	}
+	rootNode = nodes[rootAttempt];
+	return rootNode;
+}
+
+
+//probably doesnt work. DOONT USE
+exports.tree = function(flatList) {
+	let tree = new TreeModel();
+	let tree2 = new TreeModel();
+	let treeNodes = [];
+	let treeNodesById = {};
+	for(let i = 0; i < flatList.length; i++) {
+		let node = tree.parse(flatList[i]);
+		treeNodes[i] = node;
+		treeNodesById[node.id] = node; 
+	}
+
+
+	treeNodes.forEach((node) => {
+		treeNodes[node.parent].addChild(node)
+	});
+
+	let rootNode;
+	const res = treeNodes.filter((node) => (
+		 node.isRoot()
+	));
+	rootNode = res[0];
+
+	let data = {
+		root: rootNode,
+
+	}
+
+	treeNodes = [];
+	treeNodesById = {};
+	// let root2 = tree2.parse(flatList.items);
+	flatList.items.forEach((item) => {
+		let node = tree.parse(flatList[i]);
+		treeNodes[i] = node;
+		treeNodesById[node.id] = node; 
+	})
+
+
+	treeNodes.forEach((node) => {
+		if(node.parent)
+			treeNodes[node.parent].addChild(node)
+	});
+
+
+	root2.walk(function (node) {
+		console.log(node);
+	    // Halt the traversal by returning false
+	    // if (node.model.id === 121) return false;
+	});
+	
+	// console.log(data);
+	return root2;
+}
+
+
+exports.hashMap = async function(userObj) {
+	let itemitem = await db.relations.itemItem.byUser(userObj);
+	let list = [];
+	let asd = {}
+	let hashMap = {};
+
+	itemitem.forEach(function(obj) {
+		asd[obj.parent.id] = obj.parent.id;
+		asd[obj.child.id] = obj.child.id;
+	});
+	let uniqueIds = Object.keys(asd);
+	let newlist = [];
+
+	uniqueIds.forEach(function(id) {
+		let relationWhereThisIsChild = itemitem.filter((relation) => (relation.child.id).equals(id))[0];
+		let parent;
+		if(relationWhereThisIsChild && relationWhereThisIsChild.parent)
+			parent = relationWhereThisIsChild.parent.id;
+		let relationsWhereThisIsParent = itemitem.filter((relation) => (relation.parent.id).equals(id));
+		let children = relationsWhereThisIsParent.map((relation) => ({id:relation.child.id}));
+		let item = {
+			parent: parent,
+			children: children,
+		}
+		hashMap[id]= item;
+	});
+
+
+	return hashMap;
+}
+
+/*
+input: (Object) user
+output: [{id, label, parent}]
+*/
+exports.flatList = async function(userObj) {
+	let itemitem = await db.relations.itemItem.byUser(userObj);
+	let list = [];
+	let asd = {}
+
+	itemitem.forEach(function(obj) {
+		let item = {};
+		item['id'] = obj.child.id;
+		item['label'] = obj.child.label;
+		item['parent'] = obj.parent.id;
+		list.push(item);
+		asd[obj.parent.id] = obj.parent.id;
+		asd[obj.child.id] = obj.child.id;
+	});
+	let uniqueIds = Object.keys(asd);
+	let newlist = [];
+	uniqueIds.forEach(function(id) {
+		let relationWhereThisIsChild = itemitem.filter((relation) => (relation.child.id).equals(id))[0];
+		let parent;
+		if(relationWhereThisIsChild && relationWhereThisIsChild.parent)
+			parent = relationWhereThisIsChild.parent.id;
+		let relationsWhereThisIsParent = itemitem.filter((relation) => (relation.parent.id).equals(id));
+		let children = relationsWhereThisIsParent.map((relation) => ({id:relation.child.id}));
+		// let parent = itemitem.filter((relation) => (relation.child.id).equals(id))[0];
+		// let children = itemitem.filter((relation) => (relation.parent.id).equals(id));
+		let item = {
+			id: id,
+			parent: parent,
+			children: children,
+		}
+		newlist.push(item);
+	});
+
+	let data = {
+		// ids:  uniqueIds,
+		items: newlist,
+		// oldList: list
+	}
+
+	return data;
+}
+
 
 //garbage function, dont use
 exports.refreshPriority = async function(userObj) {
@@ -66,65 +241,6 @@ exports.refreshPriority = async function(userObj) {
 	}
 	Promise.all(promiseStack).then(function() {});
 }
-
-
-//idk what this does? at least not save, thats for sure. NOT IN USE?
-/*
-exports.refreshTotalRelevancy = async function(userObj) {
-	let list, items, itemObjs, relevancyObjs, itemsRelevancy, relevancyrelation;
-	list = await utils.listifyItemRelations(userObj);
-	items = await db.items.byUser(userObj);
-	relevancies = await db.relevancies.byUser(userObj);
-	relevancyrelations 	= await db.relations.relevancyItem.byUser(userObj);
-	itemsRelevancy = {};
-	itemsTotalRelevancy = {};
-	itemObjs = {};
-	relevancyObjs = {};
-	for(let i = 0; i < items.length; i++) {
-		let item = items[i];
-		itemObjs[item.id] = item;
-		itemsTotalRelevancy[item.id] = 100;
-	}
-	for(let i = 0; i < relevancies.length; i++) {
-		let relevancy = relevancies[i];
-		relevancyObjs[relevancy.id] = relevancy.value;
-	}
-	for(let i = 0; i < relevancyrelations.length; i++) {
-		let relation = relevancyrelations[i];
-		itemsRelevancy[relation.item.id] = relevancyObjs[relation.relevancy.id];
-	}
-	// for(let i = 0; i < list.length; i++) {
-	// 	let id = list[i].id;
-	// 	itemsTotalRelevancy[id] *= itemObjs
-	// }
-
-	// list = await utils.listifyItemRelations(userObj);
-	for(let i = 0; i < list.length; i++) {
-		let currentItemListed, 
-			currentItemObj, 
-			currentItemObjTotalRelevancy, 
-			nextParentId;
-
-		currentItemListed = list[i];
-		currentItemObj = itemObjs[currentItemListed.id];
-		currentItemObjTotalRelevancy = itemsRelevancy[currentItemObj.id];
-		nextParentId = currentItemListed.parent;
-		while(nextParentId) {
-			let parentItemListed, parentItemObj;
-			parentItemListed = list.filter(function(item) {
-				return item['id'].equals(nextParentId);
-			});
-			if(parentItemListed.length > 0) {
-				itemsTotalRelevancy[currentItemListed.id] *= itemsTotalRelevancy[currentItemListed.id] / 100;
-				nextParentId = parentItemListed[0].parent;
-			} else
-				nextParentId = false;
-		}
-		currentItemObj.cumulativeMinutes += currentItemObj.totalMinutes;
-	}
-
-}
-*/
 
 exports.refreshCumulativeMinutes = async function(userObj) {
 	let items;
@@ -227,26 +343,6 @@ exports.refreshTotalMinutes = async function(userObj) {
 	Promise.all(promiseStack).then(function() {});
 }
 
-//garbage, dont use
-/*
-exports.resetMinutes = async function(userObj) {
-	let items;
-
-
-	//reset totalMinutes and cumulativeMinutes
-	items = await db.items.byUser(userObj);
-	for(let i = 0; i < items.length; i++) {
-		let itemObj, data;
-		itemObj = items[i];
-		data = {
-			totalMinutes: 0,
-			cumulativeMinutes: 0,
-		};
-
-		await db.items.update2(itemObj, data);
-	}
-}
-*/
 
 exports.refresh = async function(userObj) {
 	exports.refreshTotalMinutes(userObj);

@@ -207,8 +207,24 @@ app.get("/api", function(req, res) {
 	res.render("api");
 });
 
+app.get("/api/items/hashmap", auth.isAuthenticated, async function(req, res) {
+	let list = await utils2.hashMap(req.user);
+	// let tree = await utils2.tree(list);
+	res.send(list);
+});
+
+app.get("/api/items/tree2", auth.isAuthenticated, async function(req, res) {
+	let hashmap = await utils2.hashMap(req.user);
+	let tree = await utils2.tree2(hashmap);
+	// console.log(tree.children[0].children[0].parent.children[0].parent.children[0]);
+	// res.send(tree);
+	res.send("tree printed");
+});
+
+//garbage, through away
 app.get("/api/items/tree", auth.isAuthenticated, async function(req, res) {
-	let tree = await utils2.tree(req.user);
+	let list = await utils2.flatList(req.user);
+	let tree = await utils2.tree(list);
 	res.send(tree);
 });
 
@@ -312,7 +328,7 @@ app.post("/api/migrate/in", async function(req, res) {
 
 //creates a list structure of the item relations and returns this structure
 app.get("/api/items/listify", auth.isAuthenticated, async function(req, res) {
-	let list = await utils.listifyItemRelations(req.user);
+	let list = await utils2.flatList(req.user);
 	res.send(list);
 });
 
